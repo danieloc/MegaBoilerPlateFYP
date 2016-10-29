@@ -38,7 +38,7 @@ $RECYCLE.BIN/
 .TemporaryItems
 .Trashes
 .VolumeIcon.icns
-
+.idea
 node_modules/
 
 # Directories potentially created on remote AFP share
