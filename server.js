@@ -105,7 +105,7 @@ if (app.get('env') === 'development') {
 }
 
 app.post('/contact', contactController.contactPost);
-app.post('/addBubbles', userController.addBubbles);
+app.post('/addBubbles', userController.ensureAuthenticated, userController.addBubbles);
 app.put('/account', userController.ensureAuthenticated, userController.accountPut);
 app.delete('/account', userController.ensureAuthenticated, userController.accountDelete);
 app.post('/signup', userController.signupPost);

@@ -235,7 +235,7 @@ export function deleteAccount(token) {
   };
 }
 
-export function submitBubbleForm(state) {
+export function submitBubbleForm(state, token) {
   console.log(state.goal);
   return (dispatch) => {
     dispatch({
@@ -244,7 +244,10 @@ export function submitBubbleForm(state) {
     console.log("Step 2");
     return fetch('/addBubbles', {
       method: 'post',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({
         email: state.email,
         goal: state.goal

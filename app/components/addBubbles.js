@@ -10,9 +10,15 @@ class addBubbles extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            email: props.user.email,
+            name: props.user.name,
+            gender: props.user.gender,
+            location: props.user.location,
+            website: props.user.website,
+            gravatar: props.user.gravatar,
             goal: '',
-            email: this.props.auth.user.email
         }
+        console.log(this.props.token);
     }
 
     handleChange(event) {
@@ -21,7 +27,7 @@ class addBubbles extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(submitBubbleForm(this.state));
+        this.props.dispatch(submitBubbleForm(this.state, this.props.token));
     }
 
     render() {
@@ -42,12 +48,21 @@ class addBubbles extends React.Component {
                         </form>
                     </div>
                 </div>
+                <div className="container">
+                    <div className="panel">
+                        <h1></h1>
+                    </div>
+                </div>
             </div>
         );
     }
 }
 
 const mapStateToProps = (state) => {
-    return state;
+    return {
+        token: state.auth.token,
+        user: state.auth.user,
+        messages: state.messages
+    };
 };
 export default connect(mapStateToProps)(addBubbles);

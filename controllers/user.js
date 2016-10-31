@@ -441,7 +441,7 @@ exports.addBubbles = function(req, res) {
               return res.status(400).send({ msg: 'Password reset token is invalid or has expired.' });
             }
             console.log('In final Bit');
-            user.goals = req.body.goal;
+            user.goals.push(req.body.goal);
             user.save(function(err) {
               done(err, user);
             });
