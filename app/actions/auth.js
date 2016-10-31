@@ -234,3 +234,41 @@ export function deleteAccount(token) {
     });
   };
 }
+
+export function submitBubbleForm(state) {
+  console.log(state.goal);
+  return (dispatch) => {
+    dispatch({
+      type: 'CLEAR_MESSAGES'
+    });
+    console.log("Step 2");
+    return fetch('/addBubbles', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email: state.email,
+        goal: state.goal
+      })
+    }).then((response) => {
+      console.log("Step 3");
+      if (response.ok) {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'BUBBLE_FORM_SUCCESS',
+            message: [json],
+            token: json.token,
+            user: json.user
+          });
+        });
+      } else {
+        console.log("Big Error");
+        return response.json().then((json) => {
+          dispatch({
+            type: 'BUBBLE_FORM_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}

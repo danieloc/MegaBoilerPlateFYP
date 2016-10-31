@@ -42,6 +42,7 @@ var app = express();
 var compiler = webpack(config);
 
 mongoose.connect(process.env.MONGODB);
+mongoose.Promise = global.Promise;
 mongoose.connection.on('error', function() {
   console.log('MongoDB Connection Error. Please make sure that MongoDB is running.');
   process.exit(1);
@@ -104,6 +105,7 @@ if (app.get('env') === 'development') {
 }
 
 app.post('/contact', contactController.contactPost);
+app.post('/addBubbles', userController.addBubbles);
 app.put('/account', userController.ensureAuthenticated, userController.accountPut);
 app.delete('/account', userController.ensureAuthenticated, userController.accountDelete);
 app.post('/signup', userController.signupPost);

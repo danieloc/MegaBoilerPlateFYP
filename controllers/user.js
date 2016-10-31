@@ -419,3 +419,33 @@ exports.authGoogle = function(req, res) {
 exports.authGoogleCallback = function(req, res) {
   res.render('loading', { layout: false });
 };
+
+/**
+ * POST /addBubbles
+ */
+
+exports.addBubbles = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      console.log(req.body);
+      console.log(req.body.email);
+      User.findOne({  email: req.body.email  })
+          .exec(function(err, user) {
+            if (!user) {
+              return res.status(400).send({ msg: 'Password reset token is invalid or has expired.' });
+            }
+            console.log('In final Bit');
+            user.goals = req.body.goal;
+            user.save(function(err) {
+              done(err, user);
+            });
+            console.log("Got this far")
+          });
+    }]);
+};
