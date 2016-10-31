@@ -13,9 +13,7 @@ class Header extends React.Component {
     const active = { borderBottomColor: '#3f51b5' };
     const leftNav = this.props.token ? (
         <li><Link to="/addBubbles" activeStyle={active}>Bubbles</Link></li>
-    ): (
-        <li>Nothing Here</li>
-    );
+    ):(<li></li>);
     const rightNav = this.props.token ? (
       <ul className="nav navbar-nav navbar-right">
         <li className="dropdown">
