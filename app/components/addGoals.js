@@ -13,6 +13,7 @@ class addGoals extends React.Component {
             email: props.user.email,
             name: props.user.name,
             gender: props.user.gender,
+            goals: props.user.goals,
             goal: '',
             priority: ''
         }
