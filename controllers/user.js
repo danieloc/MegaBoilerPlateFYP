@@ -440,7 +440,7 @@ exports.addBubbles = function(req, res) {
             if (!user) {
               return res.status(400).send({ msg: 'Password reset token is invalid or has expired.' });
             }
-            user.goals.push({ goal: req.body.goalTitle, priority: req.body.goalPriority});
+            user.goals.push({ goal: req.body.goalTitle, priority: req.body.goalPriority, completed: false});
             user.save(function(err) {
               done(err, user);
             });
