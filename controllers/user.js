@@ -27,36 +27,36 @@ exports.ensureAuthenticated = function(req, res, next) {
     res.status(401).send({ msg: 'Unauthorized' });
   }
 };
-  /**
-   * POST /login
-   * Sign in with email and password
-   */
-  exports.loginPost = function(req, res, next) {
-    req.assert('email', 'Email is not valid').isEmail();
-    req.assert('email', 'Email cannot be blank').notEmpty();
-    req.assert('password', 'Password cannot be blank').notEmpty();
-    req.sanitize('email').normalizeEmail({ remove_dots: false });
+/**
+ * POST /login
+ * Sign in with email and password
+ */
+exports.loginPost = function(req, res, next) {
+  req.assert('email', 'Email is not valid').isEmail();
+  req.assert('email', 'Email cannot be blank').notEmpty();
+  req.assert('password', 'Password cannot be blank').notEmpty();
+  req.sanitize('email').normalizeEmail({ remove_dots: false });
 
-    var errors = req.validationErrors();
+  var errors = req.validationErrors();
 
-    if (errors) {
-      return res.status(400).send(errors);
-    }
+  if (errors) {
+    return res.status(400).send(errors);
+  }
 
-    User.findOne({ email: req.body.email }, function(err, user) {
-      if (!user) {
-        return res.status(401).send({ msg: 'The email address ' + req.body.email + ' is not associated with any account. ' +
-        'Double-check your email address and try again.'
-        });
-      }
-      user.comparePassword(req.body.password, function(err, isMatch) {
-        if (!isMatch) {
-          return res.status(401).send({ msg: 'Invalid email or password' });
-        }
-        res.send({ token: generateToken(user), user: user.toJSON() });
+  User.findOne({ email: req.body.email }, function(err, user) {
+    if (!user) {
+      return res.status(401).send({ msg: 'The email address ' + req.body.email + ' is not associated with any account. ' +
+      'Double-check your email address and try again.'
       });
+    }
+    user.comparePassword(req.body.password, function(err, isMatch) {
+      if (!isMatch) {
+        return res.status(401).send({ msg: 'Invalid email or password' });
+      }
+      res.send({ token: generateToken(user), user: user.toJSON() });
     });
-  };
+  });
+};
 
 /**
  * POST /signup
@@ -76,7 +76,7 @@ exports.signupPost = function(req, res, next) {
 
   User.findOne({ email: req.body.email }, function(err, user) {
     if (user) {
-    return res.status(400).send({ msg: 'The email address you have entered is already associated with another account.' });
+      return res.status(400).send({ msg: 'The email address you have entered is already associated with another account.' });
     }
     user = new User({
       name: req.body.name,
@@ -84,7 +84,7 @@ exports.signupPost = function(req, res, next) {
       password: req.body.password
     });
     user.save(function(err) {
-    res.send({ token: generateToken(user), user: user });
+      res.send({ token: generateToken(user), user: user });
     });
   });
 };
@@ -236,24 +236,24 @@ exports.resetPost = function(req, res, next) {
   var errors = req.validationErrors();
 
   if (errors) {
-      return res.status(400).send(errors);
+    return res.status(400).send(errors);
   }
 
   async.waterfall([
     function(done) {
       User.findOne({ passwordResetToken: req.params.token })
-        .where('passwordResetExpires').gt(Date.now())
-        .exec(function(err, user) {
-          if (!user) {
-            return res.status(400).send({ msg: 'Password reset token is invalid or has expired.' });
-          }
-          user.password = req.body.password;
-          user.passwordResetToken = undefined;
-          user.passwordResetExpires = undefined;
-          user.save(function(err) {
-            done(err, user);
+          .where('passwordResetExpires').gt(Date.now())
+          .exec(function(err, user) {
+            if (!user) {
+              return res.status(400).send({ msg: 'Password reset token is invalid or has expired.' });
+            }
+            user.password = req.body.password;
+            user.passwordResetToken = undefined;
+            user.passwordResetExpires = undefined;
+            user.save(function(err) {
+              done(err, user);
+            });
           });
-        });
     },
     function(user, done) {
       var transporter = nodemailer.createTransport({
@@ -445,11 +445,13 @@ exports.addGoals = function(req, res) {
       console.log(req.body.goalTitle);
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            if (!user) {
-              return res.status(400).send({ msg: 'Password reset token is invalid or has expired.' });
-            }
-            user.goals.push({ goal: req.body.goalTitle, priority: req.body.goalPriority, completed: false});
-            user.save(function(err) {
+            user.goals.forEach(function (goal) {
+              if(goal.goal.match(req.body.goalTitle)){
+                return res.status(400).send({ msg: 'This already Exists in the database.' });
+              }
+            });
+            user.goals.push({goal: req.body.goalTitle, priority: req.body.goalPriority, completed: false});
+            user.save(function (err) {
               done(err, user);
             });
           });
