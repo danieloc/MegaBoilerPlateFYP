@@ -425,6 +425,14 @@ exports.authGoogleCallback = function(req, res) {
  */
 
 exports.addGoals = function(req, res) {
+  req.assert('goalTitle', 'Goal name cannot be blank').notEmpty();
+  req.assert('goalPriority', 'Priority cannot be blank').notEmpty();
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    return res.status(400).send(errors);
+  }
   async.waterfall([
     function(done) {
       crypto.randomBytes(16, function(err, buf) {
