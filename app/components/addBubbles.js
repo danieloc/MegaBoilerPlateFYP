@@ -13,12 +13,9 @@ class addBubbles extends React.Component {
             email: props.user.email,
             name: props.user.name,
             gender: props.user.gender,
-            location: props.user.location,
-            website: props.user.website,
-            gravatar: props.user.gravatar,
             goal: '',
+            priority: ''
         }
-        console.log(this.props.token);
     }
 
     handleChange(event) {
@@ -28,6 +25,8 @@ class addBubbles extends React.Component {
     handleReset(event) {
         event.preventDefault();
         this.props.dispatch(submitBubbleForm(this.state, this.props.token));
+        this.state.goal = '';
+        this.state.priority = '';
     }
 
     render() {
@@ -43,14 +42,20 @@ class addBubbles extends React.Component {
                                 <input name = "goal" id="goal" placeholder="New goal" className="form-control" autoFocus value={this.state.goal} onChange={this.handleChange.bind(this)}/>
                             </div>
                             <div className="form-group">
+                                <label className="radio-inline col-sm-4">
+                                    <input type="radio" name="priority" value="Low" checked={this.state.priority === 'Low'} onChange={this.handleChange.bind(this)}/><span>Low</span>
+                                </label>
+                                <label className="radio-inline col-sm-4">
+                                    <input type="radio" name="priority" value="Medium" checked={this.state.priority === 'Medium'} onChange={this.handleChange.bind(this)}/><span>Medium</span>
+                                </label>
+                                <label className="radio-inline col-sm-4">
+                                    <input type="radio" name="priority" value="High" checked={this.state.priority === 'High'} onChange={this.handleChange.bind(this)}/><span>High</span>
+                                </label>
+                            </div>
+                            <div className="form-group">
                                 <button type="submit" className="btn btn-success">Add goal</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-                <div className="container">
-                    <div className="panel">
-                        <h1></h1>
                     </div>
                 </div>
             </div>

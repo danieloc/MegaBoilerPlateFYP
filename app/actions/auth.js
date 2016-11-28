@@ -241,7 +241,6 @@ export function submitBubbleForm(state, token) {
     dispatch({
       type: 'CLEAR_MESSAGES'
     });
-    console.log("Step 2");
     return fetch('/addBubbles', {
       method: 'post',
       headers: {
@@ -250,10 +249,10 @@ export function submitBubbleForm(state, token) {
       },
       body: JSON.stringify({
         email: state.email,
-        goal: state.goal
+        goalTitle: state.goal,
+        goalPriority:state.priority
       })
     }).then((response) => {
-      console.log("Step 3");
       if (response.ok) {
         return response.json().then((json) => {
           dispatch({
@@ -264,7 +263,6 @@ export function submitBubbleForm(state, token) {
           });
         });
       } else {
-        console.log("Big Error");
         return response.json().then((json) => {
           dispatch({
             type: 'BUBBLE_FORM_FAILURE',

@@ -433,19 +433,17 @@ exports.addBubbles = function(req, res) {
       });
     },
     function(token, done) {
-      console.log(req.body);
-      console.log(req.body.email);
+      console.log("This is the request");
+      console.log(req.body.goalTitle);
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             if (!user) {
               return res.status(400).send({ msg: 'Password reset token is invalid or has expired.' });
             }
-            console.log('In final Bit');
-            user.goals.push(req.body.goal);
+            user.goals.push({ goal: req.body.goalTitle, priority: req.body.goalPriority});
             user.save(function(err) {
               done(err, user);
             });
-            console.log("Got this far")
           });
     }]);
 };

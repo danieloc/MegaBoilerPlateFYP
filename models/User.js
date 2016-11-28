@@ -14,7 +14,10 @@ var userSchema = new mongoose.Schema({
   email: { type: String, unique: true},
   password: String,
   bubbles: [String],
-  goals: [String],
+  goals: [{
+    goal: String,
+    priority: String
+  }],
   achievements: [String],
   passwordResetToken: String,
   passwordResetExpires: Date,
