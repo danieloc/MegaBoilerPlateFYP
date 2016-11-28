@@ -41,14 +41,14 @@ class addBubbles extends React.Component {
                                 <label htmlFor="goal">New Goal</label>
                                 <input name = "goal" id="goal" placeholder="New goal" className="form-control" autoFocus value={this.state.goal} onChange={this.handleChange.bind(this)}/>
                             </div>
-                            <div className="form-group">
-                                <label className="radio-inline col-sm-4">
+                            <div className = "form-group">
+                                <label className="radio-inline">
                                     <input type="radio" name="priority" value="Low" checked={this.state.priority === 'Low'} onChange={this.handleChange.bind(this)}/><span>Low</span>
                                 </label>
-                                <label className="radio-inline col-sm-4">
+                                <label className="radio-inline">
                                     <input type="radio" name="priority" value="Medium" checked={this.state.priority === 'Medium'} onChange={this.handleChange.bind(this)}/><span>Medium</span>
                                 </label>
-                                <label className="radio-inline col-sm-4">
+                                <label className="radio-inline">
                                     <input type="radio" name="priority" value="High" checked={this.state.priority === 'High'} onChange={this.handleChange.bind(this)}/><span>High</span>
                                 </label>
                             </div>
