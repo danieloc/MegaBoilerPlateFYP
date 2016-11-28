@@ -421,10 +421,10 @@ exports.authGoogleCallback = function(req, res) {
 };
 
 /**
- * POST /addBubbles
+ * POST /addGoals
  */
 
-exports.addBubbles = function(req, res) {
+exports.addGoals = function(req, res) {
   async.waterfall([
     function(done) {
       crypto.randomBytes(16, function(err, buf) {

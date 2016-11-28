@@ -3,10 +3,10 @@
  */
 import React from 'react';
 import { connect } from 'react-redux'
-import { submitBubbleForm } from '../actions/auth';
+import { submitGoalForm } from '../actions/auth';
 import Messages from './Messages';
 
-class addBubbles extends React.Component {
+class addGoals extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -24,7 +24,7 @@ class addBubbles extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(submitBubbleForm(this.state, this.props.token));
+        this.props.dispatch(submitGoalForm(this.state, this.props.token));
         this.state.goal = '';
         this.state.priority = '';
     }
@@ -70,4 +70,4 @@ const mapStateToProps = (state) => {
         messages: state.messages
     };
 };
-export default connect(mapStateToProps)(addBubbles);
+export default connect(mapStateToProps)(addGoals);

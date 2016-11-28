@@ -235,13 +235,13 @@ export function deleteAccount(token) {
   };
 }
 
-export function submitBubbleForm(state, token) {
+export function submitGoalForm(state, token) {
   console.log(state.goal);
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
     });
-    return fetch('/addBubbles', {
+    return fetch('/addGoals', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -256,7 +256,7 @@ export function submitBubbleForm(state, token) {
       if (response.ok) {
         return response.json().then((json) => {
           dispatch({
-            type: 'BUBBLE_FORM_SUCCESS',
+            type: 'GOAL_FORM_SUCCESS',
             message: [json],
             token: json.token,
             user: json.user
@@ -265,7 +265,7 @@ export function submitBubbleForm(state, token) {
       } else {
         return response.json().then((json) => {
           dispatch({
-            type: 'BUBBLE_FORM_FAILURE',
+            type: 'GOAL_FORM_FAILURE',
             messages: Array.isArray(json) ? json : [json]
           });
         });

@@ -3,7 +3,7 @@ import { IndexRoute, Route } from 'react-router';
 import App from './components/App';
 import Home from './components/Home';
 import Contact from './components/Contact';
-import addBubbles from './components/addBubbles';
+import addGoals from './components/addGoals';
 import NotFound from './components/NotFound';
 import Login from './components/Account/Login';
 import Signup from './components/Account/Signup';
@@ -31,7 +31,7 @@ export default function getRoutes(store) {
     <Route path="/" component={App}>
       <IndexRoute component={Home} onLeave={clearMessages}/>
       <Route path="/contact" component={Contact} onLeave={clearMessages}/>
-      <Route path="/addBubbles" component={addBubbles} onEnter={ensureAuthenticated} onLeave={clearMessages}/>
+      <Route path="/addGoals" component={addGoals} onEnter={ensureAuthenticated} onLeave={clearMessages}/>
       <Route path="/login" component={Login} onEnter={skipIfAuthenticated} onLeave={clearMessages}/>
       <Route path="/signup" component={Signup} onEnter={skipIfAuthenticated} onLeave={clearMessages}/>
       <Route path="/account" component={Profile} onEnter={ensureAuthenticated} onLeave={clearMessages}/>

@@ -12,7 +12,7 @@ class Header extends React.Component {
   render() {
     const active = { borderBottomColor: '#3f51b5' };
     const leftNav = this.props.token ? (
-        <li><Link to="/addBubbles" activeStyle={active}>Bubbles</Link></li>
+        <li><Link to="/addGoals" activeStyle={active}>Goals</Link></li>
     ):(<li></li>);
     const rightNav = this.props.token ? (
       <ul className="nav navbar-nav navbar-right">
