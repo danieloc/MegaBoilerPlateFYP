@@ -14,7 +14,7 @@ class addGoals extends React.Component {
             name: props.user.name,
             gender: props.user.gender,
             goal: '',
-            priority: ''
+            priority: 'Low'
         }
     }
 
@@ -26,7 +26,6 @@ class addGoals extends React.Component {
         event.preventDefault();
         this.props.dispatch(submitGoalForm(this.state, this.props.token));
         this.state.goal = '';
-        this.state.priority = '';
     }
 
     render() {
@@ -42,7 +41,7 @@ class addGoals extends React.Component {
                                 <input name = "goal" id="goal" placeholder="New goal" className="form-control" autoFocus value={this.state.goal} onChange={this.handleChange.bind(this)}/>
                             </div>
                             <div className = "form-group">
-                                <label className="radio-inline">
+                                <label className="radio-inline" >
                                     <input type="radio" name="priority" value="Low" checked={this.state.priority === 'Low'} onChange={this.handleChange.bind(this)}/><span>Low</span>
                                 </label>
                                 <label className="radio-inline">
