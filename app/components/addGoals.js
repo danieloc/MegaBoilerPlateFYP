@@ -13,10 +13,12 @@ class addGoals extends React.Component {
             email: props.user.email,
             name: props.user.name,
             gender: props.user.gender,
+            goals:props.user.goals,
             goal: '',
             priority: 'Low'
         }
     }
+
 
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
@@ -28,7 +30,16 @@ class addGoals extends React.Component {
         this.state.goal = '';
     }
 
+     getGoals() {
+        if (this.state.goals.length > 0) {
+            return this.state.goals.map((goal, index) => (
+                <li key={index}> {goal.goal} </li>
+            ));
+        }
+        else return [];
+    }
     render() {
+
         return (
             <div className="container">
                 <div className="panel">
@@ -55,6 +66,12 @@ class addGoals extends React.Component {
                                 <button type="submit" className="btn btn-success">Add goal</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <div className="panel">
+                    <div className="panel-body">
+                        {this.getGoals()}
                     </div>
                 </div>
             </div>
