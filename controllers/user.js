@@ -443,13 +443,19 @@ exports.addGoals = function(req, res) {
     function(token, done) {
       console.log("This is the request");
       console.log(req.body.goalTitle);
+      if(!(req.body.goalTitle.match("^[a-zA-Z0-9_]*$"))) {
+        return res.status(400).send({ msg: 'You cannot save a goal with a unicode character' });
+      }
+      if(req.body.goalTitle.length < 1) {
+        return res.status(400).send({ msg: 'You have not given your goal a title!' });
+      }
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            user.goals.forEach(function (goal) {
-              if(goal.goal.match(req.body.goalTitle)){
+            Promise.all(user.goals.map(function (goal) {
+              if(goal.goal.toLowerCase() === req.body.goalTitle.toLowerCase()){
                 return res.status(400).send({ msg: 'This already Exists in the database.' });
               }
-            });
+            }));
             user.goals.push({goal: req.body.goalTitle, priority: req.body.goalPriority, completed: false});
             user.save(function (err) {
               done(err, user);
