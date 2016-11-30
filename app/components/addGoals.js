@@ -5,6 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { submitGoalForm } from '../actions/auth';
 import Messages from './Messages';
+import SingleGoal from './SingleGoal';
 
 class addGoals extends React.Component {
     constructor(props) {
@@ -32,9 +33,10 @@ class addGoals extends React.Component {
 
      getGoals() {
         if (this.state.goals.length > 0) {
-            return this.state.goals.map((goal, index) => (
-                <li key={index}> {goal.goal} </li>
-            ));
+            console.log("Hurrah");
+            return this.state.goals.map((goal, index) => {
+                return <SingleGoal key={index+1} obj={goal}> </SingleGoal>;
+            });
         }
         else return [];
     }
@@ -68,11 +70,8 @@ class addGoals extends React.Component {
                         </form>
                     </div>
                 </div>
-
-                <div className="panel">
-                    <div className="panel-body">
-                        {this.getGoals()}
-                    </div>
+                <div>
+                    {this.getGoals()}
                 </div>
             </div>
         );
