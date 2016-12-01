@@ -441,8 +441,6 @@ exports.addGoals = function(req, res) {
       });
     },
     function(token, done) {
-      console.log("This is the request");
-      console.log(req.body.goalTitle);
       if(!(req.body.goalTitle.match("^[a-zA-Z0-9_ ]*$"))) {
         return res.status(400).send({ msg: 'You cannot save a goal with a unicode character' });
       }

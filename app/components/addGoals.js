@@ -22,7 +22,6 @@ class addGoals extends React.Component {
 
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
-        console.log(this.props.user.goals);
     }
 
     handleReset(event) {
@@ -33,7 +32,6 @@ class addGoals extends React.Component {
 
      getGoals() {
         if (this.props.user.goals.length > 0) {
-            console.log("Hurrah");
             return this.props.user.goals.map((goal, index) => {
                 return <SingleGoal key={index+1} obj={goal}> </SingleGoal>;
             });
