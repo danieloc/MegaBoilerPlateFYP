@@ -6,9 +6,13 @@ import React from 'react';
 class SingleGoal extends React.Component {
     render() {
         return (
-            <div>
-                <h1>Goal with Title : {this.props.obj.goal}</h1>
-                <h2>And Priority : {this.props.obj.priority}</h2>
+            <div className="col-sm-4">
+                <div className="panel">
+                    <div className="panel-body">
+                        <h3>{this.props.obj.goal}</h3>
+                        <p>{this.props.obj.priority}</p>
+                    </div>
+                </div>
             </div>
         );
     }
