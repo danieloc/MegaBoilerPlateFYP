@@ -2,7 +2,7 @@
  * Created by Daniel on 10/30/2016.
  */
 import React from 'react';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import { submitGoalForm } from '../actions/auth';
 import Messages from './Messages';
 import SingleGoal from './SingleGoal';
@@ -14,7 +14,6 @@ class addGoals extends React.Component {
             email: props.user.email,
             name: props.user.name,
             gender: props.user.gender,
-            goals:props.user.goals,
             goal: '',
             priority: 'Low'
         }
@@ -23,6 +22,7 @@ class addGoals extends React.Component {
 
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
+        console.log(this.props.user.goals);
     }
 
     handleReset(event) {
@@ -32,9 +32,9 @@ class addGoals extends React.Component {
     }
 
      getGoals() {
-        if (this.state.goals.length > 0) {
+        if (this.props.user.goals.length > 0) {
             console.log("Hurrah");
-            return this.state.goals.map((goal, index) => {
+            return this.props.user.goals.map((goal, index) => {
                 return <SingleGoal key={index+1} obj={goal}> </SingleGoal>;
             });
         }
@@ -70,9 +70,7 @@ class addGoals extends React.Component {
                         </form>
                     </div>
                 </div>
-                <div>
                     {this.getGoals()}
-                </div>
             </div>
         );
     }

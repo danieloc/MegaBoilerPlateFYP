@@ -236,7 +236,6 @@ export function deleteAccount(token) {
 }
 
 export function submitGoalForm(state, token) {
-  console.log(state.goal);
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
@@ -257,8 +256,7 @@ export function submitGoalForm(state, token) {
         return response.json().then((json) => {
           dispatch({
             type: 'GOAL_FORM_SUCCESS',
-            message: [json],
-            token: json.token,
+            messages: [json],
             user: json.user
           });
         });
