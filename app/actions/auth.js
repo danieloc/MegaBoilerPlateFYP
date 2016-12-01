@@ -256,7 +256,7 @@ export function submitGoalForm(state, token) {
         return response.json().then((json) => {
           dispatch({
             type: 'GOAL_FORM_SUCCESS',
-            messages: [json],
+            messages: [{msg : "Goal Submitted"}],
             user: json.user
           });
         });
