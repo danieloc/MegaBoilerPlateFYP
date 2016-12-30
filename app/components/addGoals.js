@@ -33,7 +33,7 @@ class addGoals extends React.Component {
      getGoals() {
         if (this.props.user.goals.length > 0) {
             return this.props.user.goals.map((goal, i) => {
-                return <SingleGoal key={i} index={i} obj={goal}> </SingleGoal>;
+                return <SingleGoal key={i} index={i} obj={goal} handleChange = {this.handleChange}> </SingleGoal>;
             });
         }
         else return [];

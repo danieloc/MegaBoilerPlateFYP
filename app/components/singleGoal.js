@@ -9,7 +9,8 @@ class SingleGoal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            editing: false
+            editing: false,
+            priority: "Low"
         }
     }
 
@@ -19,7 +20,17 @@ class SingleGoal extends React.Component {
     }
 
     saveChanges() {
-        this.props.dispatch(updateGoal(this.props.obj._id,  this.props.user.email, newName, this.props.obj.priority, this.props.token));
+        let newName = this.refs.newText.value;
+        var newPriority;
+        if(this.refs.lowPriorRef.value.checked){
+            newPriority = "Low";
+        }else if(this.refs.medPriorRef.checked){
+            newPriority = "Medium";
+        }else if(this.refs.highPriorRef.checked){
+            newPriority = "High";
+        }
+        console.log(newName + " " + newPriority);
+        this.props.dispatch(updateGoal(this.props.obj._id,  this.props.user.email, newName, newPriority, this.props.token));
         this.setState({editing: false});
     }
 
@@ -32,8 +43,20 @@ class SingleGoal extends React.Component {
             <div className="col-sm-4">
                 <div className="panel">
                     <div className="panel-body">
-                        <input ref="newtext" placeholder={this.props.obj.name}></input>
+                        <input ref="newText" placeholder={this.props.obj.name}></input>
+
                         <button className="btn-success" onClick={() => this.saveChanges()}>Save</button>
+                    </div>
+                    <div className = "form-group">
+                        <label className="radio-inline" >
+                            <input ref = "lowPriorRef" type="radio" name="priority" value="Low" checked={this.state.priority === 'Low'} onChange={this.props.handleChange.bind(this)}/><span>Low</span>
+                        </label>
+                        <label className="radio-inline">
+                            <input ref = "medPriorRef" type="radio" name="priority" value="Medium" checked={this.state.priority === 'Medium'} onChange={this.props.handleChange.bind(this)}/><span>Medium</span>
+                        </label>
+                        <label className="radio-inline">
+                            <input ref = "highPriorRef" type="radio" name="priority" value="High" checked={this.state.priority === 'High'} onChange={this.props.handleChange.bind(this)}/><span>High</span>
+                        </label>
                     </div>
                 </div>
             </div>
