@@ -475,7 +475,6 @@ exports.deleteGoal = function(req, res) {
       });
     },
     function(token, done) {
-      console.log("No need to worry");
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             var arr = user.goals;
@@ -492,7 +491,6 @@ exports.deleteGoal = function(req, res) {
             }
             arr.splice((i-1),1);
             user.goals = arr;
-            console.log(user.goals);
             user.save(function (err) {
               done(err, user);
             });

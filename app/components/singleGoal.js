@@ -9,7 +9,6 @@ class SingleGoal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: props.user.email,
             editing: false
         }
     }
@@ -20,14 +19,12 @@ class SingleGoal extends React.Component {
     }
 
     saveChanges() {
-        let newName = this.refs.newtext.value;
-        console.log("Saving changes - " + this.props.obj.goal + " to " + newName);
-        this.props.dispatch(updateGoal(this.props.obj._id, this.state.email, newName, this.props.obj.priority, this.props.token));
+        this.props.dispatch(updateGoal(this.props.obj._id,  this.props.user.email, newName, this.props.obj.priority, this.props.token));
         this.setState({editing: false});
     }
 
     removeGoal() {
-        this.props.dispatch(removeGoal(this.props.obj._id, this.state.email, this.props.token));
+        this.props.dispatch(removeGoal(this.props.obj._id, this.props.user.email, this.props.token));
     }
 
     renderForm() {
