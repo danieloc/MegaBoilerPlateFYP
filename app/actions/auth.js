@@ -248,7 +248,7 @@ export function submitGoalForm(state, token) {
       },
       body: JSON.stringify({
         email: state.email,
-        goalTitle: state.goal,
+          goalTitle: state.goal,
         goalPriority:state.priority
       })
     }).then((response) => {
@@ -270,4 +270,77 @@ export function submitGoalForm(state, token) {
       }
     });
   };
+}
+
+export function removeGoal(goalID ,email, token) {
+  return (dispatch) => {
+    dispatch({
+      type: 'CLEAR_MESSAGES'
+    });
+    return fetch('/deleteGoals', {
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        goalID: goalID
+      })
+    }).then((response) => {
+      if (response.ok) {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'DELETE_GOAL_SUCCESS',
+            messages: [{msg : "Goal Deleted"}],
+            user: json.user
+          });
+        });
+      } else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'DELETE_GOAL_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}
+export function updateGoal(goalID ,email, name, priority, token) {
+    return (dispatch) => {
+        dispatch({
+            type: 'CLEAR_MESSAGES'
+        });
+        return fetch('/updateGoals', {
+            method: 'put',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                email: email,
+                goalID: goalID,
+                goalName: name,
+                goalPriority: priority
+            })
+        }).then((response) => {
+            if (response.ok) {
+                return response.json().then((json) => {
+                    dispatch({
+                        type: 'UPDATE_GOAL_SUCCESS',
+                        messages: [{msg : "Goal updated"}],
+                        user: json.user
+                    });
+                });
+            } else {
+                return response.json().then((json) => {
+                    dispatch({
+                        type: 'UPDATE_GOAL_FAILURE',
+                        messages: Array.isArray(json) ? json : [json]
+                    });
+                });
+            }
+        });
+    };
 }

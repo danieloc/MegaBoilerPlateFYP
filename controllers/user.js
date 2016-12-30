@@ -462,3 +462,74 @@ exports.addGoals = function(req, res) {
           });
     }]);
 };
+/**
+ * DELETE /goal
+ */
+
+exports.deleteGoal = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      console.log("No need to worry");
+      User.findOne({  email: req.body.email  })
+          .exec(function(err, user) {
+            var arr = user.goals;
+            var i=0;
+            var found = false;
+            while(arr.length > i && !found) {
+              if(user.goals[i]._id.valueOf() == req.body.goalID.valueOf()) {
+                found = true;
+              }
+              i++;
+            }
+            if(!found){
+              return res.status(400).send({ msg: 'Could not find the goal by ID in the database.' });
+            }
+            arr.splice((i-1),1);
+            user.goals = arr;
+            console.log(user.goals);
+            user.save(function (err) {
+              done(err, user);
+            });
+            res.send({user: user.toJSON()});
+          });
+    }]);
+};
+exports.updateGoal = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      User.findOne({  email: req.body.email  })
+          .exec(function(err, user) {
+            var arr = user.goals;
+            var i=0;
+            var found = false;
+            while(arr.length > i && !found) {
+              if(user.goals[i]._id.valueOf() == req.body.goalID.valueOf()) {
+                found = true;
+              }
+              i++;
+            }
+            if(!found){
+              return res.status(400).send({ msg: 'Could not find the goal by ID in the database.' });
+            }
+            arr[i-1].goal = req.body.goalName;
+            arr[i-1].priority = req.body.goalPriority;
+            user.goals = arr;
+            user.save(function (err) {
+              done(err, user);
+            });
+            res.send({user: user.toJSON()});
+          });
+    }]);
+};

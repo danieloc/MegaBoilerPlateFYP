@@ -18,6 +18,14 @@ export default function auth(state = initialState, action) {
     case 'GOAL_FORM_SUCCESS':
       return Object.assign({}, state, {
         user: action.user});
+    case 'DELETE_GOAL_SUCCESS':
+      return Object.assign({}, state, {
+        user: action.user
+      });
+    case 'UPDATE_GOAL_SUCCESS':
+      return Object.assign({}, state, {
+        user: action.user
+      });
     case 'LOGOUT_SUCCESS':
       return initialState;
     default:
