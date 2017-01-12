@@ -235,12 +235,12 @@ export function deleteAccount(token) {
   };
 }
 
-export function submitGoalForm(state, token) {
+export function submitNodeToDoForm(state, parentID, childID, token) {
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
     });
-    return fetch('/addGoals', {
+    return fetch('/addToDos', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -248,14 +248,16 @@ export function submitGoalForm(state, token) {
       },
       body: JSON.stringify({
         email: state.email,
-          goalTitle: state.goal,
-        goalPriority:state.priority
+        goalTitle: state.goal,
+        goalPriority:state.priority,
+        parentID: parentID,
+        childID: childID
       })
     }).then((response) => {
       if (response.ok) {
         return response.json().then((json) => {
           dispatch({
-            type: 'GOAL_FORM_SUCCESS',
+            type: 'TODO_FORM_SUCCESS',
             messages: [{msg : "Goal Submitted"}],
             user: json.user
           });
@@ -263,7 +265,7 @@ export function submitGoalForm(state, token) {
       } else {
         return response.json().then((json) => {
           dispatch({
-            type: 'GOAL_FORM_FAILURE',
+            type: 'TODO_FORM_FAILURE',
             messages: Array.isArray(json) ? json : [json]
           });
         });

@@ -3,22 +3,24 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
-import { submitGoalForm } from '../actions/auth';
 import Messages from './Messages';
-import SingleGoal from './SingleGoal';
+import { submitNodeToDoForm } from '../actions/auth';
 
-class addGoals extends React.Component {
+class AddNodesForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             email: props.user.email,
             name: props.user.name,
-            gender: props.user.gender,
             goal: '',
             priority: 'Low'
         }
     }
 
+
+    checkState() {
+        console.log(this.state);
+    }
 
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
@@ -26,17 +28,15 @@ class addGoals extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(submitGoalForm(this.state, this.props.token));
-        this.state.goal = '';
-    }
-
-     getGoals() {
-        if (this.props.user.goals.length > 0) {
-            return this.props.user.goals.map((goal, i) => {
-                return <SingleGoal key={i} index={i} obj={goal} handleChange = {this.handleChange}> </SingleGoal>;
-            });
+        console.log(this.props.subNodeLevel);
+        if(!this.props.subNodeLevel) {
+            console.log(this.state);
+            this.props.dispatch(submitNodeToDoForm(this.state, this.props.parentNode_ID, this.props.childNode_ID, this.props.token));
         }
-        else return [];
+        else {
+            //Do Nothing for now
+        }
+        this.state.goal = '';
     }
     render() {
 
@@ -46,7 +46,7 @@ class addGoals extends React.Component {
                     <div className="panel-body">
                         <Messages messages={this.props.messages}/>
                         <form onSubmit={this.handleReset.bind(this)}>
-                            <legend>Create Goal</legend>
+                            <legend>{this.props.name}</legend>
                             <div className="form-group">
                                 <label htmlFor="goal">New Goal</label>
                                 <input name = "goal" id="goal" placeholder="New goal" className="form-control" autoFocus value={this.state.goal} onChange={this.handleChange.bind(this)}/>
@@ -65,10 +65,10 @@ class addGoals extends React.Component {
                             <div className="form-group">
                                 <button type="submit" className="btn btn-success">Add goal</button>
                             </div>
+                            <button onClick={() => this.checkState}>State</button>
                         </form>
                     </div>
                 </div>
-                    {this.getGoals()}
             </div>
         );
     }
@@ -81,4 +81,4 @@ const mapStateToProps = (state) => {
         messages: state.messages
     };
 };
-export default connect(mapStateToProps)(addGoals);
+export default connect(mapStateToProps)(AddNodesForm);

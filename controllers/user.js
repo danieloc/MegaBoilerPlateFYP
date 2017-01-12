@@ -424,7 +424,87 @@ exports.authGoogleCallback = function(req, res) {
  * POST /addGoals
  */
 
-exports.addGoals = function(req, res) {
+exports.addTodos = function(req, res) {
+  req.assert('goalTitle', 'Goal name cannot be blank').notEmpty();
+  req.assert('goalPriority', 'Priority cannot be blank').notEmpty();
+  console.log("Got here");
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    return res.status(400).send(errors);
+  }
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      if(!(req.body.goalTitle.match("^[a-zA-Z0-9_ ]*$"))) {
+        return res.status(400).send({ msg: 'You cannot save a goal with a unicode character' });
+      }
+      if(req.body.goalTitle.length < 1) {
+        return res.status(400).send({ msg: 'You have not given your goal a title!' });
+      }
+      User.findOne({  email: req.body.email  })
+          .exec(function(err, user) {
+            var found = false;
+            var nodeIndex = 0;
+            var subNodeIndex = 0;
+            var node;
+            while (nodeIndex < user.nodes.length && !found) {
+              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
+                node = user.nodes[nodeIndex];
+                found = true;
+              } else {
+                nodeIndex++;
+              }
+            }
+            if(req.body.childID) {
+              found = false;
+              while (subNodeIndex < node.subnodes.length && !found) {
+                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+                  found = true;
+                } else {
+                  subNodeIndex++;
+                }
+              }
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //I've used the same var name node to avoid duplicate code in this API.
+              node = node.subnodes[subNodeIndex];
+            }
+            Promise.all(node.todos.map(function (todo) {
+              if (todo.name.toLowerCase() === req.body.goalTitle.toLowerCase()) {
+                return res.status(400).send({msg: 'This already Exists in the database.'});
+              }
+            }));
+
+            if(!req.body.childID) {
+              user.nodes[nodeIndex].todos.push({
+                name: req.body.goalTitle,
+                priority: req.body.goalPriority,
+                completed: false
+              });
+            }
+            else {
+              user.nodes[nodeIndex].subnodes[subNodeIndex].todos.push({
+                name: req.body.goalTitle,
+                priority: req.body.goalPriority,
+                completed: false
+              });
+            }
+      user.save(function (err) {
+        done(err, user);
+      });
+      res.send({user: user.toJSON()});
+    });
+}]);
+};
+
+
+exports.addSubNodeToDos = function(req, res) {
   req.assert('goalTitle', 'Goal name cannot be blank').notEmpty();
   req.assert('goalPriority', 'Priority cannot be blank').notEmpty();
 
@@ -449,6 +529,25 @@ exports.addGoals = function(req, res) {
       }
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
+            var found = false;
+            var nodeIndex =0;
+            var node;
+            while( nodeIndex <= user.nodes.length && !found) {
+              if(user.nodes[nodeIndex]._id === req.parentID){
+                node = user.nodes[nodeIndex];
+                found = true;
+              }else {
+                nodeIndex++;
+              }
+            }
+            if(req.childID !== null) {
+              for(var i =0; i < node.subnodes.length && !found; i++)
+              {
+                if(node.subnodes[i]._id === req.childID){
+                  node = node.subnodes[i]
+                }
+              }
+            }
             Promise.all(user.goals.map(function (goal) {
               if(goal.goal.toLowerCase() === req.body.goalTitle.toLowerCase()){
                 return res.status(400).send({ msg: 'This already Exists in the database.' });

@@ -13,9 +13,21 @@ var userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true},
   password: String,
-  bubbles: [{
-    bubble: String,
-    priority: String
+  nodes: [{
+    name: String,
+    todos:[{
+      name: String,
+      priority: String,
+      completed: Boolean
+    }],
+    subnodes: [{
+      name: String,
+      todos: [{
+        name: String,
+        priority: String,
+        completed: Boolean
+      }]
+    }]
   }],
   goals: [{
     goal: String,

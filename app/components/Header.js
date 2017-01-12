@@ -17,6 +17,9 @@ class Header extends React.Component {
     const leftNavMindMap = this.props.token ? (
         <li><Link to="/mindmap" activeStyle={active}>Mindmap</Link></li>
     ):(<li></li>);
+    const leftNavNodes = this.props.token ? (
+        <li><Link to="/nodes" activeStyle={active}>Nodes</Link></li>
+    ):(<li></li>);
     const rightNav = this.props.token ? (
       <ul className="nav navbar-nav navbar-right">
         <li className="dropdown">
@@ -56,6 +59,7 @@ class Header extends React.Component {
               <li><Link to="/contact" activeStyle={active}>Contact</Link></li>
               {leftNavGoals}
               {leftNavMindMap}
+              {leftNavNodes}
             </ul>
             {rightNav}
           </div>

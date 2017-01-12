@@ -68,7 +68,7 @@ class SingleGoal extends React.Component {
             <div className="col-sm-4">
                 <div className="panel">
                     <div className="panel-body">
-                        <h3>{this.props.obj.goal}<span onClick={() => this.removeGoal()}
+                        <h3>{this.props.obj.name}<span onClick={() => this.removeGoal()}
                                                        className="glyphicon glyphicon-trash pull-right"></span></h3>
                         <p>{this.props.obj.priority}<span className="glyphicon glyphicon-wrench pull-right"
                                                           onClick={() =>this.changeToEdit()}></span></p>

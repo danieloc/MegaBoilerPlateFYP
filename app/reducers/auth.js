@@ -15,7 +15,7 @@ export default function auth(state = initialState, action) {
         token: action.token,
         user: action.user
       });
-    case 'GOAL_FORM_SUCCESS':
+    case 'TODO_FORM_SUCCESS':
       return Object.assign({}, state, {
         user: action.user});
     case 'DELETE_GOAL_SUCCESS':
