@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
-import { removeGoal, updateGoal } from '../actions/auth';
+import { removeGoal, updateToDo } from '../actions/auth';
 
 class SingleGoal extends React.Component {
     constructor(props) {
@@ -22,15 +22,14 @@ class SingleGoal extends React.Component {
     saveChanges() {
         let newName = this.refs.newText.value;
         var newPriority;
-        if(this.refs.lowPriorRef.value.checked){
+        if(this.refs.lowPriorRef.checked){
             newPriority = "Low";
         }else if(this.refs.medPriorRef.checked){
             newPriority = "Medium";
         }else if(this.refs.highPriorRef.checked){
             newPriority = "High";
         }
-        console.log(newName + " " + newPriority);
-        this.props.dispatch(updateGoal(this.props.obj._id,  this.props.user.email, newName, newPriority, this.props.token));
+        this.props.dispatch(updateToDo(this.props.obj._id, this.props.parentID, this.props.childID, this.props.user.email, newName, newPriority, this.props.token));
         this.setState({editing: false});
     }
 

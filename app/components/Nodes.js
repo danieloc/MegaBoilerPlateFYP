@@ -2,11 +2,10 @@
  * Created by Daniel on 1/7/2017.
  */
 import React from 'react';
-import { IndexLink, Link } from 'react-router';
+import { Link } from 'react-router';
 import { connect } from 'react-redux'
 import AddNodesForm from './AddNodesForm';
 import SingleGoal from './SingleGoal';
-import { submitNodeToDoForm } from '../actions/auth';
 
 class Nodes extends React.Component {
 
@@ -71,26 +70,28 @@ class Nodes extends React.Component {
         }
     }
 
-    checkState() {
-        console.log(this.state);
+
+
+    handleChange(event) {
+        this.setState({ [event.target.name]: event.target.value });
     }
 
     displayToDos() {
-        if(!this.state.childNode_ID) {
-            if (this.state.topNode.todos.length > 0) {
-                return this.props.user.nodes[this.state.topNodeIndex].todos.map((todo, i) => {
-                    return <SingleGoal key={i} index={i} obj={todo} handleChange={this.handleChange}> </SingleGoal>;
-                });
-            }
-        }
-        else {
-            if (this.state.subNode.todos.length > 0) {
-                return this.props.user.nodes[this.state.topNodeIndex].subnodes[this.state.subNodeIndex].todos.map((todo, i) => {
-                    return <SingleGoal key={i} index={i} obj={todo} handleChange={this.handleChange}> </SingleGoal>;
-                });
-            }
+    if(!this.state.childNode_ID) {
+        if (this.state.topNode.todos.length > 0) {
+            return this.props.user.nodes[this.state.topNodeIndex].todos.map((todo, i) => {
+                return <SingleGoal key={i} index={i} obj={todo} parentID = {this.state.parentNode_ID} childID = {this.state.childNode_ID} handleChange={this.handleChange}> </SingleGoal>;
+            });
         }
     }
+    else {
+        if (this.state.subNode.todos.length > 0) {
+            return this.props.user.nodes[this.state.topNodeIndex].subnodes[this.state.subNodeIndex].todos.map((todo, i) => {
+                return <SingleGoal key={i} index={i} obj={todo} parentID = {this.state.parentNode_ID} childID = {this.state.childNode_ID} handleChange={this.handleChange}> </SingleGoal>;
+            });
+        }
+    }
+}
 
     render() {
 
@@ -107,7 +108,6 @@ class Nodes extends React.Component {
                             {this.getNodes()}
                         </ul>
                     </div>
-                    <button onClick={() => this.checkState()}>Check State</button>
                 </nav>
                 <nav className="navbar navbar-default navbar-static-top">
                     <div id="navbar" className="navbar-collapse collapse">
@@ -115,7 +115,6 @@ class Nodes extends React.Component {
                             {this.getSubNodes()}
                         </ul>
                     </div>
-                    <button onClick={() => this.checkState()}>Check State</button>
                 </nav>
                 <div className="panel-body">
                     <AddNodesForm parentNode_ID = {this.state.parentNode_ID} childNode_ID = {this.state.childNode_ID} name = {message}/>

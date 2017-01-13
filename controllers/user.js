@@ -495,65 +495,6 @@ exports.addTodos = function(req, res) {
                 completed: false
               });
             }
-      user.save(function (err) {
-        done(err, user);
-      });
-      res.send({user: user.toJSON()});
-    });
-}]);
-};
-
-
-exports.addSubNodeToDos = function(req, res) {
-  req.assert('goalTitle', 'Goal name cannot be blank').notEmpty();
-  req.assert('goalPriority', 'Priority cannot be blank').notEmpty();
-
-  var errors = req.validationErrors();
-
-  if (errors) {
-    return res.status(400).send(errors);
-  }
-  async.waterfall([
-    function(done) {
-      crypto.randomBytes(16, function(err, buf) {
-        var token = buf.toString('hex');
-        done(err, token);
-      });
-    },
-    function(token, done) {
-      if(!(req.body.goalTitle.match("^[a-zA-Z0-9_ ]*$"))) {
-        return res.status(400).send({ msg: 'You cannot save a goal with a unicode character' });
-      }
-      if(req.body.goalTitle.length < 1) {
-        return res.status(400).send({ msg: 'You have not given your goal a title!' });
-      }
-      User.findOne({  email: req.body.email  })
-          .exec(function(err, user) {
-            var found = false;
-            var nodeIndex =0;
-            var node;
-            while( nodeIndex <= user.nodes.length && !found) {
-              if(user.nodes[nodeIndex]._id === req.parentID){
-                node = user.nodes[nodeIndex];
-                found = true;
-              }else {
-                nodeIndex++;
-              }
-            }
-            if(req.childID !== null) {
-              for(var i =0; i < node.subnodes.length && !found; i++)
-              {
-                if(node.subnodes[i]._id === req.childID){
-                  node = node.subnodes[i]
-                }
-              }
-            }
-            Promise.all(user.goals.map(function (goal) {
-              if(goal.goal.toLowerCase() === req.body.goalTitle.toLowerCase()){
-                return res.status(400).send({ msg: 'This already Exists in the database.' });
-              }
-            }));
-            user.goals.push({goal: req.body.goalTitle, priority: req.body.goalPriority, completed: false});
             user.save(function (err) {
               done(err, user);
             });
@@ -561,6 +502,7 @@ exports.addSubNodeToDos = function(req, res) {
           });
     }]);
 };
+
 /**
  * DELETE /goal
  */
@@ -597,7 +539,8 @@ exports.deleteGoal = function(req, res) {
           });
     }]);
 };
-exports.updateGoal = function(req, res) {
+
+exports.updateToDos = function(req, res) {
   async.waterfall([
     function(done) {
       crypto.randomBytes(16, function(err, buf) {
@@ -608,21 +551,64 @@ exports.updateGoal = function(req, res) {
     function(token, done) {
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            var arr = user.goals;
+            console.log(req.body);
+            var found = false;
+            var nodeIndex = 0;
+            var subNodeIndex = 0;
+            var node;
+            while (nodeIndex < user.nodes.length && !found) {
+              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
+                console.log("HERE BROSUFF");
+                node = user.nodes[nodeIndex];
+                found = true;
+              } else {
+                nodeIndex++;
+              }
+            }
+            console.log(req.body.childID);
+            if(req.body.childID) {
+              console.log("Should not be here brosuff");
+              found = false;
+              while (subNodeIndex < node.subnodes.length && !found) {
+                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+                  found = true;
+                } else {
+                  subNodeIndex++;
+                }
+              }
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //I've used the same var name node to avoid duplicate code in this API.
+              node = node.subnodes[subNodeIndex];
+            }
+            if(!found){
+              return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
+            }
+
+
+            var arr = node.todos;
+            console.log(arr);
             var i=0;
             var found = false;
             while(arr.length > i && !found) {
-              if(user.goals[i]._id.valueOf() == req.body.goalID.valueOf()) {
+              if(arr[i]._id.equals(req.body.todoID)) {
                 found = true;
+              }else {
+                i++;
               }
-              i++;
             }
+
             if(!found){
-              return res.status(400).send({ msg: 'Could not find the goal by ID in the database.' });
+              return res.status(400).send({ msg: 'Could not find the ToDo by ID in the database.' });
             }
-            arr[i-1].goal = req.body.goalName;
-            arr[i-1].priority = req.body.goalPriority;
-            user.goals = arr;
+
+            arr[i].name = req.body.todoName;
+            arr[i].priority = req.body.todoPriority;
+            if(!req.body.childID) {
+              user.nodes[nodeIndex].todos = arr;
+            }
+            else {
+              user.nodes[nodeIndex].subnodes[subNodeIndex].todos = arr;
+            }
             user.save(function (err) {
               done(err, user);
             });

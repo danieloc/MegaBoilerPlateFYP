@@ -309,40 +309,43 @@ export function removeGoal(goalID ,email, token) {
     });
   };
 }
-export function updateGoal(goalID ,email, name, priority, token) {
-    return (dispatch) => {
-        dispatch({
-            type: 'CLEAR_MESSAGES'
+export function updateToDo(todoID , parentID, childID, email, name, priority, token) {
+  return (dispatch) => {
+    dispatch({
+      type: 'CLEAR_MESSAGES'
+    });
+    console.log(todoID +"\n"+ parentID +"\n"+ childID +"\n"+ email +"\n"+ name +"\n"+ priority +"\n"+ token);
+    return fetch('/updateToDos', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        todoID: todoID,
+        parentID : parentID,
+        childID : childID,
+        todoName: name,
+        todoPriority: priority
+      })
+    }).then((response) => {
+      if (response.ok) {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'UPDATE_GOAL_SUCCESS',
+            messages: [{msg : "Goal updated"}],
+            user: json.user
+          });
         });
-        return fetch('/updateGoals', {
-            method: 'put',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                email: email,
-                goalID: goalID,
-                goalName: name,
-                goalPriority: priority
-            })
-        }).then((response) => {
-            if (response.ok) {
-                return response.json().then((json) => {
-                    dispatch({
-                        type: 'UPDATE_GOAL_SUCCESS',
-                        messages: [{msg : "Goal updated"}],
-                        user: json.user
-                    });
-                });
-            } else {
-                return response.json().then((json) => {
-                    dispatch({
-                        type: 'UPDATE_GOAL_FAILURE',
-                        messages: Array.isArray(json) ? json : [json]
-                    });
-                });
-            }
+      } else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'UPDATE_GOAL_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
         });
-    };
+      }
+    });
+  };
 }

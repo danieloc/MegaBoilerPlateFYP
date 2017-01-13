@@ -18,10 +18,6 @@ class AddNodesForm extends React.Component {
     }
 
 
-    checkState() {
-        console.log(this.state);
-    }
-
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
@@ -65,7 +61,6 @@ class AddNodesForm extends React.Component {
                             <div className="form-group">
                                 <button type="submit" className="btn btn-success">Add goal</button>
                             </div>
-                            <button onClick={() => this.checkState}>State</button>
                         </form>
                     </div>
                 </div>
