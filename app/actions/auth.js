@@ -274,12 +274,12 @@ export function submitNodeToDoForm(state, parentID, childID, token) {
   };
 }
 
-export function removeGoal(goalID ,email, token) {
+export function removeToDo(todoID , parentID, childID, email, token) {
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
     });
-    return fetch('/deleteGoals', {
+    return fetch('/deleteToDo', {
       method: 'delete',
       headers: {
         'Content-Type': 'application/json',
@@ -287,7 +287,9 @@ export function removeGoal(goalID ,email, token) {
       },
       body: JSON.stringify({
         email: email,
-        goalID: goalID
+        todoID: todoID,
+        parentID: parentID,
+        childID: childID
       })
     }).then((response) => {
       if (response.ok) {

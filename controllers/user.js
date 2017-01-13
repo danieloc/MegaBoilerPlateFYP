@@ -507,7 +507,7 @@ exports.addTodos = function(req, res) {
  * DELETE /goal
  */
 
-exports.deleteGoal = function(req, res) {
+exports.deleteToDo = function(req, res) {
   async.waterfall([
     function(done) {
       crypto.randomBytes(16, function(err, buf) {
@@ -518,20 +518,60 @@ exports.deleteGoal = function(req, res) {
     function(token, done) {
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            var arr = user.goals;
-            var i=0;
             var found = false;
-            while(arr.length > i && !found) {
-              if(user.goals[i]._id.valueOf() == req.body.goalID.valueOf()) {
+            var nodeIndex = 0;
+            var subNodeIndex = 0;
+            var node;
+            console.log("Step 1");
+            while (nodeIndex < user.nodes.length && !found) {
+              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
+                node = user.nodes[nodeIndex];
                 found = true;
+                console.log("Step 2");
+              } else {
+                nodeIndex++;
               }
-              i++;
             }
+            if(req.body.childID) {
+              console.log("Step 3");
+              found = false;
+              while (subNodeIndex < node.subnodes.length && !found) {
+                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+                  found = true;
+                } else {
+                  subNodeIndex++;
+                }
+              }
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //I've used the same var name node to avoid duplicate code in this API.
+              node = node.subnodes[subNodeIndex];
+            }
+            console.log("Step 4");
             if(!found){
-              return res.status(400).send({ msg: 'Could not find the goal by ID in the database.' });
+              return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
             }
-            arr.splice((i-1),1);
-            user.goals = arr;
+            var arr = node.todos;
+            var index=0;
+            var found = false;
+            while(arr.length > index && !found) {
+              if(arr[index]._id.equals(req.body.todoID)) {
+                found = true;
+              } else {
+                index++;
+              }
+            }
+            console.log("Step 5");
+            if(!found){
+              return res.status(400).send({ msg: 'Could not find the todo by ID in the database.' });
+            }
+            arr.splice((index),1);
+            if(!req.body.childID) {
+              user.nodes[nodeIndex].todos = arr;
+            }
+            else {
+              user.nodes[nodeIndex].subnodes[subNodeIndex].todos = arr;
+            }
+            console.log("Step 6");
             user.save(function (err) {
               done(err, user);
             });
@@ -551,23 +591,19 @@ exports.updateToDos = function(req, res) {
     function(token, done) {
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            console.log(req.body);
             var found = false;
             var nodeIndex = 0;
             var subNodeIndex = 0;
             var node;
             while (nodeIndex < user.nodes.length && !found) {
               if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
-                console.log("HERE BROSUFF");
                 node = user.nodes[nodeIndex];
                 found = true;
               } else {
                 nodeIndex++;
               }
             }
-            console.log(req.body.childID);
             if(req.body.childID) {
-              console.log("Should not be here brosuff");
               found = false;
               while (subNodeIndex < node.subnodes.length && !found) {
                 if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {

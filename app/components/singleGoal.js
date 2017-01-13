@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
-import { removeGoal, updateToDo } from '../actions/auth';
+import { removeToDo, updateToDo } from '../actions/auth';
 
 class SingleGoal extends React.Component {
     constructor(props) {
@@ -34,7 +34,7 @@ class SingleGoal extends React.Component {
     }
 
     removeGoal() {
-        this.props.dispatch(removeGoal(this.props.obj._id, this.props.user.email, this.props.token));
+        this.props.dispatch(removeToDo(this.props.obj._id,  this.props.parentID, this.props.childID, this.props.user.email, this.props.token));
     }
 
     renderForm() {
