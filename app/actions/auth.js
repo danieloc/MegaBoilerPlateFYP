@@ -351,3 +351,15 @@ export function updateToDo(todoID , parentID, childID, email, name, priority, to
     });
   };
 }
+
+export function hideModal() {
+  return {
+    type: 'HIDE_MODAL'
+  };
+}
+
+export function getAddNodeModal() {
+  return {
+    type: 'NODE_MODAL'
+  };
+}

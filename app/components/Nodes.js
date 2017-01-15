@@ -6,6 +6,7 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux'
 import AddNodesForm from './AddNodesForm';
 import SingleGoal from './SingleGoal';
+import { getAddNodeModal } from '../actions/auth';
 
 class Nodes extends React.Component {
 
@@ -17,7 +18,8 @@ class Nodes extends React.Component {
             'topNodeIndex' : 0,
             'childNode_ID' : null,
             'subNode' : null,
-            'subNodeIndex' : null
+            'subNodeIndex' : null,
+            'showModal': false
         };
     }
 
@@ -52,7 +54,7 @@ class Nodes extends React.Component {
     getNodes() {
         if(this.props.user.nodes.length > 0) {
             return this.props.user.nodes.map((node, i) => {
-                return <li key = {i} index = {i} value={i} onClick={() => this.changeCurrentNode(i)}><Link>{node.name}</Link></li>
+                return <li key = {i} value={i} onClick={() => this.changeCurrentNode(i)}><Link>{node.name}</Link></li>
             });
         }
         else {
@@ -62,12 +64,20 @@ class Nodes extends React.Component {
     getSubNodes() {
         if(this.state.topNode.subnodes.length > 0) {
             return this.state.topNode.subnodes.map((node, i) => {
-                return <li key = {i} index = {i} value={i} onClick={() => this.changeCurrentSubNode(i)}><Link>{node.name}</Link></li>
+                return <li key = {i} value={i} onClick={() => this.changeCurrentSubNode(i)}><Link>{node.name}</Link></li>
             });
         }
         else {
             return []
         }
+    }
+
+    addNodeModal() {
+        console.log("DOING DISPATCH!");
+        console.log(this.props.activeModal);
+        this.props.dispatch(getAddNodeModal());
+        console.log(this.props.activeModal);
+        console.log("DID DISPATCH!");
     }
 
 
@@ -92,7 +102,6 @@ class Nodes extends React.Component {
         }
     }
 }
-
     render() {
 
         const message = this.state.childNode_ID ? "SUB LEVEL NODE: " + this.state.subNode.name
@@ -102,23 +111,26 @@ class Nodes extends React.Component {
 
         return (
             <div>
-                <nav className="navbar navbar-default navbar-static-top">
+                <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}} >
                     <div id="navbar" className="navbar-collapse collapse">
                         <ul className="nav navbar-nav">
                             {this.getNodes()}
+                            <li><Link><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
                         </ul>
                     </div>
                 </nav>
-                <nav className="navbar navbar-default navbar-static-top">
+                <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}}>
                     <div id="navbar" className="navbar-collapse collapse">
                         <ul className="nav navbar-nav">
                             {this.getSubNodes()}
+                            <li><Link><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
                         </ul>
                     </div>
                 </nav>
                 <div className="panel-body">
                     <AddNodesForm parentNode_ID = {this.state.parentNode_ID} childNode_ID = {this.state.childNode_ID} name = {message}/>
                     {this.displayToDos()}
+                    <button className="btn btn-default btn-block" onClick={() => this.addNodeModal()}>Open Modal</button>
                 </div>
             </div>
 
@@ -128,7 +140,8 @@ class Nodes extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        user: state.auth.user
+        user: state.auth.user,
+        activeModal: state.modals.activeModal
     };
 };
 
