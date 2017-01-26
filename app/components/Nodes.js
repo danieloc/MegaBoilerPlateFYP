@@ -72,12 +72,13 @@ class Nodes extends React.Component {
         }
     }
 
-    addNodeModal() {
-        console.log("DOING DISPATCH!");
-        console.log(this.props.activeModal);
-        this.props.dispatch(getAddNodeModal());
-        console.log(this.props.activeModal);
-        console.log("DID DISPATCH!");
+    addNodeModal(isSubLevel) {
+        if(isSubLevel) {
+            this.props.dispatch(getAddNodeModal(this.state.topNode.name));
+        }
+        else {
+            this.props.dispatch(getAddNodeModal(null));
+        }
     }
 
 
@@ -115,7 +116,7 @@ class Nodes extends React.Component {
                     <div id="navbar" className="navbar-collapse collapse">
                         <ul className="nav navbar-nav">
                             {this.getNodes()}
-                            <li><Link><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
+                            <li><Link onClick={() => this.addNodeModal(false)}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
                         </ul>
                     </div>
                 </nav>
@@ -123,14 +124,13 @@ class Nodes extends React.Component {
                     <div id="navbar" className="navbar-collapse collapse">
                         <ul className="nav navbar-nav">
                             {this.getSubNodes()}
-                            <li><Link><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
+                            <li><Link onClick={() => this.addNodeModal(true)} ><span className = "glyphicon glyphicon-plus-sign" onClick={() => this.addNodeModal()}></span></Link></li>
                         </ul>
                     </div>
                 </nav>
                 <div className="panel-body">
                     <AddNodesForm parentNode_ID = {this.state.parentNode_ID} childNode_ID = {this.state.childNode_ID} name = {message}/>
                     {this.displayToDos()}
-                    <button className="btn btn-default btn-block" onClick={() => this.addNodeModal()}>Open Modal</button>
                 </div>
             </div>
 

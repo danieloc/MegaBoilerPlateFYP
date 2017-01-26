@@ -4,6 +4,7 @@
 import React from 'react';
 import { hideModal} from '../../actions/auth';
 import { connect } from 'react-redux';
+import Panel from './Panel';
 
 const styles = {
     back: {
@@ -61,11 +62,9 @@ class ModalWrapper extends React.Component {
         return (
             <div style={styles.back} onClick={handleBackgroundClick}>
                 <div style={styles.panelAboveSpacer}></div>
-                <p>Hello</p>
-
+                <Panel {...this.props}>{this.props.children}</Panel>
                 <div style={styles.panelBelowSpacer}></div>
             </div>
-
         );
     }
 }

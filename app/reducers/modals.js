@@ -3,18 +3,21 @@
  */
 import {MODALS, } from '../constants';
 const initialState = {
-    activeModal: 'NONE'
+    activeModal: 'NONE',
+    parentName : null
 };
 
 export default function modals(state = initialState, action) {
     switch (action.type) {
         case 'NODE_MODAL' :
             return Object.assign({}, state, {
-                activeModal: MODALS.NODE_MODAL
+                activeModal: MODALS.NODE_MODAL,
+                parentName: action.parentName
             });
         case 'HIDE_MODAL' :
             return Object.assign({}, state, {
-                activeModal: MODALS.NONE
+                activeModal: MODALS.NONE,
+                parentName : null
             });
         default:
             return state;

@@ -316,7 +316,6 @@ export function updateToDo(todoID , parentID, childID, email, name, priority, to
     dispatch({
       type: 'CLEAR_MESSAGES'
     });
-    console.log(todoID +"\n"+ parentID +"\n"+ childID +"\n"+ email +"\n"+ name +"\n"+ priority +"\n"+ token);
     return fetch('/updateToDos', {
       method: 'put',
       headers: {
@@ -358,8 +357,29 @@ export function hideModal() {
   };
 }
 
-export function getAddNodeModal() {
+export function getAddNodeModal(parentName) {
   return {
-    type: 'NODE_MODAL'
+    type: 'NODE_MODAL',
+    parentName: parentName
   };
+}
+
+export function addNodeForm(email, parentName) {
+  return (dispatch) => {
+    return fetch('/AddNode' , {
+      method : 'post',
+      headers : {
+        'Content-Type' : 'application/json',
+        'Authorization' : `Bearer ${token}`
+      },
+      body : JSON.stringify({
+        email : email,
+        parentName: parentName
+      })
+
+
+        }
+
+    )}
+
 }
