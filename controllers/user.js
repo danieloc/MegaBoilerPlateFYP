@@ -652,3 +652,72 @@ exports.updateToDos = function(req, res) {
           });
     }]);
 };
+
+exports.addNodes = function(req, res) {
+  req.assert('nodeTitle', 'Node title cannot be blank').notEmpty();
+
+  if(!(req.body.nodeTitle.match("^[a-zA-Z0-9_ ]*$"))) {
+    return res.status(400).send({ msg: 'You cannot save a node with a unicode character' });
+  }
+  if(req.body.nodeTitle.length < 1) {
+    return res.status(400).send({ msg: 'You have not given your node a title!' });
+  }
+  var errors = req.validationErrors();
+
+  if (errors) {
+    return res.status(400).send(errors);
+  }
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      User.findOne({ email: req.body.email})
+          .exec(function (err, user) {
+            var found = false;
+            if (req.body.parentName !== null) {
+              user.nodes.forEach(function (node) {
+                if (node.name.toLowerCase() === req.body.parentName.toLowerCase()) {
+                  node.subnodes.forEach(function (subNode) {
+                    if (subNode.name.toLowerCase() == req.body.nodeTitle.toLowerCase()) {
+                      found = true;
+                      return res.status(400).send({msg: 'There is already a subNode with this title'});
+                    }
+                  });
+                  if(!found) {
+                    node.subnodes.push({
+                      name: req.body.nodeTitle,
+                      todos: []
+                    });
+                  }
+                }
+              });
+            }
+            else {
+              user.nodes.forEach(function (node) {
+                if (node.name.toLowerCase() == req.body.nodeTitle.toLowerCase()) {
+                  found = true;
+                  return res.status(400).send({msg: 'There is already a Node with this title'});
+
+                }
+              });
+              if(!found) {
+                user.nodes.push({
+                  name: req.body.nodeTitle,
+                  todos: [],
+                  subnodes: [],
+                });
+              }
+            }
+
+            user.save(function(err) {
+              if (err)
+                done(err, user);
+            });
+          });
+    }]);
+};
+

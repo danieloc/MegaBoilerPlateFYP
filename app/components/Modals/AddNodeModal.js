@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
-import {  } from '../../actions/auth'
+import { addNodeForm } from '../../actions/auth';
 
 
 const styles = {
@@ -19,17 +19,37 @@ class AddNodeModal extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            node : ''
+        };
+    }
+    handleChange(event) {
+        this.setState({ [event.target.name]: event.target.value });
+    }
+
+    handleReset(event) {
+        event.preventDefault();
+        console.log(this.props);
+        this.props.dispatch(addNodeForm(this.props.user.email, this.props.parentName, this.state.node, this.props.token));
     }
     render() {
-        const modalTitle = this.props.parentName ? (<h1>Adding a subNode for : {this.props.parentName}</h1>) : (<h1>Adding a top level node</h1>);
+        const modalTitle = this.props.parentName ? (<legend>Adding a subNode for : {this.props.parentName}</legend>) : (<h1>Adding a top level node</h1>);
         return (
-            <ModalWrapper
+            <ModalWrapper {...this.props}
                 title="Add Node"
                 width={400}
                 showOk={false}
             >
                 {modalTitle}
-                <textarea></textarea>
+                <form onSubmit={this.handleReset.bind(this)}>
+                    <div className="form-group">
+                        <label htmlFor="node">New Node</label>
+                        <input name = "node" id="node" placeholder="New Node" className="form-control" autoFocus value={this.state.goal} onChange={this.handleChange.bind(this)}/>
+                    </div>
+                    <div className="form-group">
+                        <button type="submit" className="btn btn-success">Add node</button>
+                    </div>
+                </form>
             </ModalWrapper>
         );
     }
@@ -39,6 +59,8 @@ class AddNodeModal extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        user : state.auth.user,
+        token: state.auth.token,
         parentName: state.modals.parentName,
     };
 };

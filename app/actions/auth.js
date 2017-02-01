@@ -364,22 +364,38 @@ export function getAddNodeModal(parentName) {
   };
 }
 
-export function addNodeForm(email, parentName) {
+export function addNodeForm(email, parentName, newNodeTitle, token) {
   return (dispatch) => {
-    return fetch('/AddNode' , {
-      method : 'post',
-      headers : {
-        'Content-Type' : 'application/json',
-        'Authorization' : `Bearer ${token}`
+    return fetch('/nodes', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
-      body : JSON.stringify({
-        email : email,
-        parentName: parentName
+      body: JSON.stringify({
+        email: email,
+        parentName: parentName,
+        nodeTitle: newNodeTitle,
       })
-
-
-        }
-
-    )}
-
+    }).then((response) => {
+      if(response.ok) {
+        return response.json().then((json) => {
+          // setTimeout(function(){/* Look mah! No name! */},15000);
+          dispatch({
+            type: 'ADD_NODE_SUCCESS',
+            messages: 'The node was added successfully',
+            user: json.user,
+          });
+        });
+      }
+      else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'ADD_NODE_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
 }

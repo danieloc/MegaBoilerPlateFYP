@@ -75,7 +75,6 @@ class Panel extends React.Component {
                     <div style = {styles.panelBody}>
                         {this.props.children}
                     </div>
-                    <button className = "btn" style = {styles.okButton} >Save</button>
                 </div>
             </div>
         );
