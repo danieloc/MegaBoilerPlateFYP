@@ -717,6 +717,7 @@ exports.addNodes = function(req, res) {
               if (err)
                 done(err, user);
             });
+            res.send({user: user.toJSON()});
           });
     }]);
 };
