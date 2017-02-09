@@ -44,8 +44,6 @@ class Graph extends React.Component {
 
             var links = [];
             console.log('Going to Calculate everything!!');
-
-            console.log(Obj);
             var w = Obj.props.width,
                 h = Obj.props.height;
 
@@ -225,10 +223,11 @@ class Graph extends React.Component {
     render() {
         const {width, height} = this.props;
         const styles = {
-            width,
-            height,
             border : '1px solid #323232',
-            backgroundColor: '#1a1aff'
+            backgroundColor: '#1a1aff',
+            position: 'relative',
+            overflow: 'auto',
+            height: '100%',
         };
         return (
             <div style = {styles}>

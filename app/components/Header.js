@@ -11,9 +11,6 @@ class Header extends React.Component {
 
   render() {
     const active = { borderBottomColor: '#3f51b5' };
-    const leftNavGoals = this.props.token ? (
-        <li><Link to="/goals" activeStyle={active}>Goals</Link></li>
-    ):(<li></li>);
     const leftNavMindMap = this.props.token ? (
         <li><Link to="/mindmap" activeStyle={active}>Mindmap</Link></li>
     ):(<li></li>);
@@ -51,13 +48,10 @@ class Header extends React.Component {
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <IndexLink to="/" className="navbar-brand">Project name</IndexLink>
+            <IndexLink to="/" className="navbar-brand">Bubblesort</IndexLink>
           </div>
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
-              <li><IndexLink to="/" activeStyle={active}>Home</IndexLink></li>
-              <li><Link to="/contact" activeStyle={active}>Contact</Link></li>
-              {leftNavGoals}
               {leftNavMindMap}
               {leftNavNodes}
             </ul>

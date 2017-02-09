@@ -24,7 +24,6 @@ class Nodes extends React.Component {
     }
 
     changeCurrentNode(i) {
-        console.log(i);
         if(this.state.topNodeIndex === i){
             this.setState({
                 'subNode' : null,
@@ -44,7 +43,6 @@ class Nodes extends React.Component {
         }
     }
     changeCurrentSubNode(i) {
-        console.log(i);
         this.setState({
             'subNode': this.state.topNode.subnodes[i],
             'childNode_ID': this.state.topNode.subnodes[i]._id,

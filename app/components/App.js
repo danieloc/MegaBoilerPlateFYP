@@ -5,6 +5,7 @@ import Modal from './Modals/Modal';
 
 class App extends React.Component {
   render() {
+      console.log(this);
     return (
       <div>
         <Header/>

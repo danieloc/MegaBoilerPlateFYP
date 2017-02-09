@@ -31,7 +31,7 @@ export default function getRoutes(store) {
   };
   return (
     <Route path="/" component={App}>
-      <IndexRoute component={Home} onLeave={clearMessages}/>
+      <IndexRoute component={Mindmap} onLeave={clearMessages} onEnter={ensureAuthenticated}/>
       <Route path="/contact" component={Contact} onLeave={clearMessages}/>
       <Route path="/goals" component={AddNodesForm} onEnter={ensureAuthenticated} onLeave={clearMessages}/>
       <Route path="/mindmap" component={Mindmap} onEnter={ensureAuthenticated} onLeave={clearMessages} />

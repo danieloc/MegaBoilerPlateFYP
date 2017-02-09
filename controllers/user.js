@@ -522,18 +522,15 @@ exports.deleteToDo = function(req, res) {
             var nodeIndex = 0;
             var subNodeIndex = 0;
             var node;
-            console.log("Step 1");
             while (nodeIndex < user.nodes.length && !found) {
               if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
                 node = user.nodes[nodeIndex];
                 found = true;
-                console.log("Step 2");
               } else {
                 nodeIndex++;
               }
             }
             if(req.body.childID) {
-              console.log("Step 3");
               found = false;
               while (subNodeIndex < node.subnodes.length && !found) {
                 if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
@@ -546,7 +543,6 @@ exports.deleteToDo = function(req, res) {
               //I've used the same var name node to avoid duplicate code in this API.
               node = node.subnodes[subNodeIndex];
             }
-            console.log("Step 4");
             if(!found){
               return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
             }
@@ -560,7 +556,6 @@ exports.deleteToDo = function(req, res) {
                 index++;
               }
             }
-            console.log("Step 5");
             if(!found){
               return res.status(400).send({ msg: 'Could not find the todo by ID in the database.' });
             }
@@ -571,7 +566,6 @@ exports.deleteToDo = function(req, res) {
             else {
               user.nodes[nodeIndex].subnodes[subNodeIndex].todos = arr;
             }
-            console.log("Step 6");
             user.save(function (err) {
               done(err, user);
             });

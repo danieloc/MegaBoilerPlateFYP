@@ -22,6 +22,7 @@
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.1",
     "d3": "^3.5.17",
+    "dimensions": "^0.1.0",
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
     "express-handlebars": "^3.0.0",
