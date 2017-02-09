@@ -60,7 +60,7 @@ class Nodes extends React.Component {
         }
     }
     getSubNodes() {
-        if(this.state.topNode.subnodes.length > 0) {
+        if(this.props.user.nodes[this.state.topNodeIndex].subnodes.length > 0) {
             return this.props.user.nodes[this.state.topNodeIndex].subnodes.map((node, i) => {
                 return <li key = {i} value={i} onClick={() => this.changeCurrentSubNode(i)}><Link>{node.name}</Link></li>
             });

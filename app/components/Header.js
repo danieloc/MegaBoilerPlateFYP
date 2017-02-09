@@ -39,7 +39,7 @@ class Header extends React.Component {
       </ul>
     );
     return (
-      <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}}>
+      <nav className="navbar navbar-default navbar-static-top" style={{zIndex:2}}>
         <div className="container">
           <div className="navbar-header">
             <button type="button" data-toggle="collapse" data-target="#navbar" className="navbar-toggle collapsed">

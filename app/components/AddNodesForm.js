@@ -26,7 +26,6 @@ class AddNodesForm extends React.Component {
         event.preventDefault();
         console.log(this.props.subNodeLevel);
         if(!this.props.subNodeLevel) {
-            console.log(this.state);
             this.props.dispatch(submitNodeToDoForm(this.state, this.props.parentNode_ID, this.props.childNode_ID, this.props.token));
         }
         else {
