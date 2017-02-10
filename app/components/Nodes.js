@@ -6,7 +6,8 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux'
 import AddNodesForm from './AddNodesForm';
 import SingleGoal from './SingleGoal';
-import { getAddNodeModal } from '../actions/auth';
+import { getAddNodeModal } from '../actions/modals';
+import { getDeleteNodeModal} from '../actions/modals';
 
 class Nodes extends React.Component {
 
@@ -127,6 +128,7 @@ class Nodes extends React.Component {
                     </div>
                 </nav>
                 <div className="panel-body">
+                    <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(this.state.parentNode_ID, this.state.childNode_ID));}}> Delete Node</button>
                     <AddNodesForm parentNode_ID = {this.state.parentNode_ID} childNode_ID = {this.state.childNode_ID} name = {message}/>
                     {this.displayToDos()}
                 </div>

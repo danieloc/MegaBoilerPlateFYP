@@ -69,7 +69,7 @@ export function signup(name, email, password) {
 
 export function logout() {
   cookie.remove('token');
-  browserHistory.push('/');
+  browserHistory.push('/login');
   return {
     type: 'LOGOUT_SUCCESS'
   };
@@ -351,18 +351,7 @@ export function updateToDo(todoID , parentID, childID, email, name, priority, to
   };
 }
 
-export function hideModal() {
-  return {
-    type: 'HIDE_MODAL'
-  };
-}
 
-export function getAddNodeModal(parentName) {
-  return {
-    type: 'NODE_MODAL',
-    parentName: parentName
-  };
-}
 
 export function addNodeForm(email, parentName, newNodeTitle, token) {
   return (dispatch) => {
@@ -380,7 +369,7 @@ export function addNodeForm(email, parentName, newNodeTitle, token) {
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
-          // setTimeout(function(){/* Look mah! No name! */},15000);
+          // setTimeout(function(){/* Look! No name! */},15000);
           dispatch({
             type: 'ADD_NODE_SUCCESS',
             messages: 'The node was added successfully',

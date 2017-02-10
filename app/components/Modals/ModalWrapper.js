@@ -2,7 +2,7 @@
  * Created by Daniel on 15/01/2017.
  */
 import React from 'react';
-import { hideModal} from '../../actions/auth';
+import { hideModal} from '../../actions/modals';
 import { connect } from 'react-redux';
 import Panel from './Panel';
 

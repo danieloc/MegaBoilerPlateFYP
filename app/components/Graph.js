@@ -71,8 +71,8 @@ class Graph extends React.Component {
             var force = d3.layout.force()
                 .nodes(displayedNodes)
                 .links([])
-                .gravity(0.08)
-                .charge(-2000)
+                .gravity(0.11)
+                .charge(-1500)
                 .size([w, h]);
 
 

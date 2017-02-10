@@ -4,4 +4,5 @@
 export const MODALS = {
     NONE: 'NONE',
     NODE_MODAL: 'NODE_MODAL',
+    DELETE_NODE_MODAL: 'DELETE_NODE_MODAL',
 };

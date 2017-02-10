@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import AddNodeModal from './AddNodeModal';
+import DeleteNodeModal from './DeleteNodeModal'
 
 import { MODALS, } from '../../constants.js';
 
@@ -15,7 +16,9 @@ class Modal extends React.Component {
             case MODALS.NODE_MODAL :
                 ModalBody = AddNodeModal;
                 break;
-
+            case MODALS.DELETE_NODE_MODAL :
+                ModalBody = DeleteNodeModal;
+                break;
             default :
                 return null;
         }
