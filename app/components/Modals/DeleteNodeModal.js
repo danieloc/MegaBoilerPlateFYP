@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
-import { addNodeForm } from '../../actions/auth';
+import { deleteNodeForm } from '../../actions/auth';
 import { hideModal} from '../../actions/modals'
 
 
@@ -30,7 +30,7 @@ class AddNodeModal extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(addNodeForm(this.props.user.email, this.props.parentName, this.state.node, this.props.token));
+        this.props.dispatch(deleteNodeForm(this.props.user.email, this.props.parentID, this.props.childID, this.props.token));
         this.props.dispatch(hideModal());
     }
     render() {
@@ -43,6 +43,7 @@ class AddNodeModal extends React.Component {
                 <form onSubmit={this.handleReset.bind(this)}>
                     <div className="form-group">
                         <label htmlFor="node">Are you sure you want to delete this node?</label>
+                        <h3>Node Name: {this.props.nodeName}</h3>
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-success">Confirm</button>
@@ -63,7 +64,7 @@ const mapStateToProps = (state) => {
         token: state.auth.token,
         parentID: state.modals.parentID,
         childID: state.modals.childID,
-
+        nodeName: state.modals.nodeName
     };
 };
 

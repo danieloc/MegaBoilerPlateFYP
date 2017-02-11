@@ -5,6 +5,7 @@ import {MODALS, } from '../constants';
 const initialState = {
     activeModal: 'NONE',
     parentName : null,
+    nodeName : null,
     parentID : null,
     childID : null
 };
@@ -19,6 +20,7 @@ export default function modals(state = initialState, action) {
         case 'DELETE_NODE_MODAL' :
             return Object.assign({}, state, {
                 activeModal: MODALS.DELETE_NODE_MODAL,
+                nodeName: action.nodeName,
                 parentID: action.parentID,
                 childID: action.childID
             });

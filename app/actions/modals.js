@@ -13,10 +13,17 @@ export function getAddNodeModal(parentName) {
         parentName: parentName
     };
 }
-export function getDeleteNodeModal(parentID, childID) {
+export function getDeleteNodeModal(nodeName, parentID, childID) {
     return {
         type: 'DELETE_NODE_MODAL',
+        nodeName: nodeName,
         parentID: parentID,
         childID: childID
     };
+}
+export function setParentID(parentID) {
+    return {
+        type: 'SET_PARENT',
+        parentID: ''
+    }
 }

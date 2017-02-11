@@ -388,3 +388,39 @@ export function addNodeForm(email, parentName, newNodeTitle, token) {
     });
   };
 }
+
+export function deleteNodeForm(email, parentID, childID, token) {
+  return (dispatch) => {
+    return fetch('/nodes', {
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        parentID: parentID,
+        childID: childID,
+      })
+    }).then((response) => {
+      if(response.ok) {
+        return response.json().then((json) => {
+          // setTimeout(function(){/* Look! No name! */},15000);
+          dispatch({
+            type: 'DELETE_NODE_SUCCESS',
+            messages: 'The node was deleted successfully',
+            user: json.user,
+          });
+        });
+      }
+      else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'DELETE_NODE_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}

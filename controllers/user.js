@@ -504,7 +504,7 @@ exports.addTodos = function(req, res) {
 };
 
 /**
- * DELETE /goal
+ * DELETE /todo
  */
 
 exports.deleteToDo = function(req, res) {
@@ -647,7 +647,7 @@ exports.updateToDos = function(req, res) {
     }]);
 };
 
-exports.addNodes = function(req, res) {
+exports.addNode = function(req, res) {
   req.assert('nodeTitle', 'Node title cannot be blank').notEmpty();
 
   if(!(req.body.nodeTitle.match("^[a-zA-Z0-9_ ]*$"))) {
@@ -716,3 +716,71 @@ exports.addNodes = function(req, res) {
     }]);
 };
 
+/**
+ * DELETE /nodes
+ */
+
+exports.deleteNode = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      User.findOne({  email: req.body.email  })
+          .exec(function(err, user) {
+            console.log(req.body.parentID);
+            console.log(req.body.childID);
+            var found = false;
+            var nodeIndex = 0;
+            var nodes;
+            while (nodeIndex < user.nodes.length && !found) {
+              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
+                if(req.body.childID) {
+                  nodes = user.nodes[nodeIndex];
+                }
+                else {
+                  nodes = user.nodes;
+                  nodes.splice((nodeIndex), 1);
+                }
+                found = true;
+              } else {
+                nodeIndex++;
+              }
+            }
+            if(req.body.childID) {
+              var subNodeIndex = 0;
+              found = false;
+              while (subNodeIndex < nodes.subnodes.length && !found) {
+                if (nodes.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+                  found = true;
+                } else {
+                  subNodeIndex++;
+                }
+              }
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //I've used the same var name node to avoid duplicate code in this API.
+              if(!found){
+                return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
+              }
+              else {
+                console.log("In here");
+                nodes.subnodes.splice((subNodeIndex), 1);
+                console.log(nodes);
+              }
+            }
+            if(!req.body.childID) {
+              user.nodes = nodes;
+            }
+            else {
+              user.nodes[nodeIndex] = nodes;
+            }
+            user.save(function (err) {
+              done(err, user);
+            });
+            res.send({user: user.toJSON()});
+          });
+    }]);
+};
