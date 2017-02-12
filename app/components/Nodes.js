@@ -15,10 +15,21 @@ class Nodes extends React.Component {
     }
 
     changeCurrentNode(i, parentNodeID) {
-        this.props.dispatch(setParent(i, parentNodeID));
+        //Adding variable last because, there is no connection between the modal and view other than the modal reducer.
+        //This reducer does not have access to the user reducer, but needs to change when the nodes is deleted so that
+        //the nodes page does not try to get index n+1 when only n index's exist
+        var last = false;
+        if( i === this.props.user.nodes.length - 1 && i>0) {
+            last = true;
+        }
+        this.props.dispatch(setParent(i, parentNodeID, last));
     }
     changeCurrentSubNode(i, childNodeID) {
-        this.props.dispatch(setChild(i, childNodeID));
+        var last = false;
+        if( i === this.props.user.nodes[this.props.parentIndex].subnodes.length - 1 && i>0) {
+            last = true;
+        }
+        this.props.dispatch(setChild(i, childNodeID, last));
     }
     getNodes() {
         if(this.props.user.nodes.length > 0) {
@@ -100,7 +111,7 @@ class Nodes extends React.Component {
                     </div>
                 </nav>
                 <div className="panel-body">
-                    <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(nodeName, this.props.parentID, this.props.childID));}}> Delete Node</button>
+                    <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(nodeName));}}> Delete Node</button>
                     {addNodesForm}
                     {this.displayToDos()}
                 </div>

@@ -410,6 +410,7 @@ export function deleteNodeForm(email, parentID, childID, token) {
             type: 'DELETE_NODE_SUCCESS',
             messages: 'The node was deleted successfully',
             user: json.user,
+            childID: childID,
           });
         });
       }

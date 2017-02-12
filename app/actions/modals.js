@@ -13,25 +13,25 @@ export function getAddNodeModal(parentName) {
         parentName: parentName
     };
 }
-export function getDeleteNodeModal(nodeName, parentID, childID) {
+export function getDeleteNodeModal(nodeName) {
     return {
         type: 'DELETE_NODE_MODAL',
-        nodeName: nodeName,
-        parentID: parentID,
-        childID: childID
+        nodeName: nodeName
     };
 }
-export function setParent(parentIndex, parentID) {
+export function setParent(parentIndex, parentID, last) {
     return {
         type: 'SET_PARENT_NODE',
         parentIndex: parentIndex,
-        parentID: parentID
+        parentID: parentID,
+        lastParent: last,
     }
 }
-export function setChild(childIndex, childID) {
+export function setChild(childIndex, childID, last) {
     return {
         type: 'SET_CHILD_NODE',
         childIndex: childIndex,
-        childID: childID
+        childID: childID,
+        lastChild: last,
     }
 }

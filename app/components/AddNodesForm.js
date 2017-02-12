@@ -34,7 +34,6 @@ class AddNodesForm extends React.Component {
         this.state.goal = '';
     }
     render() {
-
         return (
             <div className="container">
                 <div className="panel">
