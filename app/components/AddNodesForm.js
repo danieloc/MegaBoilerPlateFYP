@@ -43,7 +43,7 @@ class AddNodesForm extends React.Component {
                         <form onSubmit={this.handleReset.bind(this)}>
                             <legend>{this.props.name}</legend>
                             <div className="form-group">
-                                <label htmlFor="goal">New Goal</label>
+                                <label htmlFor="goal">New To-Do</label>
                                 <input name = "goal" id="goal" placeholder="New goal" className="form-control" autoFocus value={this.state.goal} onChange={this.handleChange.bind(this)}/>
                             </div>
                             <div className = "form-group">
