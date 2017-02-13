@@ -2,6 +2,7 @@
  * Created by Daniel on 1/24/2017.
  */
 import React from 'react';
+import {hideModal} from '../../actions/modals'
 
 class Panel extends React.Component {
 
@@ -70,7 +71,7 @@ class Panel extends React.Component {
                 <div style = {styles.panel}>
                     <div style = {styles.header}>
                         <h1 style = {styles.title}> {this.props.title}</h1>
-                        <button className="btn pull-right" style = {styles.close} onClick = {() => {console.log("Close Now")}}>Close</button>
+                        <button className="btn pull-right" style = {styles.close} onClick = {() => {this.props.dispatch(hideModal())}}>Close</button>
                     </div>
                     <div style = {styles.panelBody}>
                         {this.props.children}

@@ -47,7 +47,7 @@ class AddNodeModal extends React.Component {
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-success">Confirm</button>
-                        <button type="cancel" className="btn btn-danger">Cancel</button>
+                        <button className="btn btn-danger" onClick={() => this.props.dispatch(hideModal())}>Cancel</button>
 
                     </div>
                 </form>
