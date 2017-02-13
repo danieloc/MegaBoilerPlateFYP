@@ -5,6 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
 import { addNodeForm } from '../../actions/auth';
+import { hideModal } from '../../actions/modals';
 
 
 const styles = {
@@ -30,6 +31,7 @@ class AddNodeModal extends React.Component {
     handleReset(event) {
         event.preventDefault();
         this.props.dispatch(addNodeForm(this.props.user.email, this.props.parentName, this.state.node, this.props.token));
+        this.props.dispatch(hideModal());
     }
     render() {
         const modalTitle = this.props.parentName ? (<legend>Adding a subNode for : {this.props.parentName}</legend>) : (<h1>Adding a top level node</h1>);

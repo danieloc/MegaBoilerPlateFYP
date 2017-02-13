@@ -427,7 +427,6 @@ export function deleteNodeForm(email, parentID, childID, token) {
       if(response.ok) {
         return response.json().then((json) => {
           if(!childID) {
-            console.log(json.nodeInformation);
             dispatch({
               type: 'DELETE_NODE_SUCCESS',
               messages: 'The node was deleted successfully',

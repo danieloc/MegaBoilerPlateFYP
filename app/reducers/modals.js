@@ -40,24 +40,6 @@ export default function modals(state = initialState, action) {
                 lastChild : action.lastChild,
                 childID : action.childID
             });
-
-        case 'DELETE_NODE_SUCCESS':
-            var updatedParentIndex = state.parentIndex;
-            var updatedChildIndex = state.childIndex;
-            if(action.childID === null) {
-                if (state.lastParent) {
-                    updatedParentIndex -= 1
-                }
-            }
-            else {
-                if (state.lastChild) {
-                    updatedChildIndex -= 1
-                }
-            }
-            return Object.assign({}, state, {
-                parentIndex : updatedParentIndex,
-                childIndex : updatedChildIndex,
-            });
         case 'HIDE_MODAL' :
             return Object.assign({}, state, {
                 activeModal: MODALS.NONE,

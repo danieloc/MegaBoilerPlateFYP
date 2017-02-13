@@ -42,7 +42,7 @@ class Nodes extends React.Component {
         }
     }
     getSubNodes() {
-        if(this.props.user.nodes.length > 0) {
+        if(this.props.user.nodes.length > 0  && this.props.user.nodes[this.props.parentIndex]) {
             if (this.props.user.nodes[this.props.parentIndex].subnodes.length > 0) {
                 return this.props.user.nodes[this.props.parentIndex].subnodes.map((node, i) => {
                     return <li key={i} value={i} onClick={() => this.changeCurrentSubNode(i, node._id)}>
@@ -73,8 +73,9 @@ class Nodes extends React.Component {
     }
 
     displayToDos() {
-        if (this.props.user.nodes.length > 0) {
+        if (this.props.user.nodes.length > 0 && this.props.user.nodes[this.props.parentIndex] != null) {
             if (!this.props.childID) {
+                console.log(this.props.parentIndex);
                 if (this.props.user.nodes[this.props.parentIndex].todos.length > 0) {
                     return this.props.user.nodes[this.props.parentIndex].todos.map((todo, i) => {
                         return <SingleGoal key={i} index={i} obj={todo} parentID={this.props.parentID}
@@ -82,7 +83,7 @@ class Nodes extends React.Component {
                     });
                 }
             }
-            else {
+            else if(this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex]) {
                 if (this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].todos.length > 0) {
                     return this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].todos.map((todo, i) => {
                         return <SingleGoal key={i} index={i} obj={todo} parentID={this.props.parentID}
@@ -96,8 +97,8 @@ class Nodes extends React.Component {
     }
 
     getNodeName() {
-        if(this.props.user.nodes.length > 0) {
-            if (this.props.childID) {
+        if(this.props.user.nodes.length > 0 != null && this.props.user.nodes[this.props.parentIndex] != null) {
+            if (this.props.childID && this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex] != null) {
                 return this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].name;
             } else {
                 return this.props.user.nodes[this.props.parentIndex].name;
@@ -143,6 +144,7 @@ class Nodes extends React.Component {
                     {addNodesForm}
                     {this.displayToDos()}
                 </div>
+                <button onClick={() => console.log(this.props.childID)}>STATE</button>
             </div>
 
         );
