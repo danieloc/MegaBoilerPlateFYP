@@ -785,7 +785,6 @@ exports.deleteNode = function(req, res) {
                 return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
               }
               else {
-                console.log("In here");
                 nodes.subnodes.splice((subNodeIndex), 1);
                 console.log(nodes);
               }

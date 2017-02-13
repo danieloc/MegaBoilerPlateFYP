@@ -115,6 +115,16 @@ class Nodes extends React.Component {
             null;
         const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(this.getNodeName()));}}> Delete Node</button> :
             null;
+        const subNodeNavbar = this.props.parentID ?
+            <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}}>
+                <div id="navbar" className="navbar-collapse collapse">
+                    <ul className="nav navbar-nav">
+                        {this.getSubNodes()}
+                        <li><Link onClick={() => this.addNodeModal(true)} ><span className = "glyphicon glyphicon-plus-sign" onClick={() => this.addNodeModal()}></span></Link></li>
+                    </ul>
+                </div>
+            </nav> :
+            null;
 
         return (
             <div>
@@ -126,14 +136,8 @@ class Nodes extends React.Component {
                         </ul>
                     </div>
                 </nav>
-                <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}}>
-                    <div id="navbar" className="navbar-collapse collapse">
-                        <ul className="nav navbar-nav">
-                            {this.getSubNodes()}
-                            <li><Link onClick={() => this.addNodeModal(true)} ><span className = "glyphicon glyphicon-plus-sign" onClick={() => this.addNodeModal()}></span></Link></li>
-                        </ul>
-                    </div>
-                </nav>
+                {subNodeNavbar}
+
                 <div className="panel-body">
                     {deleteNodeButton}
                     {addNodesForm}
