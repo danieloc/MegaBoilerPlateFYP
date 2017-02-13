@@ -427,7 +427,6 @@ exports.authGoogleCallback = function(req, res) {
 exports.addTodos = function(req, res) {
   req.assert('goalTitle', 'Goal name cannot be blank').notEmpty();
   req.assert('goalPriority', 'Priority cannot be blank').notEmpty();
-  console.log("Got here");
 
   var errors = req.validationErrors();
 
@@ -616,7 +615,6 @@ exports.updateToDos = function(req, res) {
 
 
             var arr = node.todos;
-            console.log(arr);
             var i=0;
             var found = false;
             while(arr.length > i && !found) {
@@ -721,14 +719,23 @@ exports.addNode = function(req, res) {
             if(!req.body.parentName) {
               nodeInformation.parentID = user.nodes[user.nodes.length -1]._id;
               nodeInformation.parentIndex = user.nodes.length -1;
-              nodeInformation.lastParent = false;
+              if(user.nodes.length > 1) {
+                nodeInformation.lastParent = true;
+              }
+              else {
+                nodeInformation.lastParent = false;
+              }
             }
             if(req.body.parentName) {
               nodeInformation.parentIndex = parentIndex;
               nodeInformation.childIndex = user.nodes[parentIndex].subnodes.length -1;
-              console.log(user.nodes[parentIndex].subnodes.length -1);
-              nodeInformation.childID = user.nodes[parentIndex].subnodes[user.nodes[parentIndex].subnodes.length -1]._id;
-              nodeInformation.lastChild = false;
+              nodeInformation.childID = user.nodes[parentIndex].subnodes[nodeInformation.childIndex]._id;
+              if(user.nodes[parentIndex].subnodes.length > 1) {
+                nodeInformation.lastParent = true;
+              }
+              else {
+                nodeInformation.lastParent = false;
+              }
             }
             res.send({user: user.toJSON(), nodeInformation : nodeInformation});
           });
@@ -750,8 +757,6 @@ exports.deleteNode = function(req, res) {
     function(token, done) {
       User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            console.log(req.body.parentID);
-            console.log(req.body.childID);
             var found = false;
             var nodeIndex = 0;
             var nodes;
@@ -786,7 +791,6 @@ exports.deleteNode = function(req, res) {
               }
               else {
                 nodes.subnodes.splice((subNodeIndex), 1);
-                console.log(nodes);
               }
             }
             if(!req.body.childID) {
@@ -795,10 +799,69 @@ exports.deleteNode = function(req, res) {
             else {
               user.nodes[nodeIndex] = nodes;
             }
+            var nodeInformation = {};
+            if(!req.body.childID) {
+              nodeInformation.childID = null;
+              nodeInformation.lastChild = false;
+              nodeInformation.childIndex = null;
+              if (user.nodes.length < 1) {
+                nodeInformation.parentIndex = null;
+                nodeInformation.parentID = null;
+                nodeInformation.lastParent = false;
+              }
+              else if (user.nodes.length === 1) {
+                nodeInformation.parentIndex = 0;
+                nodeInformation.parentID = user.nodes[0]._id;
+                nodeInformation.lastParent = false;
+              }
+              else if (nodeIndex < user.nodes.length) {
+                nodeInformation.parentIndex = nodeIndex;
+                nodeInformation.parentID = user.nodes[nodeIndex]._id;
+                if(nodeIndex === user.nodes.length - 1) {
+                  nodeInformation.lastParent = true;
+                }
+                else {
+                  nodeInformation.lastParent = false;
+                }
+              }
+              else if (nodeIndex === user.nodes.length) {
+                nodeInformation.parentIndex = nodeIndex - 1;
+                nodeInformation.parentID = user.nodes[nodeIndex - 1]._id;
+                nodeInformation.lastParent = true;
+              }
+            }
+            else if(req.body.childID) {
+              if (user.nodes[nodeIndex].subnodes.length < 1) {
+                nodeInformation.childIndex = null;
+                nodeInformation.childID = null;
+                nodeInformation.lastChild = false;
+              }
+              else if (user.nodes[nodeIndex].subnodes.length === 1) {
+                nodeInformation.childIndex = 0;
+                nodeInformation.childID = user.nodes[nodeIndex].subnodes[0]._id;
+                nodeInformation.lastChild = false;
+              }
+              else if (subNodeIndex < user.nodes[nodeIndex].subnodes.length) {
+                nodeInformation.childIndex = subNodeIndex;
+                nodeInformation.childID = user.nodes[nodeIndex].subnodes[subNodeIndex]._id;
+                if(subNodeIndex === user.nodes[nodeIndex].subnodes.length - 1) {
+                  nodeInformation.lastChild = true;
+                }
+                else {
+                  nodeInformation.lastChild = false;
+                }
+              }
+              else if (subNodeIndex ===  user.nodes[nodeIndex].subnodes.length) {
+                nodeInformation.childIndex = subNodeIndex - 1;
+                nodeInformation.childID = user.nodes[nodeIndex].subnodes[subNodeIndex - 1]._id;
+                nodeInformation.lastChild = true;
+              }
+            }
+
             user.save(function (err) {
               done(err, user);
             });
-            res.send({user: user.toJSON()});
+            res.send({user: user.toJSON(), nodeInformation:nodeInformation});
           });
     }]);
 };

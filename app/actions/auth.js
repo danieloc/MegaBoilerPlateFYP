@@ -421,18 +421,40 @@ export function deleteNodeForm(email, parentID, childID, token) {
       body: JSON.stringify({
         email: email,
         parentID: parentID,
-        childID: childID,
+        childID: childID
       })
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
-          // setTimeout(function(){/* Look! No name! */},15000);
-          dispatch({
-            type: 'DELETE_NODE_SUCCESS',
-            messages: 'The node was deleted successfully',
-            user: json.user,
-            childID: childID,
-          });
+          if(!childID) {
+            console.log(json.nodeInformation);
+            dispatch({
+              type: 'DELETE_NODE_SUCCESS',
+              messages: 'The node was deleted successfully',
+              user: json.user,
+              childID: childID,
+            });
+            dispatch({
+              type: 'SET_PARENT_NODE',
+              parentIndex: json.nodeInformation.parentIndex,
+              parentID: json.nodeInformation.parentID,
+              lastParent: json.nodeInformation.lastParent,
+            })
+          }
+          else {
+            dispatch({
+              type: 'DELETE_NODE_SUCCESS',
+              messages: 'The node was deleted successfully',
+              user: json.user,
+              childID: childID,
+            });
+            dispatch({
+              type: 'SET_CHILD_NODE',
+              childIndex: json.nodeInformation.childIndex,
+              childID: json.nodeInformation.childID,
+              lastChild: json.nodeInformation.lastChild,
+            });
+          }
         });
       }
       else {
