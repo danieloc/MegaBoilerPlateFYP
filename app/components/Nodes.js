@@ -42,10 +42,15 @@ class Nodes extends React.Component {
         }
     }
     getSubNodes() {
-        if(this.props.user.nodes[this.props.parentIndex].subnodes.length > 0) {
-            return this.props.user.nodes[this.props.parentIndex].subnodes.map((node, i) => {
-                return <li key = {i} value={i} onClick={() => this.changeCurrentSubNode(i, node._id)}><Link>{node.name}</Link></li>
-            });
+        if(this.props.user.nodes.length > 0) {
+            if (this.props.user.nodes[this.props.parentIndex].subnodes.length > 0) {
+                return this.props.user.nodes[this.props.parentIndex].subnodes.map((node, i) => {
+                    return <li key={i} value={i} onClick={() => this.changeCurrentSubNode(i, node._id)}>
+                        <Link>{node.name}</Link></li>
+                });
+            } else {
+                return []
+            }
         }
         else {
             return []
@@ -68,28 +73,47 @@ class Nodes extends React.Component {
     }
 
     displayToDos() {
-    if(!this.props.childID) {
-        if (this.props.user.nodes[this.props.parentIndex].todos.length > 0) {
-            return this.props.user.nodes[this.props.parentIndex].todos.map((todo, i) => {
-                return <SingleGoal key={i} index={i} obj={todo} parentID = {this.props.parentID} childID = {this.props.childID} handleChange={this.handleChange}> </SingleGoal>;
-            });
+        if (this.props.user.nodes.length > 0) {
+            if (!this.props.childID) {
+                if (this.props.user.nodes[this.props.parentIndex].todos.length > 0) {
+                    return this.props.user.nodes[this.props.parentIndex].todos.map((todo, i) => {
+                        return <SingleGoal key={i} index={i} obj={todo} parentID={this.props.parentID}
+                                           childID={this.props.childID} handleChange={this.handleChange}> </SingleGoal>;
+                    });
+                }
+            }
+            else {
+                if (this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].todos.length > 0) {
+                    return this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].todos.map((todo, i) => {
+                        return <SingleGoal key={i} index={i} obj={todo} parentID={this.props.parentID}
+                                           childID={this.props.childID} handleChange={this.handleChange}> </SingleGoal>;
+                    });
+                }
+            }
+        }else {
+            return [];
         }
     }
-    else {
-        if (this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].todos.length > 0) {
-            return this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].todos.map((todo, i) => {
-                return <SingleGoal key={i} index={i} obj={todo} parentID = {this.props.parentID} childID = {this.props.childID} handleChange={this.handleChange}> </SingleGoal>;
-            });
+
+    getNodeName() {
+        if(this.props.user.nodes.length > 0) {
+            if (this.props.childID) {
+                return this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].name;
+            } else {
+                return this.props.user.nodes[this.props.parentIndex].name;
+            }
+        }
+        else {
+            return [];
         }
     }
-}
     render() {
 
         const message = this.props.childID ? "SUB LEVEL NODE: " : "TOP LEVEL NODE: ";
-        const nodeName = this.props.childID ? this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].name
-            : this.props.user.nodes[this.props.parentIndex].name;
 
-        const addNodesForm = this.props.user.nodes[this.props.parentIndex] ? <AddNodesForm parentNode_ID = {this.props.parentID} childNode_ID = {this.props.childID} name = {message + nodeName}/> :
+        const addNodesForm = this.props.user.nodes[this.props.parentIndex] ? <AddNodesForm parentNode_ID = {this.props.parentID} childNode_ID = {this.props.childID} name = {message + this.getNodeName()}/> :
+            null;
+        const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(this.getNodeName()));}}> Delete Node</button> :
             null;
 
         return (
@@ -111,7 +135,7 @@ class Nodes extends React.Component {
                     </div>
                 </nav>
                 <div className="panel-body">
-                    <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(nodeName));}}> Delete Node</button>
+                    {deleteNodeButton}
                     {addNodesForm}
                     {this.displayToDos()}
                 </div>

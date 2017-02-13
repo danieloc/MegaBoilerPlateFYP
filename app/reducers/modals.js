@@ -34,6 +34,12 @@ export default function modals(state = initialState, action) {
                 childIndex : null,
                 childID: null
             });
+        case 'SET_CHILD_NODE' :
+            return Object.assign({}, state, {
+                childIndex : action.childIndex,
+                lastChild : action.lastChild,
+                childID : action.childID
+            });
 
         case 'DELETE_NODE_SUCCESS':
             var updatedParentIndex = state.parentIndex;
@@ -51,14 +57,6 @@ export default function modals(state = initialState, action) {
             return Object.assign({}, state, {
                 parentIndex : updatedParentIndex,
                 childIndex : updatedChildIndex,
-            });
-
-        case 'SET_CHILD_NODE' :
-            console.log(action.childID);
-            return Object.assign({}, state, {
-                childIndex : action.childIndex,
-                lastChild : action.lastChild,
-                childID : action.childID
             });
         case 'HIDE_MODAL' :
             return Object.assign({}, state, {

@@ -661,6 +661,7 @@ exports.addNode = function(req, res) {
   if (errors) {
     return res.status(400).send(errors);
   }
+  var nodeInformation = {};
   async.waterfall([
     function(done) {
       crypto.randomBytes(16, function(err, buf) {
@@ -673,8 +674,12 @@ exports.addNode = function(req, res) {
           .exec(function (err, user) {
             var found = false;
             if (req.body.parentName !== null) {
-              user.nodes.forEach(function (node) {
+              var parentIndex = 0;
+              //There should be a forEach loop here instead of a while loop. I had to replace it because it was asyncronous
+              //and would result in the parentIndex not incrementing correctly.
+              user.nodes.forEach(function (node, i) {
                 if (node.name.toLowerCase() === req.body.parentName.toLowerCase()) {
+                  parentIndex =i;
                   node.subnodes.forEach(function (subNode) {
                     if (subNode.name.toLowerCase() == req.body.nodeTitle.toLowerCase()) {
                       found = true;
@@ -695,7 +700,6 @@ exports.addNode = function(req, res) {
                 if (node.name.toLowerCase() == req.body.nodeTitle.toLowerCase()) {
                   found = true;
                   return res.status(400).send({msg: 'There is already a Node with this title'});
-
                 }
               });
               if(!found) {
@@ -704,6 +708,9 @@ exports.addNode = function(req, res) {
                   todos: [],
                   subnodes: [],
                 });
+                nodeInformation.childID = null;
+                nodeInformation.lastChild = false;
+                nodeInformation.childIndex = null;
               }
             }
 
@@ -711,7 +718,19 @@ exports.addNode = function(req, res) {
               if (err)
                 done(err, user);
             });
-            res.send({user: user.toJSON()});
+            if(!req.body.parentName) {
+              nodeInformation.parentID = user.nodes[user.nodes.length -1]._id;
+              nodeInformation.parentIndex = user.nodes.length -1;
+              nodeInformation.lastParent = false;
+            }
+            if(req.body.parentName) {
+              nodeInformation.parentIndex = parentIndex;
+              nodeInformation.childIndex = user.nodes[parentIndex].subnodes.length -1;
+              console.log(user.nodes[parentIndex].subnodes.length -1);
+              nodeInformation.childID = user.nodes[parentIndex].subnodes[user.nodes[parentIndex].subnodes.length -1]._id;
+              nodeInformation.lastChild = false;
+            }
+            res.send({user: user.toJSON(), nodeInformation : nodeInformation});
           });
     }]);
 };

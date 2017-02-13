@@ -369,12 +369,30 @@ export function addNodeForm(email, parentName, newNodeTitle, token) {
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
-          // setTimeout(function(){/* Look! No name! */},15000);
-          dispatch({
-            type: 'ADD_NODE_SUCCESS',
-            messages: 'The node was added successfully',
-            user: json.user,
-          });
+            if (!json.nodeInformation.childID) {
+                dispatch({
+                    type: 'ADD_NODE_SUCCESS',
+                    messages: 'The node was added successfully',
+                    user: json.user
+                }, {
+                    type: 'SET_PARENT_NODE',
+                    parentIndex: json.nodeInformation.parentIndex,
+                    parentID: json.nodeInformation.parentID,
+                    lastParent: json.nodeInformation.lastParent,
+                });
+            }
+            else {
+                dispatch({
+                    type: 'ADD_NODE_SUCCESS',
+                    messages: 'The node was added successfully',
+                    user: json.user
+                }, {
+                    type: 'SET_CHILD_NODE',
+                    childIndex: json.nodeInformation.childIndex,
+                    childID: json.nodeInformation.childID,
+                    lastChild: json.nodeInformation.lastChild,
+                });
+            }
         });
       }
       else {
