@@ -370,7 +370,6 @@ export function addNodeForm(email, parentName, newNodeTitle, token) {
       if(response.ok) {
         return response.json().then((json) => {
           if (!json.nodeInformation.childID) {
-            console.log(json.nodeInformation);
             dispatch({
               type: 'ADD_NODE_SUCCESS',
               messages: 'The node was added successfully',

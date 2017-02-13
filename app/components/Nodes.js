@@ -75,7 +75,6 @@ class Nodes extends React.Component {
     displayToDos() {
         if (this.props.user.nodes.length > 0 && this.props.user.nodes[this.props.parentIndex] != null) {
             if (!this.props.childID) {
-                console.log(this.props.parentIndex);
                 if (this.props.user.nodes[this.props.parentIndex].todos.length > 0) {
                     return this.props.user.nodes[this.props.parentIndex].todos.map((todo, i) => {
                         return <SingleGoal key={i} index={i} obj={todo} parentID={this.props.parentID}
@@ -144,7 +143,6 @@ class Nodes extends React.Component {
                     {addNodesForm}
                     {this.displayToDos()}
                 </div>
-                <button onClick={() => console.log(this.props.childID)}>STATE</button>
             </div>
 
         );
