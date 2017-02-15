@@ -10,12 +10,13 @@ class Mindmap extends React.Component {
 
     constructor(props) {
         super(props);
-        var data = getData(this.props.user.nodes);
-        var nameData = [{
+        var data = [{
             "name": this.props.user.name
         }];
-        data =_.concat(nameData, data);
-
+        if(this.props.user.nodes.length > 0) {
+            var nodeData = getData(this.props.user.nodes);
+            data = _.concat(data, nodeData);
+        }
         this.state = {
             data : data,
         };
