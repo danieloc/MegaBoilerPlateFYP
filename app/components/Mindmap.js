@@ -10,31 +10,45 @@ class Mindmap extends React.Component {
 
     constructor(props) {
         super(props);
-        var newData = [{
+        var data = getData(this.props.user.nodes);
+        var nameData = [{
             "name": this.props.user.name
         }];
-        for (var i = 0; i < this.props.user.nodes.length; i++) {
-            var nodeData = {
-                'name': this.props.user.nodes[i].name,
-                'target' : [0],
-                'subDocs': [{
-                    'name': this.props.user.nodes[i].name
-                }]};
-            for (var t = 0; t < this.props.user.nodes[i].subnodes.length; t++) {
-                var subNodes = {
-                    'name' : this.props.user.nodes[i].subnodes[t].name,
-                    'target': [0],
-                };
-                nodeData.subDocs = _.concat(nodeData.subDocs, subNodes);
-            }
-            newData =_.concat(newData, nodeData);
-        }
+        data =_.concat(nameData, data);
+
         this.state = {
-            data : newData,
+            data : data,
+        };
+
+        function getData(nodes) {
+            var nodeData = null;
+            nodes.forEach(function (node, i) {
+                var singleNodeData = {
+                    'name': node.name,
+                    'target': [0]
+                };
+                if (node.subnodes) {
+                    singleNodeData = {
+                        'name': node.name,
+                        'target': [0],
+                        'subDocs': [{'name': node.name}]
+                    };
+                    var subNodes = getData(node.subnodes);
+                    singleNodeData.subDocs = _.concat(singleNodeData, subNodes);
+                }
+                if(nodeData === null) {
+                    nodeData = singleNodeData;
+                }
+                else {
+                    nodeData = _.concat(nodeData, singleNodeData);
+                }
+            });
+            return nodeData;
         }
-        console.log(this.props.width);
-        console.log(this.props.height);
     }
+
+
+
     render() {
         return (
             <div style = {{flex: 1,  position:'relative', height: '100%', margin: 0, display: 'flex', flexDirection: 'column',
