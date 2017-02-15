@@ -40,7 +40,8 @@ class Nodes extends React.Component {
     getNodes() {
         if(this.props.user.nodes.length > 0) {
             return this.props.user.nodes.map((node, i) => {
-                return <li key = {i} value={i} onClick={() => this.changeCurrentNode(i, node._id)}><Link>{node.name}</Link></li>
+                var className = this.props.parentID === node._id ? "active" : "inActive";
+                return <li className= {className} activeStyle = {{borderBottomColor: '#3f51b5'}} key = {i} value={i} onClick={() => this.changeCurrentNode(i, node._id)}><Link>{node.name}</Link></li>
             });
         }
         else {
@@ -51,7 +52,8 @@ class Nodes extends React.Component {
         if(this.props.user.nodes.length > 0  && this.props.user.nodes[this.props.parentIndex]) {
             if (this.props.user.nodes[this.props.parentIndex].subnodes.length > 0) {
                 return this.props.user.nodes[this.props.parentIndex].subnodes.map((node, i) => {
-                    return <li key={i} value={i} onClick={() => this.changeCurrentSubNode(i, node._id)}>
+                    var className = this.props.childID === node._id ? "active" : "inActive";
+                    return <li className= {className} activeStyle = {{borderBottomColor: '#3f51b5'}} key={i} value={i} onClick={() => this.changeCurrentSubNode(i, node._id)}>
                         <Link>{node.name}</Link></li>
                 });
             } else {
