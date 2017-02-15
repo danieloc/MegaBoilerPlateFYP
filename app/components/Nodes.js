@@ -14,6 +14,12 @@ class Nodes extends React.Component {
         super(props);
     }
 
+    componentDidMount() {
+        if(this.props.user.nodes.length > 0) {
+            this.props.dispatch(setParent(0, this.props.user.nodes[0]._id, false));
+        }
+    }
+
     changeCurrentNode(i, parentNodeID) {
         //Adding variable last because, there is no connection between the modal and view other than the modal reducer.
         //This reducer does not have access to the user reducer, but needs to change when the nodes is deleted so that

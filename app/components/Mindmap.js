@@ -28,7 +28,7 @@ class Mindmap extends React.Component {
                     'name': node.name,
                     'target': [0]
                 };
-                if (node.subnodes) {
+                if (node.subnodes && node.subnodes.length > 0) {
                     singleNodeData = {
                         'name': node.name,
                         'target': [0],

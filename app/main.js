@@ -11,6 +11,10 @@ const store = configureStore(window.INITIAL_STATE);
 
 store.dispatch(setWidth(window.innerWidth));
 store.dispatch(setHeight(window.innerHeight));
+window.addEventListener('resize', () => {
+    store.dispatch(setWidth(window.innerWidth));
+    store.dispatch(setHeight(window.innerHeight));
+});
 ReactDOM.render(
   <Provider store={store}>
     <Router history={browserHistory} routes={getRoutes(store)}/>
