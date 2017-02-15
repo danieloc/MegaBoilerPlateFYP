@@ -46,6 +46,10 @@ class Graph extends React.Component {
             console.log('Going to Calculate everything!!');
             var w = Obj.props.width,
                 h = Obj.props.height;
+            var gravity = 0.02;
+            if(displayedNodes.length > 2) {
+                gravity = displayedNodes.length/100;
+            }
 
 
             //For every dataset,
@@ -71,8 +75,8 @@ class Graph extends React.Component {
             var force = d3.layout.force()
                 .nodes(displayedNodes)
                 .links([])
-                .gravity(0.11)
-                .charge(-1500)
+                .gravity(gravity)
+                .charge(-2000)
                 .size([w, h]);
 
 

@@ -23,7 +23,7 @@ class Mindmap extends React.Component {
 
         function getData(nodes) {
             var nodeData = null;
-            nodes.forEach(function (node, i) {
+            nodes.forEach(function (node) {
                 var singleNodeData = {
                     'name': node.name,
                     'target': [0]
