@@ -2,11 +2,11 @@
  * Created by Daniel on 1/7/2017.
  */
 import React from 'react';
-import { Link } from 'react-router';
 import { connect } from 'react-redux'
+import NavBar from './NavBar'
 import AddNodesForm from './AddNodesForm';
 import SingleGoal from './SingleGoal';
-import { getAddNodeModal, getDeleteNodeModal, setParent, setChild } from '../actions/modals';
+import { getDeleteNodeModal, setParent} from '../actions/modals';
 
 class Nodes extends React.Component {
 
@@ -19,63 +19,6 @@ class Nodes extends React.Component {
             this.props.dispatch(setParent(0, this.props.user.nodes[0]._id, false));
         }
     }
-
-    changeCurrentNode(i, parentNodeID) {
-        //Adding variable last because, there is no connection between the modal and view other than the modal reducer.
-        //This reducer does not have access to the user reducer, but needs to change when the nodes is deleted so that
-        //the nodes page does not try to get index n+1 when only n index's exist
-        var last = false;
-        if( i === this.props.user.nodes.length - 1 && i>0) {
-            last = true;
-        }
-        this.props.dispatch(setParent(i, parentNodeID, last));
-    }
-    changeCurrentSubNode(i, childNodeID) {
-        var last = false;
-        if( i === this.props.user.nodes[this.props.parentIndex].subnodes.length - 1 && i>0) {
-            last = true;
-        }
-        this.props.dispatch(setChild(i, childNodeID, last));
-    }
-    getNodes() {
-        if(this.props.user.nodes.length > 0) {
-            return this.props.user.nodes.map((node, i) => {
-                var className = this.props.parentID === node._id ? "active" : "inActive";
-                return <li className= {className} activeStyle = {{borderBottomColor: '#3f51b5'}} key = {i} value={i} onClick={() => this.changeCurrentNode(i, node._id)}><Link>{node.name}</Link></li>
-            });
-        }
-        else {
-            return []
-        }
-    }
-    getSubNodes() {
-        if(this.props.user.nodes.length > 0  && this.props.user.nodes[this.props.parentIndex]) {
-            if (this.props.user.nodes[this.props.parentIndex].subnodes.length > 0) {
-                return this.props.user.nodes[this.props.parentIndex].subnodes.map((node, i) => {
-                    var className = this.props.childID === node._id ? "active" : "inActive";
-                    return <li className= {className} activeStyle = {{borderBottomColor: '#3f51b5'}} key={i} value={i} onClick={() => this.changeCurrentSubNode(i, node._id)}>
-                        <Link>{node.name}</Link></li>
-                });
-            } else {
-                return []
-            }
-        }
-        else {
-            return []
-        }
-    }
-
-    addNodeModal(isSubLevel) {
-        if(isSubLevel) {
-            this.props.dispatch(getAddNodeModal(this.props.user.nodes[this.props.parentIndex].name));
-        }
-        else {
-            this.props.dispatch(getAddNodeModal(null));
-        }
-    }
-
-
-
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
@@ -123,27 +66,13 @@ class Nodes extends React.Component {
             null;
         const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(this.getNodeName()));}}> Delete Node</button> :
             null;
-        const subNodeNavbar = this.props.parentID ?
-            <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}}>
-                <div id="navbar" className="navbar-collapse collapse">
-                    <ul className="nav navbar-nav">
-                        {this.getSubNodes()}
-                        <li><Link onClick={() => this.addNodeModal(true)} ><span className = "glyphicon glyphicon-plus-sign" onClick={() => this.addNodeModal()}></span></Link></li>
-                    </ul>
-                </div>
-            </nav> :
+        const subNodeNavbar = this.props.parentID  && this.props.user.nodes.length >0?
+            <NavBar subNode = {true} nodes = {this.props.user.nodes[this.props.parentIndex].subnodes} name = {this.props.user.nodes[this.props.parentIndex].name} /> :
             null;
 
         return (
             <div>
-                <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}} >
-                    <div id="navbar" className="navbar-collapse collapse">
-                        <ul className="nav navbar-nav">
-                            {this.getNodes()}
-                            <li><Link onClick={() => this.addNodeModal(false)}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
-                        </ul>
-                    </div>
-                </nav>
+                <NavBar subNode = {false} nodes = {this.props.user.nodes}/>
                 {subNodeNavbar}
 
                 <div className="panel-body">
