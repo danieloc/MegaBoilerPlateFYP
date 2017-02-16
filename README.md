@@ -3,8 +3,8 @@
 Final Year Project
 Creating an SPA (Single Page Application) using Redux to create a brainstorming tool that uses d3s data visualization to create a mind map
 By: Daniel O’Connor
-ID: 13141252
-Course: Computer Systems LM051
+
+Course: Computer Systems
 
 Supervised by Nik Nikolov
 
