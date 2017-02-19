@@ -8,6 +8,7 @@ import { getAddNodeModal, setParent, changeDepth} from '../actions/modals';
 
 class NavBar extends React.Component {
     constructor(props) {
+        console.log("Constructor");
         super(props);
         this.state = {
             depth : props.depth
@@ -21,10 +22,11 @@ class NavBar extends React.Component {
 
     getNodes() {
         if(this.props.nodes && this.props.nodes.length > 0 && this.props.node) {
-            console.log("Depth " + this.state.depth);
             return this.props.nodes.map((node, i) => {
                 var className = "inActive";
-                if(this.state.depth -1 < this.props.indexList.length) {
+                console.log("Bye");
+                if(this.state.depth < this.props.indexList.length) {
+                    console.log("Hello");
                     if(this.props.indexList[this.state.depth -1] === i)
                     {
                         className = "active"
@@ -43,15 +45,24 @@ class NavBar extends React.Component {
     }
 
     changeCurrentNode(i, node) {
-        if (this.state.depth > this.props.indexList.length) {
-            this.props.dispatch(setParent(node, this.props.indexList));
+        var newIndexList =  this.props.indexList;
+        if (this.state.depth === this.props.indexList.length) {
+            newIndexList[this.state.depth -1] = i;
+            this.props.dispatch(setParent(node, newIndexList));
+        }
+        else if(this.state.depth > this.props.indexList.length ) {
+            newIndexList.push(i);
+            this.props.dispatch(setParent(node, newIndexList));
+
         }
         else {
-            var newIndexList =  this.props.indexList;
-            newIndexList.slice(this.state.depth);
-            newIndexList[this.state.depth -1] = i;
+            while(newIndexList.length >= this.state.depth) {
+                newIndexList.pop();
+            }
+            newIndexList[this.state.depth - 1] = i;
             console.log(newIndexList);
             this.props.dispatch(setParent(node, newIndexList));
+            console.log(this.props.indexList);
         }
     }
 

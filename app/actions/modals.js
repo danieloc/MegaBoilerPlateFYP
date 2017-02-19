@@ -23,14 +23,6 @@ export function setParent(node, indexList) {
     return {
         type: 'SET_NODE',
         node: node,
-        indexList : indexList
-    }
-}
-export function setChild(childIndex, childID, last) {
-    return {
-        type: 'SET_CHILD_NODE',
-        childIndex: childIndex,
-        childID: childID,
-        lastChild: last,
-    }
+        indexList: indexList,
+    };
 }

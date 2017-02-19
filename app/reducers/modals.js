@@ -25,6 +25,10 @@ export default function modals(state = initialState, action) {
                 node : action.node,
                 indexList : action.indexList
             });
+        case 'SET_INDEX' :
+        return Object.assign({}, state, {
+            indexList : action.indexList
+        });
         case 'HIDE_MODAL' :
             return Object.assign({}, state, {
                 activeModal: MODALS.NONE,
