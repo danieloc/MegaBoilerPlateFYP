@@ -4,14 +4,8 @@
 import {MODALS, } from '../constants';
 const initialState = {
     activeModal: 'NONE',
-    parentName : null,
-    nodeName : null,
-    parentID : null,
-    childID : null,
-    parentIndex : 0,
-    childIndex : null,
-    lastParent : false,
-    lastChild : false,
+    node : null,
+    indexList : [0]
 };
 
 export default function modals(state = initialState, action) {
@@ -26,19 +20,10 @@ export default function modals(state = initialState, action) {
                 activeModal: MODALS.DELETE_NODE_MODAL,
                 nodeName: action.nodeName
             });
-        case 'SET_PARENT_NODE' :
+        case 'SET_NODE' :
             return Object.assign({}, state, {
-                parentIndex : action.parentIndex,
-                parentID : action.parentID,
-                lastParent: action.lastParent,
-                childIndex : null,
-                childID: null
-            });
-        case 'SET_CHILD_NODE' :
-            return Object.assign({}, state, {
-                childIndex : action.childIndex,
-                lastChild : action.lastChild,
-                childID : action.childID
+                node : action.node,
+                indexList : action.indexList
             });
         case 'HIDE_MODAL' :
             return Object.assign({}, state, {

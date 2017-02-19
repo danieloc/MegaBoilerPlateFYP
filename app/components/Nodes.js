@@ -16,7 +16,7 @@ class Nodes extends React.Component {
 
     componentDidMount() {
         if(this.props.user.nodes.length > 0) {
-            this.props.dispatch(setParent(0, this.props.user.nodes[0]._id, false));
+            this.props.dispatch(setParent(this.props.user.nodes[0], [0]));
         }
     }
     handleChange(event) {
@@ -46,17 +46,12 @@ class Nodes extends React.Component {
         }
     }
 
-    getNodeName() {
-        if(this.props.user.nodes.length > 0 != null && this.props.user.nodes[this.props.parentIndex] != null) {
-            if (this.props.childID && this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex] != null) {
-                return this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].name;
-            } else {
-                return this.props.user.nodes[this.props.parentIndex].name;
-            }
+    getNavBars(nodes, depth) {
+        var lowerNavBars = <div></div>;
+        if(nodes && nodes[this.props.indexList[0]] && this.props.indexList.length >= depth) {
+            lowerNavBars = this.getNavBars(nodes[this.props.indexList[0]].subnodes, depth + 1)
         }
-        else {
-            return [];
-        }
+        return <div><NavBar nodes = {nodes} depth = {depth}/> {lowerNavBars} </div>
     }
     render() {
 
@@ -64,17 +59,12 @@ class Nodes extends React.Component {
 
         const addNodesForm = this.props.user.nodes[this.props.parentIndex] ? <AddNodesForm parentNode_ID = {this.props.parentID} childNode_ID = {this.props.childID} name = {message + this.getNodeName()}/> :
             null;
-        const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(this.getNodeName()));}}> Delete Node</button> :
-            null;
-        const subNodeNavbar = this.props.parentID  && this.props.user.nodes.length >0?
-            <NavBar subNode = {true} nodes = {this.props.user.nodes[this.props.parentIndex].subnodes} name = {this.props.user.nodes[this.props.parentIndex].name} /> :
+        const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(this.props.node.name))}}> Delete Node</button> :
             null;
 
         return (
             <div>
-                <NavBar subNode = {false} nodes = {this.props.user.nodes}/>
-                {subNodeNavbar}
-
+                {this.getNavBars(this.props.user.nodes, 1)}
                 <div className="panel-body">
                     {deleteNodeButton}
                     {addNodesForm}
@@ -90,10 +80,10 @@ const mapStateToProps = (state) => {
     return {
         user: state.auth.user,
         activeModal: state.modals.activeModal,
-        parentIndex : state.modals.parentIndex,
-        childIndex : state.modals.childIndex,
-        parentID: state.modals.parentID,
-        childID: state.modals.childID,
+        node : state.modals.node,
+        indexList : state.modals.indexList,
+        depth : state.modals.depth
+
     };
 };
 

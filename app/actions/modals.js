@@ -19,12 +19,11 @@ export function getDeleteNodeModal(nodeName) {
         nodeName: nodeName
     };
 }
-export function setParent(parentIndex, parentID, last) {
+export function setParent(node, indexList) {
     return {
-        type: 'SET_PARENT_NODE',
-        parentIndex: parentIndex,
-        parentID: parentID,
-        lastParent: last,
+        type: 'SET_NODE',
+        node: node,
+        indexList : indexList
     }
 }
 export function setChild(childIndex, childID, last) {
