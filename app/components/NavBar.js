@@ -43,17 +43,15 @@ class NavBar extends React.Component {
     }
 
     changeCurrentNode(i, node) {
-        //Adding variable last because, there is no connection between the modal and view other than the modal reducer.
-        //This reducer does not have access to the user reducer, but needs to change when the nodes is deleted so that
-        //the nodes page does not try to get index n+1 when only n index's exist
         if (this.state.depth > this.props.indexList.length) {
-            console.log("IndexList!");
-            console.log(this.props.indexList.concat(i));
-            console.log("IndexListDone!");
             this.props.dispatch(setParent(node, this.props.indexList));
         }
         else {
-            this.props.dispatch(setParent(node, this.props.indexList));
+            var newIndexList =  this.props.indexList;
+            newIndexList.slice(this.state.depth);
+            newIndexList[this.state.depth -1] = i;
+            console.log(newIndexList);
+            this.props.dispatch(setParent(node, newIndexList));
         }
     }
 
