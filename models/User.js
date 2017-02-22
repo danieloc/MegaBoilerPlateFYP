@@ -87,4 +87,6 @@ var ToDo = mongoose.model('ToDo', todoSchema);
 var Node = mongoose.model('Node', nodeSchema);
 var User = mongoose.model('User', userSchema);
 
-module.exports = User;
+module.exports = {
+  User : User, Node : Node, ToDo : ToDo
+};

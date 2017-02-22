@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');
 var moment = require('moment');
 var request = require('request');
 var qs = require('querystring');
-var User = require('../models/User');
+var UserSchema = require('../models/User');
 
 function generateToken(user) {
   var payload = {
@@ -43,7 +43,7 @@ exports.loginPost = function(req, res, next) {
     return res.status(400).send(errors);
   }
 
-  User.findOne({ email: req.body.email }, function(err, user) {
+  UserSchema.User.findOne({ email: req.body.email }, function(err, user) {
     if (!user) {
       return res.status(401).send({ msg: 'The email address ' + req.body.email + ' is not associated with any account. ' +
       'Double-check your email address and try again.'
@@ -74,11 +74,11 @@ exports.signupPost = function(req, res, next) {
     return res.status(400).send(errors);
   }
 
-  User.findOne({ email: req.body.email }, function(err, user) {
+  UserSchema.User.findOne({ email: req.body.email }, function(err, user) {
     if (user) {
       return res.status(400).send({ msg: 'The email address you have entered is already associated with another account.' });
     }
-    user = new User({
+    user = new UserSchema.User({
       name: req.body.name,
       email: req.body.email,
       password: req.body.password
@@ -110,7 +110,7 @@ exports.accountPut = function(req, res, next) {
     return res.status(400).send(errors);
   }
 
-  User.findById(req.user.id, function(err, user) {
+  UserSchema.User.findById(req.user.id, function(err, user) {
     if ('password' in req.body) {
       user.password = req.body.password;
     } else {
@@ -136,7 +136,7 @@ exports.accountPut = function(req, res, next) {
  * DELETE /account
  */
 exports.accountDelete = function(req, res, next) {
-  User.remove({ _id: req.user.id }, function(err) {
+  UserSchema.User.remove({ _id: req.user.id }, function(err) {
     res.send({ msg: 'Your account has been permanently deleted.' });
   });
 };
@@ -145,7 +145,7 @@ exports.accountDelete = function(req, res, next) {
  * GET /unlink/:provider
  */
 exports.unlink = function(req, res, next) {
-  User.findById(req.user.id, function(err, user) {
+  UserSchema.User.findById(req.user.id, function(err, user) {
     switch (req.params.provider) {
       case 'facebook':
         user.facebook = undefined;
@@ -190,7 +190,7 @@ exports.forgotPost = function(req, res, next) {
       });
     },
     function(token, done) {
-      User.findOne({ email: req.body.email }, function(err, user) {
+      UserSchema.User.findOne({ email: req.body.email }, function(err, user) {
         if (!user) {
           return res.status(400).send({ msg: 'The email address ' + req.body.email + ' is not associated with any account.' });
         }
@@ -241,7 +241,7 @@ exports.resetPost = function(req, res, next) {
 
   async.waterfall([
     function(done) {
-      User.findOne({ passwordResetToken: req.params.token })
+      UserSchema.User.findOne({ passwordResetToken: req.params.token })
           .where('passwordResetExpires').gt(Date.now())
           .exec(function(err, user) {
             if (!user) {
@@ -307,7 +307,7 @@ exports.authFacebook = function(req, res) {
 
       // Step 3a. Link accounts if user is authenticated.
       if (req.isAuthenticated()) {
-        User.findOne({ facebook: profile.id }, function(err, user) {
+        UserSchema.User.findOne({ facebook: profile.id }, function(err, user) {
           if (user) {
             return res.status(409).send({ msg: 'There is already an existing account linked with Facebook that belongs to you.' });
           }
@@ -322,15 +322,15 @@ exports.authFacebook = function(req, res) {
         });
       } else {
         // Step 3b. Create a new user account or return an existing one.
-        User.findOne({ facebook: profile.id }, function(err, user) {
+        UserSchema.User.findOne({ facebook: profile.id }, function(err, user) {
           if (user) {
             return res.send({ token: generateToken(user), user: user });
           }
-          User.findOne({ email: profile.email }, function(err, user) {
+          UserSchema.User.findOne({ email: profile.email }, function(err, user) {
             if (user) {
               return res.status(400).send({ msg: user.email + ' is already associated with another account.' })
             }
-            user = new User({
+            user = new UserSchema.User({
               name: profile.name,
               email: profile.email,
               gender: profile.gender,
@@ -379,7 +379,7 @@ exports.authGoogle = function(req, res) {
       }
       // Step 3a. Link accounts if user is authenticated.
       if (req.isAuthenticated()) {
-        User.findOne({ google: profile.sub }, function(err, user) {
+        UserSchema.User.findOne({ google: profile.sub }, function(err, user) {
           if (user) {
             return res.status(409).send({ msg: 'There is already an existing account linked with Google that belongs to you.' });
           }
@@ -395,11 +395,11 @@ exports.authGoogle = function(req, res) {
         });
       } else {
         // Step 3b. Create a new user account or return an existing one.
-        User.findOne({ google: profile.sub }, function(err, user) {
+        UserSchema.User.findOne({ google: profile.sub }, function(err, user) {
           if (user) {
             return res.send({ token: generateToken(user), user: user });
           }
-          user = new User({
+          user = new UserSchema.User({
             name: profile.name,
             email: profile.email,
             gender: profile.gender,
@@ -447,7 +447,7 @@ exports.addTodos = function(req, res) {
       if(req.body.goalTitle.length < 1) {
         return res.status(400).send({ msg: 'You have not given your goal a title!' });
       }
-      User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             var found = false;
             var nodeIndex = 0;
@@ -515,7 +515,7 @@ exports.deleteToDo = function(req, res) {
       });
     },
     function(token, done) {
-      User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             var found = false;
             var nodeIndex = 0;
@@ -582,7 +582,7 @@ exports.updateToDos = function(req, res) {
       });
     },
     function(token, done) {
-      User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             var found = false;
             var nodeIndex = 0;
@@ -668,27 +668,46 @@ exports.addNode = function(req, res) {
       });
     },
     function(token, done) {
-      User.findOne({ email: req.body.email})
+      UserSchema.User.findOne({ email: req.body.email})
           .exec(function (err, user) {
 
             ////////////////////////////////
             var i = 1;
-            var nodes = user.nodes;
-            function goDeeper(i, nodes) {
-              if (i < req.body.depth) {
+            function addToNode(i, nodes, req, parentID) {
+              if (i  < req.body.depth) {
                 i++;
-                return goDeeper(i, nodes.nodes[req.body.indexList[i]])
+                parentID = nodes[req.body.indexList[i-2]]._id;
+                nodes[req.body.indexList[i-2]].nodes = addToNode(i, nodes[req.body.indexList[i - 2]].nodes, req, parentID);
+                return nodes;
               }
-              else {
-                return nodes[req.body.indexList[depth-1]].push({
-                      name: req.body.nodeTitle,
-                      todos: [],
-                      nodes: [],
-                    }
-                );
+              else if(i === req.body.depth) {
+                var singleNode = new UserSchema.Node({
+                  name: req.body.nodeTitle,
+                  todos: [],
+                  nodes: [],
+                });
+                singleNode.save(function(err) {
+                  if (err)
+                    done(err, user);
+                });
+                if(!parentID) {
+                  nodes.push(singleNode._id);
+                }
+                else {
+                  console.log(parentID);
+                  UserSchema.Node.findOne({ _id : parentID})
+                      .exec( function (err, node) {
+                        node.nodes.push(singleNode._id);
+                        node.save(function(err) {
+                          if (err)
+                            done(err, user);
+                        });
+                      })
+                }
+                return nodes;
               }
             }
-            user.nodes = goDeeper(i, nodes);
+            user.nodes = addToNode(i, user.nodes, req, null);
             ///////////////////////////////
 
             user.save(function(err) {
@@ -699,7 +718,6 @@ exports.addNode = function(req, res) {
           });
     }]);
 };
-    .exec(function(err, a){});
 /**
  * DELETE /nodes
  */
@@ -713,7 +731,7 @@ exports.deleteNode = function(req, res) {
       });
     },
     function(token, done) {
-      User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             var found = false;
             var nodeIndex = 0;
