@@ -353,7 +353,7 @@ export function updateToDo(todoID , parentID, childID, email, name, priority, to
 
 
 
-export function addNodeForm(email, parentName, newNodeTitle, token) {
+export function addNodeForm(email, name, indexList, depth, token) {
   return (dispatch) => {
     return fetch('/nodes', {
       method: 'post',
@@ -363,8 +363,9 @@ export function addNodeForm(email, parentName, newNodeTitle, token) {
       },
       body: JSON.stringify({
         email: email,
-        parentName: parentName,
-        nodeTitle: newNodeTitle,
+        nodeTitle: name,
+        indexList : indexList,
+        depth : depth
       })
     }).then((response) => {
       if(response.ok) {

@@ -33,9 +33,9 @@ class Nodes extends React.Component {
                     });
                 }
             }
-            else if(this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex]) {
-                if (this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].todos.length > 0) {
-                    return this.props.user.nodes[this.props.parentIndex].subnodes[this.props.childIndex].todos.map((todo, i) => {
+            else if(this.props.user.nodes[this.props.parentIndex].nodes[this.props.childIndex]) {
+                if (this.props.user.nodes[this.props.parentIndex].nodes[this.props.childIndex].todos.length > 0) {
+                    return this.props.user.nodes[this.props.parentIndex].nodes[this.props.childIndex].todos.map((todo, i) => {
                         return <SingleGoal key={i} index={i} obj={todo} parentID={this.props.parentID}
                                            childID={this.props.childID} handleChange={this.handleChange}> </SingleGoal>;
                     });
@@ -50,7 +50,7 @@ class Nodes extends React.Component {
         console.log(depth);
         var lowerNavBars = <div></div>;
         if((nodes && this.props.indexList.length >= depth)) {
-            lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]].subnodes, depth + 1)
+            lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]].nodes, depth + 1)
         }
         return <div><NavBar nodes = {nodes} depth = {depth}/> {lowerNavBars} </div>
     }

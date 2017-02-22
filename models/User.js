@@ -20,7 +20,7 @@ var userSchema = new mongoose.Schema({
       priority: String,
       completed: Boolean
     }],
-    subnodes: [{
+    nodes: [{
       name: String,
       todos: [{
         name: String,

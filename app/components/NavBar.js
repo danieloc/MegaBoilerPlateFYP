@@ -4,11 +4,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
-import { getAddNodeModal, setParent, changeDepth} from '../actions/modals';
+import { getAddNodeModal, setParent} from '../actions/modals';
 
 class NavBar extends React.Component {
     constructor(props) {
-        console.log("Constructor");
         super(props);
         this.state = {
             depth : props.depth
@@ -16,7 +15,7 @@ class NavBar extends React.Component {
     }
 
     addNodeModal() {
-        this.props.dispatch(getAddNodeModal());
+        this.props.dispatch(getAddNodeModal(this.state.depth));
     }
 
 
@@ -24,9 +23,7 @@ class NavBar extends React.Component {
         if(this.props.nodes && this.props.nodes.length > 0 && this.props.node) {
             return this.props.nodes.map((node, i) => {
                 var className = "inActive";
-                console.log("Bye");
                 if(this.state.depth < this.props.indexList.length) {
-                    console.log("Hello");
                     if(this.props.indexList[this.state.depth -1] === i)
                     {
                         className = "active"
@@ -73,7 +70,7 @@ class NavBar extends React.Component {
                     <div id="navbar" className="navbar-collapse collapse">
                         <ul className="nav navbar-nav">
                             {this.getNodes()}
-                            <li><Link onClick={() => this.addNodeModal()}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
+                            <li><Link onClick={() => this.addNodeModal(this.state.depth)}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
                         </ul>
                     </div>
                 </nav>

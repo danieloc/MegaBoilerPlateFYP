@@ -463,16 +463,16 @@ exports.addTodos = function(req, res) {
             }
             if(req.body.childID) {
               found = false;
-              while (subNodeIndex < node.subnodes.length && !found) {
-                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+              while (subNodeIndex < node.nodes.length && !found) {
+                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
                   found = true;
                 } else {
                   subNodeIndex++;
                 }
               }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
               //I've used the same var name node to avoid duplicate code in this API.
-              node = node.subnodes[subNodeIndex];
+              node = node.nodes[subNodeIndex];
             }
             Promise.all(node.todos.map(function (todo) {
               if (todo.name.toLowerCase() === req.body.goalTitle.toLowerCase()) {
@@ -488,7 +488,7 @@ exports.addTodos = function(req, res) {
               });
             }
             else {
-              user.nodes[nodeIndex].subnodes[subNodeIndex].todos.push({
+              user.nodes[nodeIndex].nodes[subNodeIndex].todos.push({
                 name: req.body.goalTitle,
                 priority: req.body.goalPriority,
                 completed: false
@@ -531,16 +531,16 @@ exports.deleteToDo = function(req, res) {
             }
             if(req.body.childID) {
               found = false;
-              while (subNodeIndex < node.subnodes.length && !found) {
-                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+              while (subNodeIndex < node.nodes.length && !found) {
+                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
                   found = true;
                 } else {
                   subNodeIndex++;
                 }
               }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
               //I've used the same var name node to avoid duplicate code in this API.
-              node = node.subnodes[subNodeIndex];
+              node = node.nodes[subNodeIndex];
             }
             if(!found){
               return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
@@ -563,7 +563,7 @@ exports.deleteToDo = function(req, res) {
               user.nodes[nodeIndex].todos = arr;
             }
             else {
-              user.nodes[nodeIndex].subnodes[subNodeIndex].todos = arr;
+              user.nodes[nodeIndex].nodes[subNodeIndex].todos = arr;
             }
             user.save(function (err) {
               done(err, user);
@@ -598,16 +598,16 @@ exports.updateToDos = function(req, res) {
             }
             if(req.body.childID) {
               found = false;
-              while (subNodeIndex < node.subnodes.length && !found) {
-                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+              while (subNodeIndex < node.nodes.length && !found) {
+                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
                   found = true;
                 } else {
                   subNodeIndex++;
                 }
               }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
               //I've used the same var name node to avoid duplicate code in this API.
-              node = node.subnodes[subNodeIndex];
+              node = node.nodes[subNodeIndex];
             }
             if(!found){
               return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
@@ -635,7 +635,7 @@ exports.updateToDos = function(req, res) {
               user.nodes[nodeIndex].todos = arr;
             }
             else {
-              user.nodes[nodeIndex].subnodes[subNodeIndex].todos = arr;
+              user.nodes[nodeIndex].nodes[subNodeIndex].todos = arr;
             }
             user.save(function (err) {
               done(err, user);
@@ -670,78 +670,36 @@ exports.addNode = function(req, res) {
     function(token, done) {
       User.findOne({ email: req.body.email})
           .exec(function (err, user) {
-            var found = false;
-            if (req.body.parentName !== null) {
-              var parentIndex = 0;
-              //There should be a forEach loop here instead of a while loop. I had to replace it because it was asyncronous
-              //and would result in the parentIndex not incrementing correctly.
-              user.nodes.forEach(function (node, i) {
-                if (node.name.toLowerCase() === req.body.parentName.toLowerCase()) {
-                  parentIndex =i;
-                  node.subnodes.forEach(function (subNode) {
-                    if (subNode.name.toLowerCase() == req.body.nodeTitle.toLowerCase()) {
-                      found = true;
-                      return res.status(400).send({msg: 'There is already a subNode with this title'});
-                    }
-                  });
-                  if(!found) {
-                    node.subnodes.push({
+
+            ////////////////////////////////
+            var i = 1;
+            var nodes = user.nodes;
+            function goDeeper(i, nodes) {
+              if (i < req.body.depth) {
+                i++;
+                return goDeeper(i, nodes.nodes[req.body.indexList[i]])
+              }
+              else {
+                return nodes[req.body.indexList[depth-1]].push({
                       name: req.body.nodeTitle,
-                      todos: []
-                    });
-                  }
-                }
-              });
-            }
-            else {
-              user.nodes.forEach(function (node) {
-                if (node.name.toLowerCase() == req.body.nodeTitle.toLowerCase()) {
-                  found = true;
-                  return res.status(400).send({msg: 'There is already a Node with this title'});
-                }
-              });
-              if(!found) {
-                user.nodes.push({
-                  name: req.body.nodeTitle,
-                  todos: [],
-                  subnodes: [],
-                });
-                nodeInformation.childID = null;
-                nodeInformation.lastChild = false;
-                nodeInformation.childIndex = null;
+                      todos: [],
+                      nodes: [],
+                    }
+                );
               }
             }
+            user.nodes = goDeeper(i, nodes);
+            ///////////////////////////////
 
             user.save(function(err) {
               if (err)
                 done(err, user);
             });
-            if(!req.body.parentName) {
-              nodeInformation.parentID = user.nodes[user.nodes.length -1]._id;
-              nodeInformation.parentIndex = user.nodes.length -1;
-              if(user.nodes.length > 1) {
-                nodeInformation.lastParent = true;
-              }
-              else {
-                nodeInformation.lastParent = false;
-              }
-            }
-            if(req.body.parentName) {
-              nodeInformation.parentIndex = parentIndex;
-              nodeInformation.childIndex = user.nodes[parentIndex].subnodes.length -1;
-              nodeInformation.childID = user.nodes[parentIndex].subnodes[nodeInformation.childIndex]._id;
-              if(user.nodes[parentIndex].subnodes.length > 1) {
-                nodeInformation.lastParent = true;
-              }
-              else {
-                nodeInformation.lastParent = false;
-              }
-            }
             res.send({user: user.toJSON(), nodeInformation : nodeInformation});
           });
     }]);
 };
-
+    .exec(function(err, a){});
 /**
  * DELETE /nodes
  */
@@ -777,20 +735,20 @@ exports.deleteNode = function(req, res) {
             if(req.body.childID) {
               var subNodeIndex = 0;
               found = false;
-              while (subNodeIndex < nodes.subnodes.length && !found) {
-                if (nodes.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+              while (subNodeIndex < nodes.nodes.length && !found) {
+                if (nodes.nodes[subNodeIndex]._id.equals(req.body.childID)) {
                   found = true;
                 } else {
                   subNodeIndex++;
                 }
               }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
               //I've used the same var name node to avoid duplicate code in this API.
               if(!found){
                 return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
               }
               else {
-                nodes.subnodes.splice((subNodeIndex), 1);
+                nodes.nodes.splice((subNodeIndex), 1);
               }
             }
             if(!req.body.childID) {
@@ -831,29 +789,29 @@ exports.deleteNode = function(req, res) {
               }
             }
             else if(req.body.childID) {
-              if (user.nodes[nodeIndex].subnodes.length < 1) {
+              if (user.nodes[nodeIndex].nodes.length < 1) {
                 nodeInformation.childIndex = null;
                 nodeInformation.childID = null;
                 nodeInformation.lastChild = false;
               }
-              else if (user.nodes[nodeIndex].subnodes.length === 1) {
+              else if (user.nodes[nodeIndex].nodes.length === 1) {
                 nodeInformation.childIndex = 0;
-                nodeInformation.childID = user.nodes[nodeIndex].subnodes[0]._id;
+                nodeInformation.childID = user.nodes[nodeIndex].nodes[0]._id;
                 nodeInformation.lastChild = false;
               }
-              else if (subNodeIndex < user.nodes[nodeIndex].subnodes.length) {
+              else if (subNodeIndex < user.nodes[nodeIndex].nodes.length) {
                 nodeInformation.childIndex = subNodeIndex;
-                nodeInformation.childID = user.nodes[nodeIndex].subnodes[subNodeIndex]._id;
-                if(subNodeIndex === user.nodes[nodeIndex].subnodes.length - 1) {
+                nodeInformation.childID = user.nodes[nodeIndex].nodes[subNodeIndex]._id;
+                if(subNodeIndex === user.nodes[nodeIndex].nodes.length - 1) {
                   nodeInformation.lastChild = true;
                 }
                 else {
                   nodeInformation.lastChild = false;
                 }
               }
-              else if (subNodeIndex ===  user.nodes[nodeIndex].subnodes.length) {
+              else if (subNodeIndex ===  user.nodes[nodeIndex].nodes.length) {
                 nodeInformation.childIndex = subNodeIndex - 1;
-                nodeInformation.childID = user.nodes[nodeIndex].subnodes[subNodeIndex - 1]._id;
+                nodeInformation.childID = user.nodes[nodeIndex].nodes[subNodeIndex - 1]._id;
                 nodeInformation.lastChild = true;
               }
             }

@@ -7,10 +7,10 @@ export function hideModal() {
     };
 }
 
-export function getAddNodeModal(parentName) {
+export function getAddNodeModal(depth) {
     return {
         type: 'NODE_MODAL',
-        parentName: parentName
+        addOrDeleteDepth : depth,
     };
 }
 export function getDeleteNodeModal(nodeName) {
