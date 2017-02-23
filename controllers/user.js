@@ -704,7 +704,7 @@ exports.addNode = function(req, res) {
                         });
                       })
                 }
-                return nodes;
+                return nodes.push(singleNode);
               }
             }
             user.nodes = addToNode(i, user.nodes, req, null);
