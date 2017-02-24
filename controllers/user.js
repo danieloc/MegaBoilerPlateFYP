@@ -691,10 +691,9 @@ exports.addNode = function(req, res) {
                     done(err, user);
                 });
                 if(!parentID) {
-                  nodes.push(singleNode._id);
+                  return nodes.concat(singleNode);
                 }
                 else {
-                  console.log(parentID);
                   UserSchema.Node.findOne({ _id : parentID})
                       .exec( function (err, node) {
                         node.nodes.push(singleNode._id);
@@ -731,113 +730,31 @@ exports.deleteNode = function(req, res) {
       });
     },
     function(token, done) {
+
       UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            var found = false;
-            var nodeIndex = 0;
-            var nodes;
-            while (nodeIndex < user.nodes.length && !found) {
-              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
-                if(req.body.childID) {
-                  nodes = user.nodes[nodeIndex];
-                }
-                else {
-                  nodes = user.nodes;
-                  nodes.splice((nodeIndex), 1);
-                }
-                found = true;
-              } else {
-                nodeIndex++;
-              }
-            }
-            if(req.body.childID) {
-              var subNodeIndex = 0;
-              found = false;
-              while (subNodeIndex < nodes.nodes.length && !found) {
-                if (nodes.nodes[subNodeIndex]._id.equals(req.body.childID)) {
-                  found = true;
-                } else {
-                  subNodeIndex++;
-                }
-              }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
-              //I've used the same var name node to avoid duplicate code in this API.
-              if(!found){
-                return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
+            ////////////////////////////////
+            var i = 1;
+            console.log(req.body.depth);
+            function deleteFromUser(i, nodes, req) {
+              if (i === req.body.depth) {
+                UserSchema.Node.findOne({_id: req.body._id})
+                    .remove()
+                    .exec(function (err, node) {
+                    });
+                return nodes.splice(req.body.indexList[req.body.depth - 1], 1);
               }
               else {
-                nodes.nodes.splice((subNodeIndex), 1);
+                i++;
+                nodes[req.body.indexList[i - 2]].nodes = deleteFromUser(i, nodes[req.body.indexList[i - 2]].nodes, req);
+                return nodes;
               }
             }
-            if(!req.body.childID) {
-              user.nodes = nodes;
-            }
-            else {
-              user.nodes[nodeIndex] = nodes;
-            }
-            var nodeInformation = {};
-            if(!req.body.childID) {
-              nodeInformation.childID = null;
-              nodeInformation.lastChild = false;
-              nodeInformation.childIndex = null;
-              if (user.nodes.length < 1) {
-                nodeInformation.parentIndex = null;
-                nodeInformation.parentID = null;
-                nodeInformation.lastParent = false;
-              }
-              else if (user.nodes.length === 1) {
-                nodeInformation.parentIndex = 0;
-                nodeInformation.parentID = user.nodes[0]._id;
-                nodeInformation.lastParent = false;
-              }
-              else if (nodeIndex < user.nodes.length) {
-                nodeInformation.parentIndex = nodeIndex;
-                nodeInformation.parentID = user.nodes[nodeIndex]._id;
-                if(nodeIndex === user.nodes.length - 1) {
-                  nodeInformation.lastParent = true;
-                }
-                else {
-                  nodeInformation.lastParent = false;
-                }
-              }
-              else if (nodeIndex === user.nodes.length) {
-                nodeInformation.parentIndex = nodeIndex - 1;
-                nodeInformation.parentID = user.nodes[nodeIndex - 1]._id;
-                nodeInformation.lastParent = true;
-              }
-            }
-            else if(req.body.childID) {
-              if (user.nodes[nodeIndex].nodes.length < 1) {
-                nodeInformation.childIndex = null;
-                nodeInformation.childID = null;
-                nodeInformation.lastChild = false;
-              }
-              else if (user.nodes[nodeIndex].nodes.length === 1) {
-                nodeInformation.childIndex = 0;
-                nodeInformation.childID = user.nodes[nodeIndex].nodes[0]._id;
-                nodeInformation.lastChild = false;
-              }
-              else if (subNodeIndex < user.nodes[nodeIndex].nodes.length) {
-                nodeInformation.childIndex = subNodeIndex;
-                nodeInformation.childID = user.nodes[nodeIndex].nodes[subNodeIndex]._id;
-                if(subNodeIndex === user.nodes[nodeIndex].nodes.length - 1) {
-                  nodeInformation.lastChild = true;
-                }
-                else {
-                  nodeInformation.lastChild = false;
-                }
-              }
-              else if (subNodeIndex ===  user.nodes[nodeIndex].nodes.length) {
-                nodeInformation.childIndex = subNodeIndex - 1;
-                nodeInformation.childID = user.nodes[nodeIndex].nodes[subNodeIndex - 1]._id;
-                nodeInformation.lastChild = true;
-              }
-            }
-
-            user.save(function (err) {
-              done(err, user);
-            });
-            res.send({user: user.toJSON(), nodeInformation:nodeInformation});
+            user.nodes = deleteFromUser(i, user.nodes, req);
+            res.send({user: user.toJSON()});
+            ///////////////////////////////
           });
+
+
     }]);
 };

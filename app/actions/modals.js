@@ -13,16 +13,17 @@ export function getAddNodeModal(depth) {
         addOrDeleteDepth : depth,
     };
 }
-export function getDeleteNodeModal(nodeName) {
+export function getDeleteNodeModal() {
     return {
         type: 'DELETE_NODE_MODAL',
-        nodeName: nodeName
     };
 }
-export function setParent(node, indexList) {
+export function setParent(node, indexList, addOrDeleteDepth,last) {
     return {
         type: 'SET_NODE',
         node: node,
         indexList: indexList,
+        last : last,
+        addOrDeleteDepth: addOrDeleteDepth
     };
 }

@@ -410,7 +410,7 @@ export function addNodeForm(email, name, indexList, depth, token) {
   };
 }
 
-export function deleteNodeForm(email, parentID, childID, token) {
+export function deleteNodeForm(email, nodeID, indexList, depth, token) {
   return (dispatch) => {
     return fetch('/nodes', {
       method: 'delete',
@@ -420,40 +420,24 @@ export function deleteNodeForm(email, parentID, childID, token) {
       },
       body: JSON.stringify({
         email: email,
-        parentID: parentID,
-        childID: childID
+        _id : nodeID,
+        indexList : indexList,
+        depth : depth
       })
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
-          if(!childID) {
             dispatch({
               type: 'DELETE_NODE_SUCCESS',
               messages: 'The node was deleted successfully',
               user: json.user,
-              childID: childID,
-            });
+            });/*
             dispatch({
               type: 'SET_PARENT_NODE',
               parentIndex: json.nodeInformation.parentIndex,
               parentID: json.nodeInformation.parentID,
               lastParent: json.nodeInformation.lastParent,
-            })
-          }
-          else {
-            dispatch({
-              type: 'DELETE_NODE_SUCCESS',
-              messages: 'The node was deleted successfully',
-              user: json.user,
-              childID: childID,
-            });
-            dispatch({
-              type: 'SET_CHILD_NODE',
-              childIndex: json.nodeInformation.childIndex,
-              childID: json.nodeInformation.childID,
-              lastChild: json.nodeInformation.lastChild,
-            });
-          }
+            })*/
         });
       }
       else {

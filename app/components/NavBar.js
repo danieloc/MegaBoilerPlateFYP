@@ -43,13 +43,17 @@ class NavBar extends React.Component {
 
     changeCurrentNode(i, node) {
         var newIndexList =  this.props.indexList;
+        var last = false;
+        if( i === this.props.nodes.length - 1 && i>0) {
+            last = true;
+        }
         if (this.state.depth === this.props.indexList.length) {
             newIndexList[this.state.depth -1] = i;
-            this.props.dispatch(setParent(node, newIndexList));
+            this.props.dispatch(setParent(node, newIndexList, this.state.depth,last));
         }
         else if(this.state.depth > this.props.indexList.length ) {
             newIndexList.push(i);
-            this.props.dispatch(setParent(node, newIndexList));
+            this.props.dispatch(setParent(node, newIndexList,this.state.depth, last));
 
         }
         else {
@@ -58,7 +62,7 @@ class NavBar extends React.Component {
             }
             newIndexList[this.state.depth - 1] = i;
             console.log(newIndexList);
-            this.props.dispatch(setParent(node, newIndexList));
+            this.props.dispatch(setParent(node, newIndexList, this.state.depth, last));
             console.log(this.props.indexList);
         }
     }

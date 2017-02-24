@@ -16,14 +16,14 @@ class Nodes extends React.Component {
 
     componentDidMount() {
         if(this.props.user.nodes.length > 0) {
-            this.props.dispatch(setParent(this.props.user.nodes[0], [0]));
+            this.props.dispatch(setParent(this.props.user.nodes[0], [0], 1, false));
         }
     }
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    displayToDos() {
+    /*displayToDos() {
         if (this.props.user.nodes.length > 0 && this.props.user.nodes[this.props.parentIndex] != null) {
             if (!this.props.childID) {
                 if (this.props.user.nodes[this.props.parentIndex].todos.length > 0) {
@@ -44,13 +44,14 @@ class Nodes extends React.Component {
         }else {
             return [];
         }
-    }
+    }*/
 
     getNavBars(nodes, depth) {
         console.log(depth);
         var lowerNavBars = <div></div>;
-        if((nodes && this.props.indexList.length >= depth)) {
-            lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]].nodes, depth + 1)
+        nodes = nodes.nodes;
+        if((nodes.length > 0 && this.props.indexList.length >= depth)) {
+            lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]], depth + 1)
         }
         return <div><NavBar nodes = {nodes} depth = {depth}/> {lowerNavBars} </div>
     }
@@ -60,16 +61,16 @@ class Nodes extends React.Component {
 
         const addNodesForm = this.props.user.nodes[this.props.parentIndex] ? <AddNodesForm parentNode_ID = {this.props.parentID} childNode_ID = {this.props.childID} name = {message + this.getNodeName()}/> :
             null;
-        const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal(this.props.node.name))}}> Delete Node</button> :
+        const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal())}}> Delete Node</button> :
             null;
 
         return (
             <div>
-                {this.getNavBars(this.props.user.nodes, 1)}
+                {this.getNavBars(this.props.user, 1)}
                 <div className="panel-body">
                     {deleteNodeButton}
                     {addNodesForm}
-                    {this.displayToDos()}
+                    {/*{this.displayToDos()}*/}
                 </div>
                 <button onClick={() => {console.log(this.props.indexList)}}>Check</button>
             </div>

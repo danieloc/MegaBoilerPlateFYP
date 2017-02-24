@@ -7,6 +7,7 @@ const initialState = {
     node : null,
     indexList : [0],
     addOrDeleteDepth : null,
+    last : false
 };
 
 export default function modals(state = initialState, action) {
@@ -19,12 +20,13 @@ export default function modals(state = initialState, action) {
         case 'DELETE_NODE_MODAL' :
             return Object.assign({}, state, {
                 activeModal: MODALS.DELETE_NODE_MODAL,
-                nodeName: action.nodeName
             });
         case 'SET_NODE' :
             return Object.assign({}, state, {
                 node : action.node,
-                indexList : action.indexList
+                indexList : action.indexList,
+                last : action.last,
+                addOrDeleteDepth : action.addOrDeleteDepth
             });
         case 'SET_INDEX' :
         return Object.assign({}, state, {
