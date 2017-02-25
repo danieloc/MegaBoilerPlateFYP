@@ -37,16 +37,13 @@ class AddNodeModal extends React.Component {
         this.props.dispatch(hideModal());
     }
     render() {
-        const modalTitle = (this.props.indexList.length < this.props.depth) ? (
-            <legend>Adding a subNode</legend>)
-            : (<h1>Adding a top level node</h1>);
         return (
             <ModalWrapper {...this.props}
                 title="Add Node"
                 width={400}
                 showOk={false}
             >
-                {modalTitle}
+                <legend>Adding a Node to level : {this.props.depth}</legend>
                 <form onSubmit={this.handleReset.bind(this)}>
                     <div className="form-group">
                         <label htmlFor="name">New Node</label>
@@ -69,7 +66,7 @@ const mapStateToProps = (state) => {
         token: state.auth.token,
         node: state.modals.node,
         indexList: state.modals.indexList,
-        depth : state.modals.addOrDeleteDepth
+        depth : state.modals.depth
     };
 };
 

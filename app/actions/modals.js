@@ -10,7 +10,7 @@ export function hideModal() {
 export function getAddNodeModal(depth) {
     return {
         type: 'NODE_MODAL',
-        addOrDeleteDepth : depth,
+        depth : depth,
     };
 }
 export function getDeleteNodeModal() {
@@ -18,12 +18,12 @@ export function getDeleteNodeModal() {
         type: 'DELETE_NODE_MODAL',
     };
 }
-export function setParent(node, indexList, addOrDeleteDepth,last) {
+export function setParent(node, indexList, depth,last) {
     return {
         type: 'SET_NODE',
         node: node,
         indexList: indexList,
         last : last,
-        addOrDeleteDepth: addOrDeleteDepth
+        depth: depth
     };
 }

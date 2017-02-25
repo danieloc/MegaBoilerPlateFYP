@@ -370,32 +370,18 @@ export function addNodeForm(email, name, indexList, depth, token) {
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
-          if (!json.nodeInformation.childID) {
             dispatch({
               type: 'ADD_NODE_SUCCESS',
               messages: 'The node was added successfully',
               user: json.user
             });
-            dispatch({
-              type: 'SET_PARENT_NODE',
-              parentIndex: json.nodeInformation.parentIndex,
-              parentID: json.nodeInformation.parentID,
-              lastParent: json.nodeInformation.lastParent,
-            });
-          }
-          else {
-            dispatch({
-              type: 'ADD_NODE_SUCCESS',
-              messages: 'The node was added successfully',
-              user: json.user
-            });
-            dispatch({
-              type: 'SET_CHILD_NODE',
-              childIndex: json.nodeInformation.childIndex,
-              childID: json.nodeInformation.childID,
-              lastChild: json.nodeInformation.lastChild,
-            });
-          }
+          dispatch({
+            type: 'SET_NODE',
+            node: json.nodeInformation,
+            indexList: json.indexList,
+            last: true,
+            depth: depth
+          });
         });
       }
       else {
@@ -410,7 +396,7 @@ export function addNodeForm(email, name, indexList, depth, token) {
   };
 }
 
-export function deleteNodeForm(email, nodeID, indexList, depth, token) {
+export function deleteNodeForm(email, nodeID, indexList, depth, last, token) {
   return (dispatch) => {
     return fetch('/nodes', {
       method: 'delete',
@@ -422,22 +408,29 @@ export function deleteNodeForm(email, nodeID, indexList, depth, token) {
         email: email,
         _id : nodeID,
         indexList : indexList,
-        depth : depth
+        depth : depth,
+        last : last
       })
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
-            dispatch({
-              type: 'DELETE_NODE_SUCCESS',
-              messages: 'The node was deleted successfully',
-              user: json.user,
-            });/*
-            dispatch({
-              type: 'SET_PARENT_NODE',
-              parentIndex: json.nodeInformation.parentIndex,
-              parentID: json.nodeInformation.parentID,
-              lastParent: json.nodeInformation.lastParent,
-            })*/
+          var length = null;
+          console.log(json.user);
+          if(json.nodeInformation) {
+            length = json.indexList.length;
+          }
+          dispatch({
+            type: 'SET_NODE',
+            node: json.nodeInformation,
+            indexList: json.indexList,
+            last: json.last,
+            depth: length
+          });
+          dispatch({
+            type: 'DELETE_NODE_SUCCESS',
+            messages: 'The node was deleted successfully',
+            user: json.user,
+          });
         });
       }
       else {

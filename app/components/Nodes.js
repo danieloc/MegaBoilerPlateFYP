@@ -46,11 +46,10 @@ class Nodes extends React.Component {
         }
     }*/
 
-    getNavBars(nodes, depth) {
-        console.log(depth);
+    getNavBars(node, depth) {
         var lowerNavBars = <div></div>;
-        nodes = nodes.nodes;
-        if((nodes.length > 0 && this.props.indexList.length >= depth)) {
+        var nodes = node.nodes;
+        if(nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth) {
             lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]], depth + 1)
         }
         return <div><NavBar nodes = {nodes} depth = {depth}/> {lowerNavBars} </div>
@@ -72,7 +71,7 @@ class Nodes extends React.Component {
                     {addNodesForm}
                     {/*{this.displayToDos()}*/}
                 </div>
-                <button onClick={() => {console.log(this.props.indexList)}}>Check</button>
+                <button onClick={() => {console.log(this.props.user)}}>Check</button>
             </div>
 
         );

@@ -735,23 +735,73 @@ exports.deleteNode = function(req, res) {
           .exec(function(err, user) {
             ////////////////////////////////
             var i = 1;
-            console.log(req.body.depth);
+            var nodeInformation = null;
+            var indexList = null;
+            var last = false;
             function deleteFromUser(i, nodes, req) {
+              var nodeInformation = null;
+              var indexList = null;
+              var last = false;
               if (i === req.body.depth) {
                 UserSchema.Node.findOne({_id: req.body._id})
                     .remove()
                     .exec(function (err, node) {
                     });
-                return nodes.splice(req.body.indexList[req.body.depth - 1], 1);
+                console.log("NodeLength");
+                console.log(nodes.length);
+                nodes.splice(req.body.indexList[req.body.depth - 1], 1);
+                if(req.body.depth === 1 && nodes.length === 1) {
+                  return [nodes, null, [0], null];
+                }
+                if(req.body.last && nodes.length > 0) {
+                  console.log("If it's the last Node in the list and there is more than one in the list");
+                  nodeInformation = nodes[nodes.length - 1];
+                  indexList = req.body.indexList;
+                  indexList[req.body.depth -1] = req.body.indexList[req.body.depth -1] - 1;
+                  if(indexList[req.body.depth - 1] === nodes.length - 1) {
+                    last = true
+                  }
+                }
+                if(!req.body.last && nodes.length > 0) {
+                  console.log("If it's not the last Node in the list and there is more than one in the list");
+                  nodeInformation = nodes[req.body.indexList[req.body.indexList.length - 1]];
+                  indexList = req.body.indexList;
+                  if(indexList[req.body.depth - 1] === nodes.length - 1) {
+                    last = true
+                  }
+                }
+                return [nodes, nodeInformation, indexList, last]
+
               }
               else {
                 i++;
-                nodes[req.body.indexList[i - 2]].nodes = deleteFromUser(i, nodes[req.body.indexList[i - 2]].nodes, req);
-                return nodes;
+                var responseArray = deleteFromUser(i, nodes[req.body.indexList[i - 2]].nodes, req);
+                if(responseArray[1] === null) {
+                  console.log("If it was the last in the list and the lower bars length is now zero then fall in here.");
+                  responseArray[1] = nodes[req.body.indexList[req.body.indexList.length - 2]];
+                  indexList = req.body.indexList;
+                  indexList.splice(req.body.depth -1, 1);
+                  responseArray[2] = indexList;
+                  if(indexList[req.body.depth - 2] === nodes.length - 1) {
+                    last = true;
+                    responseArray[3] = last;
+                  }
+                }
+                nodes[req.body.indexList[i - 2]].nodes = responseArray[0];
+                return [nodes, responseArray[1], responseArray[2], responseArray[3]];
               }
             }
-            user.nodes = deleteFromUser(i, user.nodes, req);
-            res.send({user: user.toJSON()});
+            var responseArray = deleteFromUser(i, user.nodes, req);
+            if(responseArray[0]) {
+              user.nodes = responseArray[0];
+              nodeInformation = responseArray[1];
+              indexList = responseArray[2];
+              last = responseArray[3];
+            }
+            else {
+              user.nodes = null;
+            }
+            res.send({user: user.toJSON(), nodeInformation: nodeInformation, indexList : indexList, last: last});
             ///////////////////////////////
           });
 

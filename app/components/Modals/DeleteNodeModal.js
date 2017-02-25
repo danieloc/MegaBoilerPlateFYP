@@ -30,7 +30,7 @@ class AddNodeModal extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(deleteNodeForm(this.props.user.email, this.props.node._id, this.props.indexList, this.props.depth, this.props.token));
+        this.props.dispatch(deleteNodeForm(this.props.user.email, this.props.node._id, this.props.indexList, this.props.depth, this.props.last,this.props.token));
         this.props.dispatch(hideModal());
     }
     render() {
@@ -64,7 +64,8 @@ const mapStateToProps = (state) => {
         token: state.auth.token,
         node: state.modals.node,
         indexList : state.modals.indexList,
-        depth : state.modals.addOrDeleteDepth
+        depth : state.modals.depth,
+        last : state.modals.last
     };
 };
 

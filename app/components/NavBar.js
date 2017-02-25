@@ -44,7 +44,7 @@ class NavBar extends React.Component {
     changeCurrentNode(i, node) {
         var newIndexList =  this.props.indexList;
         var last = false;
-        if( i === this.props.nodes.length - 1 && i>0) {
+        if( i === this.props.nodes.length - 1) {
             last = true;
         }
         if (this.state.depth === this.props.indexList.length) {
