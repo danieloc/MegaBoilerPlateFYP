@@ -694,7 +694,7 @@ function addToNode(i, nodes, req, parentID) {
   console.log("__________________________");
   if (i < req.body.depth) {
     i++;
-    parentID = nodes[req.body.indexList[i - 2]]._id;
+    parentID = nodes[req.body.indexList[i - 2]]._id.valueOf();
     console.log("Jedfas");
     var responseArray = addToNode(i, nodes[req.body.indexList[i - 2]].nodes, req, parentID);
     console.log("Jedfas");
@@ -719,7 +719,7 @@ function addToNode(i, nodes, req, parentID) {
       if (nodes.length !== 0) {
         nodes.push(singleNode);
         var indexList = req.body.indexList;
-        indexList[req.body.depth - 1] = nodes.length;
+        indexList[req.body.depth - 1] = nodes.length - 1;
         return [nodes, singleNode, indexList, true, req.body.depth];
       }
       else {
@@ -730,6 +730,8 @@ function addToNode(i, nodes, req, parentID) {
     }
     else {
       console.log("Problem should be here!!");
+      console.log(parentID);
+      console.log("___________________________");
       UserSchema.Node.findOne({_id: parentID})
           .then(function (node) {
             console.log("OLD NODES");
@@ -749,7 +751,7 @@ function addToNode(i, nodes, req, parentID) {
       if (i === depth) {
         if (depth < req.body.indexList.length) {
           indexList.splice[depth - 1, indexList.length - 1];
-          indexList[req.body.depth - 1] = nodes.length;
+          indexList[req.body.depth - 1] = nodes.length - 1;
         }
         if (depth === req.body.indexList.length) {
           indexList[req.body.depth - 1] = nodes.length;
