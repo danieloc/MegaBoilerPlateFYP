@@ -7,31 +7,23 @@ export function hideModal() {
     };
 }
 
-export function getAddNodeModal(parentName) {
+export function getAddNodeModal(depth) {
     return {
         type: 'NODE_MODAL',
-        parentName: parentName
+        depth : depth,
     };
 }
-export function getDeleteNodeModal(nodeName) {
+export function getDeleteNodeModal() {
     return {
         type: 'DELETE_NODE_MODAL',
-        nodeName: nodeName
     };
 }
-export function setParent(parentIndex, parentID, last) {
+export function setParent(node, indexList, depth,last) {
     return {
-        type: 'SET_PARENT_NODE',
-        parentIndex: parentIndex,
-        parentID: parentID,
-        lastParent: last,
-    }
-}
-export function setChild(childIndex, childID, last) {
-    return {
-        type: 'SET_CHILD_NODE',
-        childIndex: childIndex,
-        childID: childID,
-        lastChild: last,
-    }
+        type: 'SET_NODE',
+        node: node,
+        indexList: indexList,
+        last : last,
+        depth: depth
+    };
 }
