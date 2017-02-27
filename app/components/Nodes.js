@@ -48,10 +48,14 @@ class Nodes extends React.Component {
 
     getNavBars(node, depth) {
         var lowerNavBars = <div></div>;
-        var nodes = node.nodes;
-        if(nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth) {
-            lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]], depth + 1)
-        }
+        var nodes = null;
+            if(node) {
+                depth++;
+                nodes = node.nodes;
+                if (nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth) {
+                    lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]], depth)
+                }
+            }
         return <div><NavBar nodes = {nodes} depth = {depth}/> {lowerNavBars} </div>
     }
     render() {
@@ -65,7 +69,7 @@ class Nodes extends React.Component {
 
         return (
             <div>
-                {this.getNavBars(this.props.user, 1)}
+                {this.getNavBars(this.props.user, 0)}
                 <div className="panel-body">
                     {deleteNodeButton}
                     {addNodesForm}

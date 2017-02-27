@@ -30,7 +30,7 @@ class AddNodeModal extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(deleteNodeForm(this.props.user.email, this.props.node._id, this.props.indexList, this.props.depth, this.props.last,this.props.token));
+        this.props.dispatch(deleteNodeForm(this.props.user.email, this.props.node._id, this.props.indexList, this.props.indexList.length, this.props.last,this.props.token));
         this.props.dispatch(hideModal());
     }
     render() {

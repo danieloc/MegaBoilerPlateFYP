@@ -370,18 +370,31 @@ export function addNodeForm(email, name, indexList, depth, token) {
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
+
+          console.log("----------------ADD-RESPONSE-----------------------------------");
+          console.log("User");
+          console.log(json.user);
+          console.log("NodeInformaiton");
+          console.log(json.nodeInformation);
+          console.log("IndexList");
+          console.log(json.indexList);
+          console.log("Last");
+          console.log(json.last);
+          console.log("Depth");
+          console.log(json.depth);
+
+          dispatch({
+            type: 'SET_NODE',
+            node: json.nodeInformation,
+            indexList: json.indexList,
+            last: json.last,
+            depth: json.depth
+          });
             dispatch({
               type: 'ADD_NODE_SUCCESS',
               messages: 'The node was added successfully',
               user: json.user
             });
-          dispatch({
-            type: 'SET_NODE',
-            node: json.nodeInformation,
-            indexList: json.indexList,
-            last: true,
-            depth: depth
-          });
         });
       }
       else {
@@ -414,6 +427,15 @@ export function deleteNodeForm(email, nodeID, indexList, depth, last, token) {
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
+          console.log("----------------DELETE-RESPONSE-----------------------------------");
+          console.log("User");
+          console.log(json.user);
+          console.log("NodeInformaiton");
+          console.log(json.nodeInformation);
+          console.log("IndexList");
+          console.log(json.indexList);
+          console.log("Last");
+          console.log(json.last);
           var length = null;
           console.log(json.user);
           if(json.nodeInformation) {

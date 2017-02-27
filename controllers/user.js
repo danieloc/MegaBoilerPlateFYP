@@ -659,7 +659,6 @@ exports.addNode = function(req, res) {
   if (errors) {
     return res.status(400).send(errors);
   }
-  var nodeInformation = {};
   async.waterfall([
     function(done) {
       crypto.randomBytes(16, function(err, buf) {
@@ -670,53 +669,104 @@ exports.addNode = function(req, res) {
     function(token, done) {
       UserSchema.User.findOne({ email: req.body.email})
           .exec(function (err, user) {
-
-            ////////////////////////////////
             var i = 1;
-            function addToNode(i, nodes, req, parentID) {
-              if (i  < req.body.depth) {
-                i++;
-                parentID = nodes[req.body.indexList[i-2]]._id;
-                nodes[req.body.indexList[i-2]].nodes = addToNode(i, nodes[req.body.indexList[i - 2]].nodes, req, parentID);
-                return nodes;
-              }
-              else if(i === req.body.depth) {
-                var singleNode = new UserSchema.Node({
-                  name: req.body.nodeTitle,
-                  todos: [],
-                  nodes: [],
-                });
-                singleNode.save(function(err) {
-                  if (err)
-                    done(err, user);
-                });
-                if(!parentID) {
-                  return nodes.concat(singleNode);
-                }
-                else {
-                  UserSchema.Node.findOne({ _id : parentID})
-                      .exec( function (err, node) {
-                        node.nodes.push(singleNode._id);
-                        node.save(function(err) {
-                          if (err)
-                            done(err, user);
-                        });
-                      })
-                }
-                return nodes.push(singleNode);
-              }
-            }
-            user.nodes = addToNode(i, user.nodes, req, null);
-            ///////////////////////////////
-
+            var responseArray = addToNode(i, user.nodes, req, null);
+            user.nodes = responseArray[0];
+            var nodeInformation = responseArray[1];
+            var indexList = responseArray[2];
+            var isLast = responseArray[3];
+            var depth = responseArray[4];
+            console.log(user.nodes);
             user.save(function(err) {
-              if (err)
+              if (err) {
                 done(err, user);
+              }
             });
-            res.send({user: user.toJSON(), nodeInformation : nodeInformation});
+            res.send({user: user.toJSON(), nodeInformation : nodeInformation, indexList:indexList, last : isLast, depth : depth});
           });
     }]);
 };
+
+
+
+function addToNode(i, nodes, req, parentID) {
+  console.log(req.body.depth);
+  console.log("__________________________");
+  if (i < req.body.depth) {
+    i++;
+    parentID = nodes[req.body.indexList[i - 2]]._id;
+    console.log("Jedfas");
+    var responseArray = addToNode(i, nodes[req.body.indexList[i - 2]].nodes, req, parentID);
+    console.log("Jedfas");
+    nodes[req.body.indexList[i - 2]].nodes = responseArray[0];
+    var nodeInformation = responseArray[1];
+    var indexList = responseArray[2];
+    var isLast = responseArray[3];
+    var depth = responseArray[4];
+    return [nodes, nodeInformation, indexList, isLast, depth];
+
+    return nodes;
+  }
+  else if (i === req.body.depth) {
+    var singleNode = new UserSchema.Node({
+      name: req.body.nodeTitle,
+      todos: [],
+      nodes: [],
+    });
+    singleNode.save();
+    if (!parentID) {
+      console.log("Should not be in here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      if (nodes.length !== 0) {
+        nodes.push(singleNode);
+        var indexList = req.body.indexList;
+        indexList[req.body.depth - 1] = nodes.length;
+        return [nodes, singleNode, indexList, true, req.body.depth];
+      }
+      else {
+        nodes = [singleNode];
+        var indexList = [0];
+        return [nodes, singleNode, indexList, true, req.body.depth];
+      }
+    }
+    else {
+      console.log("Problem should be here!!");
+      UserSchema.Node.findOne({_id: parentID})
+          .then(function (node) {
+            console.log("OLD NODES");
+            console.log(node);
+            node.nodes.push(singleNode);
+            console.log("NEW NODES");
+            console.log(node);
+            return node;
+          }).then(function (node) {
+        node.save();
+      });
+      var islast = true;
+      var depth = req.body.depth;
+      console.log("depth");
+      console.log(depth);
+      var indexList = req.body.indexList;
+      if (i === depth) {
+        if (depth < req.body.indexList.length) {
+          indexList.splice[depth - 1, indexList.length - 1];
+          indexList[req.body.depth - 1] = nodes.length;
+        }
+        if (depth === req.body.indexList.length) {
+          indexList[req.body.depth - 1] = nodes.length;
+        }
+        else {
+          indexList.push(nodes.length)
+        }
+        nodes.push(singleNode);
+        return [nodes, singleNode, indexList, islast, depth];
+      }
+    }
+  }
+}
+
+
+
+
 /**
  * DELETE /nodes
  */
@@ -750,8 +800,9 @@ exports.deleteNode = function(req, res) {
                 console.log("NodeLength");
                 console.log(nodes.length);
                 nodes.splice(req.body.indexList[req.body.depth - 1], 1);
-                if(req.body.depth === 1 && nodes.length === 1) {
-                  return [nodes, null, [0], null];
+                console.log(nodes);
+                if(req.body.depth === 1 && nodes.length === 0) {
+                  return [nodes, null, [0], true];
                 }
                 if(req.body.last && nodes.length > 0) {
                   console.log("If it's the last Node in the list and there is more than one in the list");

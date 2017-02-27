@@ -30,9 +30,6 @@ class AddNodeModal extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        console.log(this.state.name);
-        console.log(this.props.indexList);
-        console.log(this.props.depth);
         this.props.dispatch(addNodeForm(this.props.user.email, this.state.name,this.props.indexList, this.props.depth,  this.props.token));
         this.props.dispatch(hideModal());
     }
