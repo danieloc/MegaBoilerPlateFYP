@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');
 var moment = require('moment');
 var request = require('request');
 var qs = require('querystring');
-var User = require('../models/User');
+var UserSchema = require('../models/User');
 
 function generateToken(user) {
   var payload = {
@@ -43,7 +43,7 @@ exports.loginPost = function(req, res, next) {
     return res.status(400).send(errors);
   }
 
-  User.findOne({ email: req.body.email }, function(err, user) {
+  UserSchema.User.findOne({ email: req.body.email }, function(err, user) {
     if (!user) {
       return res.status(401).send({ msg: 'The email address ' + req.body.email + ' is not associated with any account. ' +
       'Double-check your email address and try again.'
@@ -74,11 +74,11 @@ exports.signupPost = function(req, res, next) {
     return res.status(400).send(errors);
   }
 
-  User.findOne({ email: req.body.email }, function(err, user) {
+  UserSchema.User.findOne({ email: req.body.email }, function(err, user) {
     if (user) {
       return res.status(400).send({ msg: 'The email address you have entered is already associated with another account.' });
     }
-    user = new User({
+    user = new UserSchema.User({
       name: req.body.name,
       email: req.body.email,
       password: req.body.password
@@ -110,7 +110,7 @@ exports.accountPut = function(req, res, next) {
     return res.status(400).send(errors);
   }
 
-  User.findById(req.user.id, function(err, user) {
+  UserSchema.User.findById(req.user.id, function(err, user) {
     if ('password' in req.body) {
       user.password = req.body.password;
     } else {
@@ -136,7 +136,7 @@ exports.accountPut = function(req, res, next) {
  * DELETE /account
  */
 exports.accountDelete = function(req, res, next) {
-  User.remove({ _id: req.user.id }, function(err) {
+  UserSchema.User.remove({ _id: req.user.id }, function(err) {
     res.send({ msg: 'Your account has been permanently deleted.' });
   });
 };
@@ -145,7 +145,7 @@ exports.accountDelete = function(req, res, next) {
  * GET /unlink/:provider
  */
 exports.unlink = function(req, res, next) {
-  User.findById(req.user.id, function(err, user) {
+  UserSchema.User.findById(req.user.id, function(err, user) {
     switch (req.params.provider) {
       case 'facebook':
         user.facebook = undefined;
@@ -190,7 +190,7 @@ exports.forgotPost = function(req, res, next) {
       });
     },
     function(token, done) {
-      User.findOne({ email: req.body.email }, function(err, user) {
+      UserSchema.User.findOne({ email: req.body.email }, function(err, user) {
         if (!user) {
           return res.status(400).send({ msg: 'The email address ' + req.body.email + ' is not associated with any account.' });
         }
@@ -241,7 +241,7 @@ exports.resetPost = function(req, res, next) {
 
   async.waterfall([
     function(done) {
-      User.findOne({ passwordResetToken: req.params.token })
+      UserSchema.User.findOne({ passwordResetToken: req.params.token })
           .where('passwordResetExpires').gt(Date.now())
           .exec(function(err, user) {
             if (!user) {
@@ -307,7 +307,7 @@ exports.authFacebook = function(req, res) {
 
       // Step 3a. Link accounts if user is authenticated.
       if (req.isAuthenticated()) {
-        User.findOne({ facebook: profile.id }, function(err, user) {
+        UserSchema.User.findOne({ facebook: profile.id }, function(err, user) {
           if (user) {
             return res.status(409).send({ msg: 'There is already an existing account linked with Facebook that belongs to you.' });
           }
@@ -322,15 +322,15 @@ exports.authFacebook = function(req, res) {
         });
       } else {
         // Step 3b. Create a new user account or return an existing one.
-        User.findOne({ facebook: profile.id }, function(err, user) {
+        UserSchema.User.findOne({ facebook: profile.id }, function(err, user) {
           if (user) {
             return res.send({ token: generateToken(user), user: user });
           }
-          User.findOne({ email: profile.email }, function(err, user) {
+          UserSchema.User.findOne({ email: profile.email }, function(err, user) {
             if (user) {
               return res.status(400).send({ msg: user.email + ' is already associated with another account.' })
             }
-            user = new User({
+            user = new UserSchema.User({
               name: profile.name,
               email: profile.email,
               gender: profile.gender,
@@ -379,7 +379,7 @@ exports.authGoogle = function(req, res) {
       }
       // Step 3a. Link accounts if user is authenticated.
       if (req.isAuthenticated()) {
-        User.findOne({ google: profile.sub }, function(err, user) {
+        UserSchema.User.findOne({ google: profile.sub }, function(err, user) {
           if (user) {
             return res.status(409).send({ msg: 'There is already an existing account linked with Google that belongs to you.' });
           }
@@ -395,11 +395,11 @@ exports.authGoogle = function(req, res) {
         });
       } else {
         // Step 3b. Create a new user account or return an existing one.
-        User.findOne({ google: profile.sub }, function(err, user) {
+        UserSchema.User.findOne({ google: profile.sub }, function(err, user) {
           if (user) {
             return res.send({ token: generateToken(user), user: user });
           }
-          user = new User({
+          user = new UserSchema.User({
             name: profile.name,
             email: profile.email,
             gender: profile.gender,
@@ -447,7 +447,7 @@ exports.addTodos = function(req, res) {
       if(req.body.goalTitle.length < 1) {
         return res.status(400).send({ msg: 'You have not given your goal a title!' });
       }
-      User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             var found = false;
             var nodeIndex = 0;
@@ -463,16 +463,16 @@ exports.addTodos = function(req, res) {
             }
             if(req.body.childID) {
               found = false;
-              while (subNodeIndex < node.subnodes.length && !found) {
-                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+              while (subNodeIndex < node.nodes.length && !found) {
+                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
                   found = true;
                 } else {
                   subNodeIndex++;
                 }
               }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
               //I've used the same var name node to avoid duplicate code in this API.
-              node = node.subnodes[subNodeIndex];
+              node = node.nodes[subNodeIndex];
             }
             Promise.all(node.todos.map(function (todo) {
               if (todo.name.toLowerCase() === req.body.goalTitle.toLowerCase()) {
@@ -488,7 +488,7 @@ exports.addTodos = function(req, res) {
               });
             }
             else {
-              user.nodes[nodeIndex].subnodes[subNodeIndex].todos.push({
+              user.nodes[nodeIndex].nodes[subNodeIndex].todos.push({
                 name: req.body.goalTitle,
                 priority: req.body.goalPriority,
                 completed: false
@@ -515,7 +515,7 @@ exports.deleteToDo = function(req, res) {
       });
     },
     function(token, done) {
-      User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             var found = false;
             var nodeIndex = 0;
@@ -531,16 +531,16 @@ exports.deleteToDo = function(req, res) {
             }
             if(req.body.childID) {
               found = false;
-              while (subNodeIndex < node.subnodes.length && !found) {
-                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+              while (subNodeIndex < node.nodes.length && !found) {
+                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
                   found = true;
                 } else {
                   subNodeIndex++;
                 }
               }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
               //I've used the same var name node to avoid duplicate code in this API.
-              node = node.subnodes[subNodeIndex];
+              node = node.nodes[subNodeIndex];
             }
             if(!found){
               return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
@@ -563,7 +563,7 @@ exports.deleteToDo = function(req, res) {
               user.nodes[nodeIndex].todos = arr;
             }
             else {
-              user.nodes[nodeIndex].subnodes[subNodeIndex].todos = arr;
+              user.nodes[nodeIndex].nodes[subNodeIndex].todos = arr;
             }
             user.save(function (err) {
               done(err, user);
@@ -582,7 +582,7 @@ exports.updateToDos = function(req, res) {
       });
     },
     function(token, done) {
-      User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
             var found = false;
             var nodeIndex = 0;
@@ -598,16 +598,16 @@ exports.updateToDos = function(req, res) {
             }
             if(req.body.childID) {
               found = false;
-              while (subNodeIndex < node.subnodes.length && !found) {
-                if (node.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
+              while (subNodeIndex < node.nodes.length && !found) {
+                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
                   found = true;
                 } else {
                   subNodeIndex++;
                 }
               }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
+              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
               //I've used the same var name node to avoid duplicate code in this API.
-              node = node.subnodes[subNodeIndex];
+              node = node.nodes[subNodeIndex];
             }
             if(!found){
               return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
@@ -635,7 +635,7 @@ exports.updateToDos = function(req, res) {
               user.nodes[nodeIndex].todos = arr;
             }
             else {
-              user.nodes[nodeIndex].subnodes[subNodeIndex].todos = arr;
+              user.nodes[nodeIndex].nodes[subNodeIndex].todos = arr;
             }
             user.save(function (err) {
               done(err, user);
@@ -659,7 +659,6 @@ exports.addNode = function(req, res) {
   if (errors) {
     return res.status(400).send(errors);
   }
-  var nodeInformation = {};
   async.waterfall([
     function(done) {
       crypto.randomBytes(16, function(err, buf) {
@@ -668,79 +667,107 @@ exports.addNode = function(req, res) {
       });
     },
     function(token, done) {
-      User.findOne({ email: req.body.email})
+      UserSchema.User.findOne({ email: req.body.email})
           .exec(function (err, user) {
-            var found = false;
-            if (req.body.parentName !== null) {
-              var parentIndex = 0;
-              //There should be a forEach loop here instead of a while loop. I had to replace it because it was asyncronous
-              //and would result in the parentIndex not incrementing correctly.
-              user.nodes.forEach(function (node, i) {
-                if (node.name.toLowerCase() === req.body.parentName.toLowerCase()) {
-                  parentIndex =i;
-                  node.subnodes.forEach(function (subNode) {
-                    if (subNode.name.toLowerCase() == req.body.nodeTitle.toLowerCase()) {
-                      found = true;
-                      return res.status(400).send({msg: 'There is already a subNode with this title'});
-                    }
-                  });
-                  if(!found) {
-                    node.subnodes.push({
-                      name: req.body.nodeTitle,
-                      todos: []
-                    });
-                  }
-                }
-              });
-            }
-            else {
-              user.nodes.forEach(function (node) {
-                if (node.name.toLowerCase() == req.body.nodeTitle.toLowerCase()) {
-                  found = true;
-                  return res.status(400).send({msg: 'There is already a Node with this title'});
-                }
-              });
-              if(!found) {
-                user.nodes.push({
-                  name: req.body.nodeTitle,
-                  todos: [],
-                  subnodes: [],
-                });
-                nodeInformation.childID = null;
-                nodeInformation.lastChild = false;
-                nodeInformation.childIndex = null;
-              }
-            }
-
+            var i = 1;
+            var responseArray = addToNode(i, user.nodes, req, null);
+            user.nodes = responseArray[0];
+            var nodeInformation = responseArray[1];
+            var indexList = responseArray[2];
+            var isLast = responseArray[3];
+            var depth = responseArray[4];
+            console.log(user.nodes);
             user.save(function(err) {
-              if (err)
+              if (err) {
                 done(err, user);
+              }
             });
-            if(!req.body.parentName) {
-              nodeInformation.parentID = user.nodes[user.nodes.length -1]._id;
-              nodeInformation.parentIndex = user.nodes.length -1;
-              if(user.nodes.length > 1) {
-                nodeInformation.lastParent = true;
-              }
-              else {
-                nodeInformation.lastParent = false;
-              }
-            }
-            if(req.body.parentName) {
-              nodeInformation.parentIndex = parentIndex;
-              nodeInformation.childIndex = user.nodes[parentIndex].subnodes.length -1;
-              nodeInformation.childID = user.nodes[parentIndex].subnodes[nodeInformation.childIndex]._id;
-              if(user.nodes[parentIndex].subnodes.length > 1) {
-                nodeInformation.lastParent = true;
-              }
-              else {
-                nodeInformation.lastParent = false;
-              }
-            }
-            res.send({user: user.toJSON(), nodeInformation : nodeInformation});
+            res.send({user: user.toJSON(), nodeInformation : nodeInformation, indexList:indexList, last : isLast, depth : depth});
           });
     }]);
 };
+
+
+
+function addToNode(i, nodes, req, parentID) {
+  console.log(req.body.depth);
+  console.log("__________________________");
+  if (i < req.body.depth) {
+    i++;
+    parentID = nodes[req.body.indexList[i - 2]]._id.valueOf();
+    console.log("Jedfas");
+    var responseArray = addToNode(i, nodes[req.body.indexList[i - 2]].nodes, req, parentID);
+    console.log("Jedfas");
+    nodes[req.body.indexList[i - 2]].nodes = responseArray[0];
+    var nodeInformation = responseArray[1];
+    var indexList = responseArray[2];
+    var isLast = responseArray[3];
+    var depth = responseArray[4];
+    return [nodes, nodeInformation, indexList, isLast, depth];
+
+    return nodes;
+  }
+  else if (i === req.body.depth) {
+    var singleNode = new UserSchema.Node({
+      name: req.body.nodeTitle,
+      todos: [],
+      nodes: [],
+    });
+    singleNode.save();
+    if (!parentID) {
+      console.log("Should not be in here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      if (nodes.length !== 0) {
+        nodes.push(singleNode);
+        var indexList = req.body.indexList;
+        indexList[req.body.depth - 1] = nodes.length - 1;
+        return [nodes, singleNode, indexList, true, req.body.depth];
+      }
+      else {
+        nodes = [singleNode];
+        var indexList = [0];
+        return [nodes, singleNode, indexList, true, req.body.depth];
+      }
+    }
+    else {
+      console.log("Problem should be here!!");
+      console.log(parentID);
+      console.log("___________________________");
+      UserSchema.Node.findOne({_id: parentID})
+          .then(function (node) {
+            console.log("OLD NODES");
+            console.log(node);
+            node.nodes.push(singleNode);
+            console.log("NEW NODES");
+            console.log(node);
+            return node;
+          }).then(function (node) {
+        node.save();
+      });
+      var islast = true;
+      var depth = req.body.depth;
+      console.log("depth");
+      console.log(depth);
+      var indexList = req.body.indexList;
+      if (i === depth) {
+        if (depth < req.body.indexList.length) {
+          indexList.splice[depth - 1, indexList.length - 1];
+          indexList[req.body.depth - 1] = nodes.length - 1;
+        }
+        if (depth === req.body.indexList.length) {
+          indexList[req.body.depth - 1] = nodes.length;
+        }
+        else {
+          indexList.push(nodes.length)
+        }
+        nodes.push(singleNode);
+        return [nodes, singleNode, indexList, islast, depth];
+      }
+    }
+  }
+}
+
+
+
 
 /**
  * DELETE /nodes
@@ -755,113 +782,82 @@ exports.deleteNode = function(req, res) {
       });
     },
     function(token, done) {
-      User.findOne({  email: req.body.email  })
+
+      UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            var found = false;
-            var nodeIndex = 0;
-            var nodes;
-            while (nodeIndex < user.nodes.length && !found) {
-              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
-                if(req.body.childID) {
-                  nodes = user.nodes[nodeIndex];
+            ////////////////////////////////
+            var i = 1;
+            var nodeInformation = null;
+            var indexList = null;
+            var last = false;
+            function deleteFromUser(i, nodes, req) {
+              var nodeInformation = null;
+              var indexList = null;
+              var last = false;
+              if (i === req.body.depth) {
+                UserSchema.Node.findOne({_id: req.body._id})
+                    .remove()
+                    .exec(function (err, node) {
+                    });
+                console.log("NodeLength");
+                console.log(nodes.length);
+                nodes.splice(req.body.indexList[req.body.depth - 1], 1);
+                console.log(nodes);
+                if(req.body.depth === 1 && nodes.length === 0) {
+                  return [nodes, null, [0], true];
                 }
-                else {
-                  nodes = user.nodes;
-                  nodes.splice((nodeIndex), 1);
+                if(req.body.last && nodes.length > 0) {
+                  console.log("If it's the last Node in the list and there is more than one in the list");
+                  nodeInformation = nodes[nodes.length - 1];
+                  indexList = req.body.indexList;
+                  indexList[req.body.depth -1] = req.body.indexList[req.body.depth -1] - 1;
+                  if(indexList[req.body.depth - 1] === nodes.length - 1) {
+                    last = true
+                  }
                 }
-                found = true;
-              } else {
-                nodeIndex++;
-              }
-            }
-            if(req.body.childID) {
-              var subNodeIndex = 0;
-              found = false;
-              while (subNodeIndex < nodes.subnodes.length && !found) {
-                if (nodes.subnodes[subNodeIndex]._id.equals(req.body.childID)) {
-                  found = true;
-                } else {
-                  subNodeIndex++;
+                if(!req.body.last && nodes.length > 0) {
+                  console.log("If it's not the last Node in the list and there is more than one in the list");
+                  nodeInformation = nodes[req.body.indexList[req.body.indexList.length - 1]];
+                  indexList = req.body.indexList;
+                  if(indexList[req.body.depth - 1] === nodes.length - 1) {
+                    last = true
+                  }
                 }
-              }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the subnodes of the subnode causing an error.
-              //I've used the same var name node to avoid duplicate code in this API.
-              if(!found){
-                return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
+                return [nodes, nodeInformation, indexList, last]
+
               }
               else {
-                nodes.subnodes.splice((subNodeIndex), 1);
+                i++;
+                var responseArray = deleteFromUser(i, nodes[req.body.indexList[i - 2]].nodes, req);
+                if(responseArray[1] === null) {
+                  console.log("If it was the last in the list and the lower bars length is now zero then fall in here.");
+                  responseArray[1] = nodes[req.body.indexList[req.body.indexList.length - 2]];
+                  indexList = req.body.indexList;
+                  indexList.splice(req.body.depth -1, 1);
+                  responseArray[2] = indexList;
+                  if(indexList[req.body.depth - 2] === nodes.length - 1) {
+                    last = true;
+                    responseArray[3] = last;
+                  }
+                }
+                nodes[req.body.indexList[i - 2]].nodes = responseArray[0];
+                return [nodes, responseArray[1], responseArray[2], responseArray[3]];
               }
             }
-            if(!req.body.childID) {
-              user.nodes = nodes;
+            var responseArray = deleteFromUser(i, user.nodes, req);
+            if(responseArray[0]) {
+              user.nodes = responseArray[0];
+              nodeInformation = responseArray[1];
+              indexList = responseArray[2];
+              last = responseArray[3];
             }
             else {
-              user.nodes[nodeIndex] = nodes;
+              user.nodes = null;
             }
-            var nodeInformation = {};
-            if(!req.body.childID) {
-              nodeInformation.childID = null;
-              nodeInformation.lastChild = false;
-              nodeInformation.childIndex = null;
-              if (user.nodes.length < 1) {
-                nodeInformation.parentIndex = null;
-                nodeInformation.parentID = null;
-                nodeInformation.lastParent = false;
-              }
-              else if (user.nodes.length === 1) {
-                nodeInformation.parentIndex = 0;
-                nodeInformation.parentID = user.nodes[0]._id;
-                nodeInformation.lastParent = false;
-              }
-              else if (nodeIndex < user.nodes.length) {
-                nodeInformation.parentIndex = nodeIndex;
-                nodeInformation.parentID = user.nodes[nodeIndex]._id;
-                if(nodeIndex === user.nodes.length - 1) {
-                  nodeInformation.lastParent = true;
-                }
-                else {
-                  nodeInformation.lastParent = false;
-                }
-              }
-              else if (nodeIndex === user.nodes.length) {
-                nodeInformation.parentIndex = nodeIndex - 1;
-                nodeInformation.parentID = user.nodes[nodeIndex - 1]._id;
-                nodeInformation.lastParent = true;
-              }
-            }
-            else if(req.body.childID) {
-              if (user.nodes[nodeIndex].subnodes.length < 1) {
-                nodeInformation.childIndex = null;
-                nodeInformation.childID = null;
-                nodeInformation.lastChild = false;
-              }
-              else if (user.nodes[nodeIndex].subnodes.length === 1) {
-                nodeInformation.childIndex = 0;
-                nodeInformation.childID = user.nodes[nodeIndex].subnodes[0]._id;
-                nodeInformation.lastChild = false;
-              }
-              else if (subNodeIndex < user.nodes[nodeIndex].subnodes.length) {
-                nodeInformation.childIndex = subNodeIndex;
-                nodeInformation.childID = user.nodes[nodeIndex].subnodes[subNodeIndex]._id;
-                if(subNodeIndex === user.nodes[nodeIndex].subnodes.length - 1) {
-                  nodeInformation.lastChild = true;
-                }
-                else {
-                  nodeInformation.lastChild = false;
-                }
-              }
-              else if (subNodeIndex ===  user.nodes[nodeIndex].subnodes.length) {
-                nodeInformation.childIndex = subNodeIndex - 1;
-                nodeInformation.childID = user.nodes[nodeIndex].subnodes[subNodeIndex - 1]._id;
-                nodeInformation.lastChild = true;
-              }
-            }
-
-            user.save(function (err) {
-              done(err, user);
-            });
-            res.send({user: user.toJSON(), nodeInformation:nodeInformation});
+            res.send({user: user.toJSON(), nodeInformation: nodeInformation, indexList : indexList, last: last});
+            ///////////////////////////////
           });
+
+
     }]);
 };

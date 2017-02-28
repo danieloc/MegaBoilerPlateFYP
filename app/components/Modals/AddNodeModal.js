@@ -21,7 +21,7 @@ class AddNodeModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            node : ''
+            name : ''
         };
     }
     handleChange(event) {
@@ -30,22 +30,21 @@ class AddNodeModal extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(addNodeForm(this.props.user.email, this.props.parentName, this.state.node, this.props.token));
+        this.props.dispatch(addNodeForm(this.props.user.email, this.state.name,this.props.indexList, this.props.depth,  this.props.token));
         this.props.dispatch(hideModal());
     }
     render() {
-        const modalTitle = this.props.parentName ? (<legend>Adding a subNode for : {this.props.parentName}</legend>) : (<h1>Adding a top level node</h1>);
         return (
             <ModalWrapper {...this.props}
                 title="Add Node"
                 width={400}
                 showOk={false}
             >
-                {modalTitle}
+                <legend>Adding a Node to level : {this.props.depth}</legend>
                 <form onSubmit={this.handleReset.bind(this)}>
                     <div className="form-group">
-                        <label htmlFor="node">New Node</label>
-                        <input name = "node" id="node" placeholder="New Node" className="form-control" autoFocus value={this.state.goal} onChange={this.handleChange.bind(this)}/>
+                        <label htmlFor="name">New Node</label>
+                        <input name = "name" id="name" placeholder="New Node" className="form-control" autoFocus value={this.state.name} onChange={this.handleChange.bind(this)}/>
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-success">Add node</button>
@@ -62,7 +61,9 @@ const mapStateToProps = (state) => {
     return {
         user : state.auth.user,
         token: state.auth.token,
-        parentName: state.modals.parentName,
+        node: state.modals.node,
+        indexList: state.modals.indexList,
+        depth : state.modals.depth
     };
 };
 
