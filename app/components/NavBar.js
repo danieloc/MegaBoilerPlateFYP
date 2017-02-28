@@ -4,88 +4,78 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
-import { getAddNodeModal, setParent} from '../actions/modals';
+import { getAddNodeModal, setParent, setChild } from '../actions/modals';
 
 class NavBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            depth : props.depth
-        }
-    }
 
     addNodeModal() {
-        this.props.dispatch(getAddNodeModal(this.state.depth));
+        if(this.props.subNode) {
+            this.props.dispatch(getAddNodeModal(this.props.name));
+        }
+        else {
+            this.props.dispatch(getAddNodeModal(null));
+        }
     }
 
 
     getNodes() {
-        if(this.props.nodes && this.props.nodes.length > 0 && this.props.node) {
-            return this.props.nodes.map((node, i) => {
-                var className = "inActive";
-                if(this.state.depth < this.props.indexList.length) {
-                    if(this.props.indexList[this.state.depth -1] === i)
-                    {
-                        className = "active"
+        console.log(this.props.subNode);
+        if(this.props.nodes.length > 0) {
+                return this.props.nodes.map((node, i) => {
+                    var className = "inActive";
+                    if(!this.props.subNode) {
+                        className = this.props.parentID === node._id ? "active" : "inActive";
                     }
-                }
-                else {
-                    className = this.props.node._id === node._id ? "active" : "inActive";
-                }
-                return <li className={className} key={i} value={i}
-                           onClick={() => this.changeCurrentNode(i, node)}><Link>{node.name}</Link></li>
-            });
+                    else if(this.props.subNode){
+                        className = this.props.childID === node._id ? "active" : "inActive";
+                    }
+                    return <li className={className} key={i} value={i}
+                               onClick={() => this.changeCurrentNode(i, node._id)}><Link>{node.name}</Link></li>
+                });
         }
         else {
             return []
         }
     }
 
-    changeCurrentNode(i, node) {
-        var newIndexList =  this.props.indexList;
+    changeCurrentNode(i, nodeID) {
+        //Adding variable last because, there is no connection between the modal and view other than the modal reducer.
+        //This reducer does not have access to the user reducer, but needs to change when the nodes is deleted so that
+        //the nodes page does not try to get index n+1 when only n index's exist
         var last = false;
-        if( i === this.props.nodes.length - 1) {
+        if( i === this.props.nodes.length - 1 && i>0) {
             last = true;
         }
-        if (this.state.depth === this.props.indexList.length) {
-            newIndexList[this.state.depth -1] = i;
-            this.props.dispatch(setParent(node, newIndexList, this.state.depth,last));
-        }
-        else if(this.state.depth > this.props.indexList.length ) {
-            newIndexList.push(i);
-            this.props.dispatch(setParent(node, newIndexList,this.state.depth, last));
+        if(this.props.subNode) {
 
+            this.props.dispatch(setChild(i, nodeID, last));
         }
         else {
-            while(newIndexList.length >= this.state.depth) {
-                newIndexList.pop();
-            }
-            newIndexList[this.state.depth - 1] = i;
-            console.log(newIndexList);
-            this.props.dispatch(setParent(node, newIndexList, this.state.depth, last));
-            console.log(this.props.indexList);
+            this.props.dispatch(setParent(i, nodeID, last));
         }
     }
 
     render() {
         return (
-            <div>
-                <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}} >
-                    <div id="navbar" className="navbar-collapse collapse">
-                        <ul className="nav navbar-nav">
-                            {this.getNodes()}
-                            <li><Link onClick={() => this.addNodeModal(this.state.depth)}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
-                        </ul>
-                    </div>
-                </nav>
-            </div>
+        <div>
+            <nav className="navbar navbar-default navbar-static-top" style={{zIndex:1}} >
+                <div id="navbar" className="navbar-collapse collapse">
+                    <ul className="nav navbar-nav">
+                        {this.getNodes()}
+                        <li><Link onClick={() => this.addNodeModal()}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
         )
     }
 }
 const mapStateToProps =(state) => {
     return {
-        node : state.modals.node,
-        indexList : state.modals.indexList
+        parentIndex : state.modals.parentIndex,
+        childIndex : state.modals.childIndex,
+        parentID: state.modals.parentID,
+        childID: state.modals.childID,
     }
 }
 

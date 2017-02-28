@@ -27,7 +27,7 @@ require('babel-core/register');
 require('babel-polyfill');
 
 // Models
-var UserSchema = require('./models/User');
+var User = require('./models/User');
 
 // Controllers
 var userController = require('./controllers/user');
@@ -87,7 +87,7 @@ app.use(function(req, res, next) {
 
   if (req.isAuthenticated()) {
     var payload = req.isAuthenticated();
-    UserSchema.User.findById(payload.sub, function(err, user) {
+    User.findById(payload.sub, function(err, user) {
       req.user = user;
       next();
     });
