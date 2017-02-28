@@ -28,13 +28,13 @@ class Mindmap extends React.Component {
                     'name': node.name,
                     'target': [0]
                 };
-                if (node.subnodes && node.subnodes.length > 0) {
+                if (node.nodes && node.nodes.length > 0) {
                     singleNodeData = {
                         'name': node.name,
                         'target': [0],
                         'subDocs': [{'name': node.name}]
                     };
-                    var subNodes = getData(node.subnodes);
+                    var subNodes = getData(node.nodes);
                     singleNodeData.subDocs = _.concat(singleNodeData, subNodes);
                 }
                 if(nodeData === null) {

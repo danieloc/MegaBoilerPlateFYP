@@ -30,7 +30,7 @@ class AddNodeModal extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(deleteNodeForm(this.props.user.email, this.props.parentID, this.props.childID, this.props.token));
+        this.props.dispatch(deleteNodeForm(this.props.user.email, this.props.node._id, this.props.indexList, this.props.indexList.length, this.props.last,this.props.token));
         this.props.dispatch(hideModal());
     }
     render() {
@@ -43,7 +43,7 @@ class AddNodeModal extends React.Component {
                 <form onSubmit={this.handleReset.bind(this)}>
                     <div className="form-group">
                         <label htmlFor="node">Are you sure you want to delete this node?</label>
-                        <h3>Node Name: {this.props.nodeName}</h3>
+                        <h3>Node Name: {this.props.node.name}</h3>
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-success">Confirm</button>
@@ -62,9 +62,10 @@ const mapStateToProps = (state) => {
     return {
         user : state.auth.user,
         token: state.auth.token,
-        parentID: state.modals.parentID,
-        childID: state.modals.childID,
-        nodeName: state.modals.nodeName
+        node: state.modals.node,
+        indexList : state.modals.indexList,
+        depth : state.modals.depth,
+        last : state.modals.last
     };
 };
 

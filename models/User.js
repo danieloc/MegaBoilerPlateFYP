@@ -1,6 +1,7 @@
 var crypto = require('crypto');
 var bcrypt = require('bcrypt-nodejs');
 var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 
 var schemaOptions = {
   timestamps: true,
@@ -9,31 +10,23 @@ var schemaOptions = {
   }
 };
 
+var todoSchema = new mongoose.Schema({
+  name: String,
+  priority: String,
+  completed: Boolean
+});
+
+var nodeSchema = new mongoose.Schema({
+  name: String,
+  todos: [{type: mongoose.Schema.Types.ObjectId, ref: 'ToDo'}],
+  nodes:[{type: mongoose.Schema.Types.ObjectId, ref: 'Node'}],
+});
+
 var userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true},
   password: String,
-  nodes: [{
-    name: String,
-    todos:[{
-      name: String,
-      priority: String,
-      completed: Boolean
-    }],
-    subnodes: [{
-      name: String,
-      todos: [{
-        name: String,
-        priority: String,
-        completed: Boolean
-      }]
-    }]
-  }],
-  goals: [{
-    goal: String,
-    priority: String,
-    completed: Boolean
-  }],
+  nodes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Node'}],
   passwordResetToken: String,
   passwordResetExpires: Date,
   gender: String,
@@ -46,7 +39,26 @@ var userSchema = new mongoose.Schema({
   vk: String
 }, schemaOptions);
 
-userSchema.pre('save', function(next) {
+
+var autoPopulateNodeSchema = function(next) {
+  this.populate('nodes');
+  this.populate('todos');
+  next();
+};
+
+var autoPopulateUserSchema = function(next) {
+  this.populate('nodes');
+  next();
+};
+
+nodeSchema
+    .pre('findOne', autoPopulateNodeSchema)
+    .pre('find', autoPopulateNodeSchema);
+
+userSchema
+    .pre('findOne', autoPopulateUserSchema)
+    .pre('find', autoPopulateUserSchema)
+    .pre('save', function(next) {
   var user = this;
   if (!user.isModified('password')) { return next(); }
   bcrypt.genSalt(10, function(err, salt) {
@@ -71,6 +83,10 @@ userSchema.virtual('gravatar').get(function() {
   return 'https://gravatar.com/avatar/' + md5 + '?s=200&d=retro';
 });
 
+var ToDo = mongoose.model('ToDo', todoSchema);
+var Node = mongoose.model('Node', nodeSchema);
 var User = mongoose.model('User', userSchema);
 
-module.exports = User;
+module.exports = {
+  User : User, Node : Node, ToDo : ToDo
+};
