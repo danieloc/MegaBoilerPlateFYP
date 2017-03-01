@@ -11,7 +11,8 @@ class Mindmap extends React.Component {
     constructor(props) {
         super(props);
         var data = [{
-            "name": this.props.user.name
+            "name": this.props.user.name,
+            "img" : this.props.user.picture
         }];
         if(this.props.user.nodes.length > 0) {
             var nodeData = getData(this.props.user.nodes);
@@ -26,7 +27,7 @@ class Mindmap extends React.Component {
             nodes.forEach(function (node) {
                 var singleNodeData = {
                     'name': node.name,
-                    'target': [0]
+                    'target': [0],
                 };
                 if (node.nodes && node.nodes.length > 0) {
                     singleNodeData = {

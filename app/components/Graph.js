@@ -43,7 +43,6 @@ class Graph extends React.Component {
         function calculateEverything(Obj, nodes, displayedNodes, isInner, palette) {
 
             var links = [];
-            console.log('Going to Calculate everything!!');
             var w = Obj.props.width,
                 h = Obj.props.height;
             var gravity = 0.02;
@@ -80,10 +79,15 @@ class Graph extends React.Component {
                 .size([w, h]);
 
 
+            var path = myChart.selectAll("path.link")
+                .data(links);
+
             //Add visable lines to the data links
-            var link = myChart.selectAll('line')
-                .data(links).enter().append('line')
-                .attr('stroke', palette.white);
+            var link =path.enter().append('svg:path')
+                .attr("fill", "none")
+                .attr("stroke-width", 5)
+                .style("stroke", "#eee");
+
 
             var node = myChart.selectAll('circle')
                 .data(displayedNodes).enter()
@@ -145,7 +149,7 @@ class Graph extends React.Component {
             force.linkDistance(w / 2);
 
 
-            node.append('circle')
+            node.append("circle")
                 .attr('r', circleWidth)
                 .attr('stroke', function (d, i) {
                     if (i > 0) {
@@ -163,9 +167,19 @@ class Graph extends React.Component {
                     }
                 })
 
+            node.append("svg:image")
+                .attr("xlink:href",  function(d) { return d.img;})
+                .attr("x", function(d) { return -25;})
+                .attr("y", function(d) { return -25;})
+                .attr("height", 50)
+                .attr("width", 50);
+
             node.append('text')
-                .text(function (d) {
-                    return d.name
+                .text(function (d, i) {
+                    if(i >0)
+                        return d.name;
+                    else
+                        return "";
                 })
                 .attr('font-family', 'Roboto Slab')
                 .attr('fill',palette.white)
@@ -204,20 +218,18 @@ class Graph extends React.Component {
                 node.attr('transform', function (d, i) {
                     return 'translate(' + d.x + ', ' + d.y + ')';
                 })
+                path.attr("d", function(d) {
 
-                link
-                    .attr('x1', function (d) {
-                        return d.source.x
-                    })
-                    .attr('y1', function (d) {
-                        return d.source.y
-                    })
-                    .attr('x2', function (d) {
-                        return d.target.x
-                    })
-                    .attr('y2', function (d) {
-                        return d.target.y
-                    })
+                    var dx = d.target.x - d.source.x,
+                        dy = d.target.y - d.source.y,
+                        dr = Math.sqrt(dx * dx + dy * dy);
+                    return   "M" + d.source.x + ","
+                        + d.source.y
+                        + "A" + dr + ","
+                        + dr + " 0 0,1 "
+                        + d.target.x + ","
+                        + d.target.y;
+                });
             })
 
             force.start();
