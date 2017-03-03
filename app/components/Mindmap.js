@@ -37,7 +37,7 @@ class Mindmap extends React.Component {
                     singleNodeData.children = _.concat(singleNodeData.children, subNodes);
                 }
                 if(nodeData === null) {
-                    nodeData = singleNodeData;
+                    nodeData = [singleNodeData];
                 }
                 else {
                     nodeData = _.concat(nodeData, singleNodeData);
