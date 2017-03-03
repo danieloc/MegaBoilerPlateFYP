@@ -10,13 +10,16 @@ class Mindmap extends React.Component {
 
     constructor(props) {
         super(props);
-        var data = [{
+        var data = {
             "name": this.props.user.name,
-            "img" : this.props.user.picture
-        }];
+            "img" : this.props.user.picture || this.props.user.gravatar,
+            "children" : []
+        };
         if(this.props.user.nodes.length > 0) {
             var nodeData = getData(this.props.user.nodes);
-            data = _.concat(data, nodeData);
+            console.log("NDDDDDDDDDD");
+            console.log(nodeData);
+            data.children = nodeData;
         }
         this.state = {
             data : data,
@@ -26,17 +29,12 @@ class Mindmap extends React.Component {
             var nodeData = null;
             nodes.forEach(function (node) {
                 var singleNodeData = {
-                    'name': node.name,
-                    'target': [0],
+                    "name": node.name,
+                    "children" : []
                 };
                 if (node.nodes && node.nodes.length > 0) {
-                    singleNodeData = {
-                        'name': node.name,
-                        'target': [0],
-                        'subDocs': [{'name': node.name}]
-                    };
                     var subNodes = getData(node.nodes);
-                    singleNodeData.subDocs = _.concat(singleNodeData, subNodes);
+                    singleNodeData.children = _.concat(singleNodeData.children, subNodes);
                 }
                 if(nodeData === null) {
                     nodeData = singleNodeData;

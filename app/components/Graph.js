@@ -11,26 +11,10 @@ class Graph extends React.Component {
     componentDidMount() {
 
         var circleWidth = 30;
-        var isInner = false;
 
         var palette = {
-            "lightgray": "#819090",
-            "gray": "#708284",
-            "mediumgray": "#536870",
-            "darkgray": "#475B62",
-            "darkblue": "#0A2933",
-            "darkerblue": "#042029",
-            "paleryellow": "#FCF4DC",
-            "paleyellow": "#EAE3CB",
-            "yellow": "#A57706",
-            "orange": "#BD3613",
-            "red": "#D11C24",
-            "pink": "#C61C6F",
-            "purple": "#595AB7",
-            "blue": "#2176C7",
-            "green": "#259286",
-            "white": "#fefefe",
-            "yellowgreen": "#738A05"
+            "lightgray" : '#819090',
+            'tcBlack' : '#130COE',
         };
 
         //displayedNodes is used as the data that is being displayed.
@@ -38,186 +22,136 @@ class Graph extends React.Component {
         var displayedNodes = this.props.data;
         var width = this.props.width;
         var height = this.props.height;
-        calculateEverything(this, this.props.data, displayedNodes, isInner, palette);
+        var circleWidth = 30;
+        var root;
+        var myChart;
 
-        function calculateEverything(Obj, nodes, displayedNodes, isInner, palette) {
+        var force = d3.layout.force();
 
-            var links = [];
-            var w = Obj.props.width,
-                h = Obj.props.height;
-            var gravity = 0.02;
-            if(displayedNodes.length > 2) {
-                gravity = displayedNodes.length/100;
-            }
+        myChart = d3.select(this.refs.hook)
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
 
 
-            //For every dataset,
-            for (var i = 0; i < displayedNodes.length; i++) {
-                //If the datahas a "target" value
-                if (displayedNodes[i].target !== undefined) {
-                    //Push it onto the links
-                    for (var x = 0; x < displayedNodes[i].target.length; x++) {
-                        links.push({
-                            source: displayedNodes[i],
-                            target: displayedNodes[displayedNodes[i].target[x]]
-                        })
-                    }
-                }
-            }
+        console.log("Displayed Nodes");
+        console.log(displayedNodes);
+        var root = displayedNodes;
+            root.fixed = true;
+            root.x = width/2;
+            root.y = width/4;
 
-            //Append the svg image to the d3 element.
-            var myChart = d3.select(Obj.refs.hook)
-                .append('svg')
-                .attr('width', w)
-                .attr('height', h)
-            //Apply d3 force
-            var force = d3.layout.force()
-                .nodes(displayedNodes)
-                .links([])
-                .gravity(gravity)
-                .charge(-2000)
-                .size([w, h]);
+        var defs = myChart.insert("svg:defs")
+            .data(["end"]);
+        defs.enter().append("svg:path")
+            .attr("d", "M0,-5L10,0L0,5");
 
+            console.log("Root");
+            console.log(root);
+            update();
+
+
+
+        function update() {
+            var nodes = flatten(root);
+            console.log("NERDS");
+            console.log(nodes);
+            var links = d3.layout.tree().links(nodes);
+            console.log("links");
+            console.log(links);
+
+            //Restart the force layout with the updated paths
+            force.nodes(nodes)
+                .links(links)
+                .gravity(0.05)
+                .charge(-1500)
+                .linkDistance(100)
+                .friction(0.5)
+                .linkStrength(function(l, i) {return 1; })
+                .size([width, height])
+                .on("tick", tick)
+                .start();
 
             var path = myChart.selectAll("path.link")
-                .data(links);
+                .data(links, function(d) { return d.target.id; });
 
-            //Add visable lines to the data links
-            var link =path.enter().append('svg:path')
+            path.enter().insert("svg:path")
+                .attr("class", "link")
                 .attr("fill", "none")
-                .attr("stroke-width", 5)
+                .attr("stroke-width", "2px")
+                // .attr("marker-end", "url(#end)")
                 .style("stroke", "#eee");
 
 
-            var node = myChart.selectAll('circle')
-                .data(displayedNodes).enter()
-                .append('g')
-                .call(force.drag)
-                .on('dblclick', function () {
-                    var nodeName = d3.select(this).text();
-                    if ( isInner === false) {
-                        var nodeFound = false;
-                        for (i = 0; i <= displayedNodes.length && nodeFound === false; i++) {
-                            if (displayedNodes[i].name === nodeName) {
-                                nodeFound = true;
-                                displayedNodes = displayedNodes[i].subDocs.valueOf();
-                                myChart.remove();
-                                while (links.length > 0) {
-                                    links.pop();
-                                }
-                                d3.select('svg').remove();
-                                isInner = true;
-                                calculateEverything(Obj, nodes, displayedNodes, isInner, palette);
-                            }
-                        }
-                    }
-                    else {
-                        if (nodeName === displayedNodes[0].name) {
-                            displayedNodes = nodes.valueOf();
-                            myChart.remove();
-                            while (links.length > 0) {
-                                links.pop();
-                            }
-                            d3.select('svg').remove();
-                            isInner = false;
-                            calculateEverything(Obj, nodes, displayedNodes, isInner, palette);
-                        }
-                    }
+            // Exit any old paths.
+            path.exit().remove();
 
-                })
-                .on("mouseover", function (d, i) {
-                    if (i > 0) {
-                        //CIRCLE
-                        d3.select(this).selectAll("circle")
-                            .transition()
-                            .duration(250)
-                            .attr("r", circleWidth + 3)
-                    }
-                })
-
-                //MOUSEOUT
-                .on("mouseout", function (d, i) {
-                    if (i > 0) {
-                        //CIRCLE
-                        d3.select(this).selectAll("circle")
-                            .transition()
-                            .duration(250)
-                            .attr("r", circleWidth)
-
-                    }
-                });
-            force.linkDistance(w / 2);
+            //Update the nodes....
+            var node = myChart.selectAll("g.node")
+                .data(nodes, function(d) { return d.id; });
 
 
-            node.append("circle")
-                .attr('r', circleWidth)
-                .attr('stroke', function (d, i) {
-                    if (i > 0) {
-                        return palette.pink
-                    } else {
-                        return "transparent"
-                    }
-                })
-                .attr('stroke-width', 2)
-                .attr('fill', function (d, i) {
-                    if (i > 0) {
-                        return palette.white
-                    } else {
-                        return "transparent"
-                    }
-                })
+            // Enter any new nodes.
+            var nodeEnter = node.enter().append("svg:g")
+                .attr("class", "node")
+                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+                .on("click", click)
+                .call(force.drag);
 
-            node.append("svg:image")
+            // Append a circle
+            nodeEnter.append("svg:circle")
+                .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+                .style("fill", "#eee");
+
+            var images = nodeEnter.append("svg:image")
                 .attr("xlink:href",  function(d) { return d.img;})
                 .attr("x", function(d) { return -25;})
                 .attr("y", function(d) { return -25;})
+                .attr("rx", 24)
                 .attr("height", 50)
-                .attr("width", 50);
+                .attr("width", 50)
 
-            node.append('text')
-                .text(function (d, i) {
-                    if(i >0)
-                        return d.name;
-                    else
-                        return "";
-                })
-                .attr('font-family', 'Roboto Slab')
-                .attr('fill',palette.white)
-                .attr('x', function (d, i) {
-                    if (i > 0) {
-                        return circleWidth + 20
-                    } else {
-                        return circleWidth - 15
-                    }
-                })
-                .attr('y', function (d, i) {
-                    if (i > 0) {
-                        return circleWidth
-                    } else {
-                        return 8
-                    }
-                })
-                .attr('text-anchor', function (d, i) {
-                    if (i > 0) {
-                        return 'beginning'
-                    } else {
-                        return 'end'
-                    }
-                })
-                .attr('font-size', function (d, i) {
-                    if (i > 0) {
-                        return '2em'
-                    } else {
-                        return '3.4em'
-                    }
-                })
 
-            force.on('tick', function (e) {
-                displayedNodes[0].x = w / 2;
-                displayedNodes[0].y = h / 2;
-                node.attr('transform', function (d, i) {
-                    return 'translate(' + d.x + ', ' + d.y + ')';
+            var nodeText = nodeEnter.append("text")
+                .attr("x", 30)
+                .attr("fill", palette.tcBlack)
+                .text(function(d) { return d.name; })
+
+            ///////////
+
+            // make the image grow a little on mouse over and add the text details on click
+            var setEvents = images
+
+                .on( 'mouseenter', function() {
+                    // select element in current context
+                    d3.select( this )
+                        .transition()
+                        .attr("x", function(d) { return -60;})
+                        .attr("y", function(d) { return -60;})
+                        .attr("height", 100)
+                        .attr("width", 100);
                 })
+                // set back
+                .on( 'mouseleave', function() {
+                    d3.select( this )
+                        .transition()
+                        .attr("x", function(d) { return -25;})
+                        .attr("y", function(d) { return -25;})
+                        .attr("height", 50)
+                        .attr("width", 50);
+                });
+
+            // Exit any old nodes.
+            node.exit().remove();
+
+
+            // Re-select for update.
+            path = myChart.selectAll("path.link");
+            node = myChart.selectAll("g.node");
+
+            function tick() {
+
+
                 path.attr("d", function(d) {
 
                     var dx = d.target.x - d.source.x,
@@ -230,9 +164,45 @@ class Graph extends React.Component {
                         + d.target.x + ","
                         + d.target.y;
                 });
-            })
+                node.attr("transform", nodeTransform);
 
-            force.start();
+            }
+        }
+
+        function nodeTransform(d) {
+            d.x = Math.max(circleWidth, Math.min(width - (d.imgwidth/2 || 16), d.x));
+            d.y = Math.max(circleWidth, Math.min(height - (d.imgheight/2 || 16), d.y));
+            return "translate(" + d.x + "," + d.y +")";
+        }
+        function click(d) {
+            if(d.children) {
+                d._children = d.children;
+                d.children = null;
+            }
+            else if(d._children) {
+                d.children = d._children;
+                d._children = null;
+            }
+            update();
+        }
+
+
+
+        function flatten(root) {
+            console.log(root);
+            var nodes = [];
+            var i =0;
+            function recurse(node) {
+                if(node.children) {
+                    node.children.forEach(recurse);
+                }
+                if(!node.id) {
+                    node.id = ++i;
+                }
+                nodes.push(node)
+            }
+            recurse(root);
+            return nodes;
         }
     }
 
