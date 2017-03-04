@@ -24,12 +24,7 @@ class AddNodesForm extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        if(!this.props.subNodeLevel) {
-            this.props.dispatch(submitNodeToDoForm(this.state, this.props.parentNode_ID, this.props.childNode_ID, this.props.token));
-        }
-        else {
-            //Do Nothing for now
-        }
+        this.props.dispatch(submitNodeToDoForm(this.state, this.props.nodeID, this.props.indexList, this.props.depth, this.props.token));
         this.state.goal = '';
     }
     render() {
@@ -70,7 +65,9 @@ const mapStateToProps = (state) => {
     return {
         token: state.auth.token,
         user: state.auth.user,
-        messages: state.messages
+        messages: state.messages,
+        indexList: state.modals.indexList,
+        depth : state.modals.depth
     };
 };
 export default connect(mapStateToProps)(AddNodesForm);

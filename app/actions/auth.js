@@ -235,7 +235,15 @@ export function deleteAccount(token) {
   };
 }
 
-export function submitNodeToDoForm(state, parentID, childID, token) {
+export function submitNodeToDoForm(state, nodeID,indexList, depth, token) {
+  console.log("state");
+  console.log(state);
+  console.log("NodeID");
+  console.log(nodeID);
+  console.log("IndexList");
+  console.log(indexList);
+  console.log("depth");
+  console.log(depth);
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
@@ -250,8 +258,9 @@ export function submitNodeToDoForm(state, parentID, childID, token) {
         email: state.email,
         goalTitle: state.goal,
         goalPriority:state.priority,
-        parentID: parentID,
-        childID: childID
+        nodeID : nodeID,
+        indexList : indexList,
+        depth : depth
       })
     }).then((response) => {
       if (response.ok) {

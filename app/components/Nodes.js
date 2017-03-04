@@ -62,7 +62,7 @@ class Nodes extends React.Component {
 
         const message = this.props.childID ? "SUB LEVEL NODE: " : "TOP LEVEL NODE: ";
 
-        const addNodesForm = this.props.user.nodes[this.props.parentIndex] ? <AddNodesForm parentNode_ID = {this.props.parentID} childNode_ID = {this.props.childID} name = {message + this.getNodeName()}/> :
+        const addNodesForm = this.props.node ? <AddNodesForm nodeID = {this.props.node._id} name = {message + this.props.node.name}/> :
             null;
         const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal())}}> Delete Node</button> :
             null;

@@ -447,53 +447,14 @@ exports.addTodos = function(req, res) {
       if(req.body.goalTitle.length < 1) {
         return res.status(400).send({ msg: 'You have not given your goal a title!' });
       }
+      console.log("Entering User");
       UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            var found = false;
-            var nodeIndex = 0;
-            var subNodeIndex = 0;
-            var node;
-            while (nodeIndex < user.nodes.length && !found) {
-              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
-                node = user.nodes[nodeIndex];
-                found = true;
-              } else {
-                nodeIndex++;
-              }
-            }
-            if(req.body.childID) {
-              found = false;
-              while (subNodeIndex < node.nodes.length && !found) {
-                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
-                  found = true;
-                } else {
-                  subNodeIndex++;
-                }
-              }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
-              //I've used the same var name node to avoid duplicate code in this API.
-              node = node.nodes[subNodeIndex];
-            }
-            Promise.all(node.todos.map(function (todo) {
-              if (todo.name.toLowerCase() === req.body.goalTitle.toLowerCase()) {
-                return res.status(400).send({msg: 'This already Exists in the database.'});
-              }
-            }));
+            var i = 1;
+            console.log("Entering Recursion");
+            user.nodes[req.body.indexList[0]] = addToDo(i, user.nodes[req.body.indexList[0]], req, null);
 
-            if(!req.body.childID) {
-              user.nodes[nodeIndex].todos.push({
-                name: req.body.goalTitle,
-                priority: req.body.goalPriority,
-                completed: false
-              });
-            }
-            else {
-              user.nodes[nodeIndex].nodes[subNodeIndex].todos.push({
-                name: req.body.goalTitle,
-                priority: req.body.goalPriority,
-                completed: false
-              });
-            }
+            console.log("Exited Recursion");
             user.save(function (err) {
               done(err, user);
             });
@@ -501,6 +462,44 @@ exports.addTodos = function(req, res) {
           });
     }]);
 };
+
+function addToDo(i , node, req) {
+  if(i < req.body.depth) {
+    console.log("Doing Recursion");
+    i++;
+    console.log(node);
+    console.log(req.body.indexList);
+    node.nodes[req.body.indexList[i - 1]] = addToDo(i, node.nodes[req.body.indexList[i - 1]], req);
+    return node;
+  }
+  else if(i === req.body.depth) {
+    var singleToDo = new UserSchema.ToDo({
+      name: req.body.goalTitle,
+      priority: req.body.goalPriority,
+      completed: false
+    });
+    console.log(singleToDo);
+    singleToDo.save();
+    console.log("Finishing the save");
+    console.log("NODE");
+    console.log(node);
+
+    UserSchema.Node.findOne({ "_id" : node._id})
+        .then(function (node) {
+          node.todos.push(singleToDo);
+          return node;
+        }).then( function (node) {
+          node.save();
+  }
+    );
+
+    if(node.todos)
+      node.todos.push(singleToDo);
+    else
+      node.todos = [singleToDo];
+    return node;
+  }
+}
 
 /**
  * DELETE /todo
@@ -645,7 +644,7 @@ exports.updateToDos = function(req, res) {
     }]);
 };
 
-exports.addNode = function(req, res) {
+exports.addToNode = function(req, res) {
   req.assert('nodeTitle', 'Node title cannot be blank').notEmpty();
 
   if(!(req.body.nodeTitle.match("^[a-zA-Z0-9_ ]*$"))) {
@@ -670,7 +669,7 @@ exports.addNode = function(req, res) {
       UserSchema.User.findOne({ email: req.body.email})
           .exec(function (err, user) {
             var i = 1;
-            var responseArray = addToNode(i, user.nodes, req, null);
+            var responseArray = addNode(i, user.nodes, req, null);
             user.nodes = responseArray[0];
             var nodeInformation = responseArray[1];
             var indexList = responseArray[2];
@@ -689,15 +688,12 @@ exports.addNode = function(req, res) {
 
 
 
-function addToNode(i, nodes, req, parentID) {
+function addNode(i, nodes, req, parentID) {
   console.log(req.body.depth);
-  console.log("__________________________");
   if (i < req.body.depth) {
     i++;
     parentID = nodes[req.body.indexList[i - 2]]._id.valueOf();
-    console.log("Jedfas");
     var responseArray = addToNode(i, nodes[req.body.indexList[i - 2]].nodes, req, parentID);
-    console.log("Jedfas");
     nodes[req.body.indexList[i - 2]].nodes = responseArray[0];
     var nodeInformation = responseArray[1];
     var indexList = responseArray[2];

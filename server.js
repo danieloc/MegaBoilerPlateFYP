@@ -105,7 +105,7 @@ if (app.get('env') === 'development') {
 }
 
 app.post('/contact', contactController.contactPost);
-app.post('/nodes', userController.ensureAuthenticated, userController.addNode);
+app.post('/nodes', userController.ensureAuthenticated, userController.addToNode);
 app.delete('/nodes', userController.ensureAuthenticated, userController.deleteNode);
 app.post('/addToDos', userController.ensureAuthenticated, userController.addTodos);
 app.delete('/deleteToDo', userController.ensureAuthenticated, userController.deleteToDo);
