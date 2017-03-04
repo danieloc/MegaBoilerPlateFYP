@@ -22,12 +22,21 @@ export default function modals(state = initialState, action) {
                 activeModal: MODALS.DELETE_NODE_MODAL,
             });
         case 'SET_NODE' :
-            return Object.assign({}, state, {
-                node : action.node,
-                indexList : action.indexList,
-                last : action.last,
-                depth : action.depth
-            });
+            if(action.last !== null) {
+                return Object.assign({}, state, {
+                    node: action.node,
+                    indexList: action.indexList,
+                    last: action.last,
+                    depth: action.depth
+                });
+            }
+            else {
+                return Object.assign({}, state, {
+                    node: action.node,
+                    indexList: action.indexList,
+                    depth: action.depth
+                });
+            }
         case 'SET_INDEX' :
         return Object.assign({}, state, {
             indexList : action.indexList

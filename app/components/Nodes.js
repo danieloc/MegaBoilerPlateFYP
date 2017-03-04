@@ -23,28 +23,17 @@ class Nodes extends React.Component {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    /*displayToDos() {
-        if (this.props.user.nodes.length > 0 && this.props.user.nodes[this.props.parentIndex] != null) {
-            if (!this.props.childID) {
-                if (this.props.user.nodes[this.props.parentIndex].todos.length > 0) {
-                    return this.props.user.nodes[this.props.parentIndex].todos.map((todo, i) => {
-                        return <SingleGoal key={i} index={i} obj={todo} parentID={this.props.parentID}
-                                           childID={this.props.childID} handleChange={this.handleChange}> </SingleGoal>;
+    displayToDos() {
+        if (this.props.node) {
+                if (this.props.node.todos.length > 0) {
+                    return this.props.node.todos.map((todo, i) => {
+                        return <SingleGoal key={i} index={i} obj={todo} nodeID = {this.props.node._id} handleChange={this.handleChange}> </SingleGoal>;
                     });
-                }
-            }
-            else if(this.props.user.nodes[this.props.parentIndex].nodes[this.props.childIndex]) {
-                if (this.props.user.nodes[this.props.parentIndex].nodes[this.props.childIndex].todos.length > 0) {
-                    return this.props.user.nodes[this.props.parentIndex].nodes[this.props.childIndex].todos.map((todo, i) => {
-                        return <SingleGoal key={i} index={i} obj={todo} parentID={this.props.parentID}
-                                           childID={this.props.childID} handleChange={this.handleChange}> </SingleGoal>;
-                    });
-                }
             }
         }else {
             return [];
         }
-    }*/
+    }
 
     getNavBars(node, depth) {
         var lowerNavBars = <div></div>;
@@ -73,7 +62,7 @@ class Nodes extends React.Component {
                 <div className="panel-body">
                     {deleteNodeButton}
                     {addNodesForm}
-                    {/*{this.displayToDos()}*/}
+                    {this.displayToDos()}
                 </div>
                 <button onClick={() => {console.log(this.props.user)}}>Check</button>
             </div>

@@ -236,14 +236,6 @@ export function deleteAccount(token) {
 }
 
 export function submitNodeToDoForm(state, nodeID,indexList, depth, token) {
-  console.log("state");
-  console.log(state);
-  console.log("NodeID");
-  console.log(nodeID);
-  console.log("IndexList");
-  console.log(indexList);
-  console.log("depth");
-  console.log(depth);
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
@@ -265,6 +257,12 @@ export function submitNodeToDoForm(state, nodeID,indexList, depth, token) {
     }).then((response) => {
       if (response.ok) {
         return response.json().then((json) => {
+          dispatch({
+            type: 'SET_NODE',
+            node: json.nodeInformation,
+            indexList: indexList,
+            depth: depth
+          });
           dispatch({
             type: 'TODO_FORM_SUCCESS',
             messages: [{msg : "Goal Submitted"}],

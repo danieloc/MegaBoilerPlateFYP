@@ -452,13 +452,14 @@ exports.addTodos = function(req, res) {
           .exec(function(err, user) {
             var i = 1;
             console.log("Entering Recursion");
-            user.nodes[req.body.indexList[0]] = addToDo(i, user.nodes[req.body.indexList[0]], req, null);
-
+            var responseArray = addToDo(i, user.nodes[req.body.indexList[0]], req, null);
+            user.nodes[req.body.indexList[0]] = responseArray[0];
+            var nodeInformation = responseArray[1];
             console.log("Exited Recursion");
             user.save(function (err) {
               done(err, user);
             });
-            res.send({user: user.toJSON()});
+            res.send({user: user.toJSON(), nodeInformation : nodeInformation});
           });
     }]);
 };
@@ -469,8 +470,9 @@ function addToDo(i , node, req) {
     i++;
     console.log(node);
     console.log(req.body.indexList);
-    node.nodes[req.body.indexList[i - 1]] = addToDo(i, node.nodes[req.body.indexList[i - 1]], req);
-    return node;
+    var responseArray = addToDo(i, node.nodes[req.body.indexList[i - 1]], req);
+    node.nodes[req.body.indexList[i - 1]] = responseArray[0];
+    return [node, responseArray[1]];
   }
   else if(i === req.body.depth) {
     var singleToDo = new UserSchema.ToDo({
@@ -497,7 +499,7 @@ function addToDo(i , node, req) {
       node.todos.push(singleToDo);
     else
       node.todos = [singleToDo];
-    return node;
+    return [node, node];
   }
 }
 
