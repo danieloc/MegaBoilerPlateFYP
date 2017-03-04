@@ -23,7 +23,6 @@ class Graph extends React.Component {
         var width = this.props.width;
         var height = this.props.height;
         var circleWidth = 30;
-        var root;
         var myChart;
 
         var force = d3.layout.force();
@@ -50,6 +49,7 @@ class Graph extends React.Component {
             console.log(root);
             update();
 
+        hideToDos(root);
 
 
         function update() {
@@ -186,7 +186,21 @@ class Graph extends React.Component {
             update();
         }
 
-
+        function hideToDos(root) {
+            console.log("Helxxxxxlo");
+            var i =0;
+            function recurseToDos(node) {
+                click(node);
+                if(node.children) {
+                    console.log("Hello");
+                    node.children.forEach(click)
+                }
+                else {
+                    i++;
+                }
+            }
+            root.children.forEach(recurseToDos);
+        }
 
         function flatten(root) {
             console.log(root);

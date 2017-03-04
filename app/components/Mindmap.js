@@ -17,7 +17,6 @@ class Mindmap extends React.Component {
         };
         if(this.props.user.nodes.length > 0) {
             var nodeData = getData(this.props.user.nodes);
-            console.log("NDDDDDDDDDD");
             console.log(nodeData);
             data.children = nodeData;
         }
