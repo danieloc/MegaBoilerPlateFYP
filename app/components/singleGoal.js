@@ -20,7 +20,7 @@ class SingleGoal extends React.Component {
     }
 
     saveChanges() {
-        let newName = this.refs.newText.value;
+        var newName = this.refs.newText.value;
         var newPriority;
         if(this.refs.lowPriorRef.checked){
             newPriority = "Low";
@@ -29,12 +29,13 @@ class SingleGoal extends React.Component {
         }else if(this.refs.highPriorRef.checked){
             newPriority = "High";
         }
-        this.props.dispatch(updateToDo(this.props.obj._id, this.props.parentID, this.props.childID, this.props.user.email, newName, newPriority, this.props.token));
+        console.log(newName);
+        this.props.dispatch(updateToDo(this.props.user.email, this.props.obj._id, newName, newPriority, this.props.nodeID, this.props.indexList, this.props.depth, this.props.token));
         this.setState({editing: false});
     }
 
     removeGoal() {
-        this.props.dispatch(removeToDo(this.props.obj._id,  this.props.parentID, this.props.childID, this.props.user.email, this.props.token));
+        this.props.dispatch(removeToDo(this.props.user.email, this.props.obj._id, this.props.nodeID, this.props.indexList, this.props.depth, this.props.token));
     }
 
     renderForm() {
@@ -90,7 +91,10 @@ const mapStateToProps = (state) => {
     return {
         token: state.auth.token,
         user: state.auth.user,
-        messages: state.messages
+        messages: state.messages,
+        nodeID: state.modals.node._id,
+        indexList: state.modals.indexList,
+        depth: state.modals.depth
     };
 };
 export default connect(mapStateToProps)(SingleGoal);

@@ -248,8 +248,8 @@ export function submitNodeToDoForm(state, nodeID,indexList, depth, token) {
       },
       body: JSON.stringify({
         email: state.email,
-        goalTitle: state.goal,
-        goalPriority:state.priority,
+        todoTitle: state.goal,
+        todoPriority:state.priority,
         nodeID : nodeID,
         indexList : indexList,
         depth : depth
@@ -318,12 +318,12 @@ export function removeToDo(todoID , parentID, childID, email, token) {
     });
   };
 }
-export function updateToDo(todoID , parentID, childID, email, name, priority, token) {
+export function updateToDo(email , todoID, name, priority, nodeID, indexList, depth, token) {
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
     });
-    return fetch('/updateToDos', {
+    return fetch('/todos', {
       method: 'put',
       headers: {
         'Content-Type': 'application/json',
@@ -332,14 +332,21 @@ export function updateToDo(todoID , parentID, childID, email, name, priority, to
       body: JSON.stringify({
         email: email,
         todoID: todoID,
-        parentID : parentID,
-        childID : childID,
-        todoName: name,
-        todoPriority: priority
+        todoTitle: name,
+        todoPriority: priority,
+        nodeID: nodeID,
+        indexList: indexList,
+        depth : depth
       })
     }).then((response) => {
       if (response.ok) {
         return response.json().then((json) => {
+          dispatch({
+            type: 'SET_NODE',
+            node: json.nodeInformation,
+            indexList: indexList,
+            depth: depth
+          });
           dispatch({
             type: 'UPDATE_GOAL_SUCCESS',
             messages: [{msg : "Goal updated"}],

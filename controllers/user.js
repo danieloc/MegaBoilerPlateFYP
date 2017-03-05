@@ -425,8 +425,8 @@ exports.authGoogleCallback = function(req, res) {
  */
 
 exports.addTodos = function(req, res) {
-  req.assert('goalTitle', 'Goal name cannot be blank').notEmpty();
-  req.assert('goalPriority', 'Priority cannot be blank').notEmpty();
+  req.assert('todoTitle', 'Goal name cannot be blank').notEmpty();
+  req.assert('todoPriority', 'Priority cannot be blank').notEmpty();
 
   var errors = req.validationErrors();
 
@@ -441,10 +441,10 @@ exports.addTodos = function(req, res) {
       });
     },
     function(token, done) {
-      if(!(req.body.goalTitle.match("^[a-zA-Z0-9_ ]*$"))) {
+      if(!(req.body.todoTitle.match("^[a-zA-Z0-9_ ]*$"))) {
         return res.status(400).send({ msg: 'You cannot save a goal with a unicode character' });
       }
-      if(req.body.goalTitle.length < 1) {
+      if(req.body.todoTitle.length < 1) {
         return res.status(400).send({ msg: 'You have not given your goal a title!' });
       }
       console.log("Entering User");
@@ -476,8 +476,8 @@ function addToDo(i , node, req) {
   }
   else if(i === req.body.depth) {
     var singleToDo = new UserSchema.ToDo({
-      name: req.body.goalTitle,
-      priority: req.body.goalPriority,
+      name: req.body.todoTitle,
+      priority: req.body.todoPriority,
       completed: false
     });
     console.log(singleToDo);
@@ -492,7 +492,7 @@ function addToDo(i , node, req) {
           return node;
         }).then( function (node) {
           node.save();
-  }
+        }
     );
 
     if(node.todos)
@@ -575,6 +575,16 @@ exports.deleteToDo = function(req, res) {
 };
 
 exports.updateToDos = function(req, res) {
+  console.log(req.body.todoTitle);
+  console.log(req.body.todoPriority);
+  req.assert('todoTitle', 'Goal name cannot be blank').notEmpty();
+  req.assert('todoPriority', 'Priority cannot be blank').notEmpty();
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    return res.status(400).send(errors);
+  }
   async.waterfall([
     function(done) {
       crypto.randomBytes(16, function(err, buf) {
@@ -583,68 +593,56 @@ exports.updateToDos = function(req, res) {
       });
     },
     function(token, done) {
+      if (!(req.body.todoTitle.match("^[a-zA-Z0-9_ ]*$"))) {
+        return res.status(400).send({msg: 'You cannot save a goal with a unicode character'});
+      }
+      if (req.body.todoTitle.length < 1) {
+        return res.status(400).send({msg: 'You have not given your goal a title!'});
+      }
       UserSchema.User.findOne({  email: req.body.email  })
           .exec(function(err, user) {
-            var found = false;
-            var nodeIndex = 0;
-            var subNodeIndex = 0;
-            var node;
-            while (nodeIndex < user.nodes.length && !found) {
-              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
-                node = user.nodes[nodeIndex];
-                found = true;
-              } else {
-                nodeIndex++;
-              }
-            }
-            if(req.body.childID) {
-              found = false;
-              while (subNodeIndex < node.nodes.length && !found) {
-                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
-                  found = true;
-                } else {
-                  subNodeIndex++;
-                }
-              }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
-              //I've used the same var name node to avoid duplicate code in this API.
-              node = node.nodes[subNodeIndex];
-            }
-            if(!found){
-              return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
-            }
-
-
-            var arr = node.todos;
-            var i=0;
-            var found = false;
-            while(arr.length > i && !found) {
-              if(arr[i]._id.equals(req.body.todoID)) {
-                found = true;
-              }else {
-                i++;
-              }
-            }
-
-            if(!found){
-              return res.status(400).send({ msg: 'Could not find the ToDo by ID in the database.' });
-            }
-
-            arr[i].name = req.body.todoName;
-            arr[i].priority = req.body.todoPriority;
-            if(!req.body.childID) {
-              user.nodes[nodeIndex].todos = arr;
-            }
-            else {
-              user.nodes[nodeIndex].nodes[subNodeIndex].todos = arr;
-            }
+            var i = 1;
+            console.log("Entering Recursion");
+            var responseArray = recursiveUpdateToDo(i, user.nodes[req.body.indexList[0]], req);
+            user.nodes[req.body.indexList[0]] = responseArray[0];
+            var nodeInformation = responseArray[1];
+            console.log("Exited Recursion");
             user.save(function (err) {
               done(err, user);
             });
-            res.send({user: user.toJSON()});
+            res.send({user: user.toJSON(), nodeInformation : nodeInformation});
           });
     }]);
 };
+function recursiveUpdateToDo(i, node, req) {
+  if(i < req.body.depth) {
+    console.log("Doing Recursion");
+    i++;
+    console.log(node);
+    console.log(req.body.indexList);
+    var responseArray = recursiveUpdateToDo(i, node.nodes[req.body.indexList[i - 1]], req);
+    node.nodes[req.body.indexList[i - 1]] = responseArray[0];
+    return [node, responseArray[1]];
+  }
+  else if(i === req.body.depth) {
+    console.log("Shottelcock");
+    console.log(node);
+    UserSchema.ToDo.findOne({ "_id" : req.body.todoID})
+        .then(function (todo) {
+          console.log(todo);
+          todo.name = req.body.todoTitle;
+          todo.priority = req.body.todoPriority;
+          todo.save();
+        });
+    node.todos.forEach(function(todo){
+      if(todo._id.equals(req.body.todoID)) {
+        todo.name = req.body.todoTitle;
+        todo.priority = req.body.todoPriority;
+      }
+    });
+    return [node, node];
+  }
+}
 
 exports.addToNode = function(req, res) {
   req.assert('nodeTitle', 'Node title cannot be blank').notEmpty();
