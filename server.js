@@ -108,7 +108,7 @@ app.post('/contact', contactController.contactPost);
 app.post('/nodes', userController.ensureAuthenticated, userController.addToNode);
 app.delete('/nodes', userController.ensureAuthenticated, userController.deleteNode);
 app.post('/todos', userController.ensureAuthenticated, userController.addTodos);
-app.delete('/deleteToDo', userController.ensureAuthenticated, userController.deleteToDo);
+app.delete('/todos', userController.ensureAuthenticated, userController.deleteToDo);
 app.put('/todos', userController.ensureAuthenticated, userController.updateToDos);
 app.put('/account', userController.ensureAuthenticated, userController.accountPut);
 app.delete('/account', userController.ensureAuthenticated, userController.accountDelete);

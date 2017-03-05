@@ -509,70 +509,55 @@ function addToDo(i , node, req) {
 
 exports.deleteToDo = function(req, res) {
   async.waterfall([
-    function(done) {
-      crypto.randomBytes(16, function(err, buf) {
+    function (done) {
+      crypto.randomBytes(16, function (err, buf) {
         var token = buf.toString('hex');
         done(err, token);
       });
     },
-    function(token, done) {
-      UserSchema.User.findOne({  email: req.body.email  })
-          .exec(function(err, user) {
-            var found = false;
-            var nodeIndex = 0;
-            var subNodeIndex = 0;
-            var node;
-            while (nodeIndex < user.nodes.length && !found) {
-              if (user.nodes[nodeIndex]._id.equals(req.body.parentID)) {
-                node = user.nodes[nodeIndex];
-                found = true;
-              } else {
-                nodeIndex++;
-              }
-            }
-            if(req.body.childID) {
-              found = false;
-              while (subNodeIndex < node.nodes.length && !found) {
-                if (node.nodes[subNodeIndex]._id.equals(req.body.childID)) {
-                  found = true;
-                } else {
-                  subNodeIndex++;
-                }
-              }
-              //This used to be in the above for loop - but when node was set to a subnode - the while loop tried getting the nodes of the subnode causing an error.
-              //I've used the same var name node to avoid duplicate code in this API.
-              node = node.nodes[subNodeIndex];
-            }
-            if(!found){
-              return res.status(400).send({ msg: 'Could not find the node by ID in the database.' });
-            }
-            var arr = node.todos;
-            var index=0;
-            var found = false;
-            while(arr.length > index && !found) {
-              if(arr[index]._id.equals(req.body.todoID)) {
-                found = true;
-              } else {
-                index++;
-              }
-            }
-            if(!found){
-              return res.status(400).send({ msg: 'Could not find the todo by ID in the database.' });
-            }
-            arr.splice((index),1);
-            if(!req.body.childID) {
-              user.nodes[nodeIndex].todos = arr;
-            }
-            else {
-              user.nodes[nodeIndex].nodes[subNodeIndex].todos = arr;
-            }
+    function (token, done) {
+      UserSchema.User.findOne({email: req.body.email})
+          .exec(function (err, user) {
+            var i = 1;
+            console.log("Entering Recursion");
+            var responseArray = recursiveDeleteToDo(i, user.nodes[req.body.indexList[0]], req);
+            user.nodes[req.body.indexList[0]] = responseArray[0];
+            var nodeInformation = responseArray[1];
+            console.log("Exited Recursion");
             user.save(function (err) {
               done(err, user);
             });
-            res.send({user: user.toJSON()});
+            res.send({user: user.toJSON(), nodeInformation: nodeInformation});
           });
     }]);
 };
+
+function recursiveDeleteToDo(i, node, req) {
+  if(i < req.body.depth) {
+    console.log("Doing Recursion");
+    i++;
+    console.log(node);
+    console.log(req.body.indexList);
+    var responseArray = recursiveUpdateToDo(i, node.nodes[req.body.indexList[i - 1]], req);
+    node.nodes[req.body.indexList[i - 1]] = responseArray[0];
+    return [node, responseArray[1]];
+  }
+  else if(i === req.body.depth) {
+    console.log(node);
+    UserSchema.ToDo.findOne({ "_id" : req.body.todoID})
+        .remove()
+        .exec(function (err, node) {
+        });
+    node.todos.forEach(function(todo, i){
+      if(todo._id.equals(req.body.todoID)) {
+        node.todos.splice(i, 1);
+      }
+    });
+    console.log("New Nodes________________");
+    console.log(node);
+    return [node, node];
+  }
+}
 
 exports.updateToDos = function(req, res) {
   console.log(req.body.todoTitle);
@@ -614,6 +599,7 @@ exports.updateToDos = function(req, res) {
           });
     }]);
 };
+
 function recursiveUpdateToDo(i, node, req) {
   if(i < req.body.depth) {
     console.log("Doing Recursion");
@@ -625,7 +611,6 @@ function recursiveUpdateToDo(i, node, req) {
     return [node, responseArray[1]];
   }
   else if(i === req.body.depth) {
-    console.log("Shottelcock");
     console.log(node);
     UserSchema.ToDo.findOne({ "_id" : req.body.todoID})
         .then(function (todo) {
@@ -693,7 +678,7 @@ function addNode(i, nodes, req, parentID) {
   if (i < req.body.depth) {
     i++;
     parentID = nodes[req.body.indexList[i - 2]]._id.valueOf();
-    var responseArray = addToNode(i, nodes[req.body.indexList[i - 2]].nodes, req, parentID);
+    var responseArray = addNode(i, nodes[req.body.indexList[i - 2]].nodes, req, parentID);
     nodes[req.body.indexList[i - 2]].nodes = responseArray[0];
     var nodeInformation = responseArray[1];
     var indexList = responseArray[2];

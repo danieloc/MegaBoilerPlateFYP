@@ -240,7 +240,7 @@ export function submitNodeToDoForm(state, nodeID,indexList, depth, token) {
     dispatch({
       type: 'CLEAR_MESSAGES'
     });
-    return fetch('/addToDos', {
+    return fetch('/todos', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -281,12 +281,12 @@ export function submitNodeToDoForm(state, nodeID,indexList, depth, token) {
   };
 }
 
-export function removeToDo(todoID , parentID, childID, email, token) {
+export function removeToDo(email , todoID, nodeID, indexList, depth, token) {
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
     });
-    return fetch('/deleteToDo', {
+    return fetch('/todos', {
       method: 'delete',
       headers: {
         'Content-Type': 'application/json',
@@ -295,12 +295,19 @@ export function removeToDo(todoID , parentID, childID, email, token) {
       body: JSON.stringify({
         email: email,
         todoID: todoID,
-        parentID: parentID,
-        childID: childID
+        nodeID: nodeID,
+        indexList: indexList,
+        depth : depth
       })
     }).then((response) => {
       if (response.ok) {
         return response.json().then((json) => {
+          dispatch({
+            type: 'SET_NODE',
+            node: json.nodeInformation,
+            indexList: indexList,
+            depth: depth
+          });
           dispatch({
             type: 'DELETE_GOAL_SUCCESS',
             messages: [{msg : "Goal Deleted"}],
