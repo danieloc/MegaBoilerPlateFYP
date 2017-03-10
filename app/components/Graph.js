@@ -100,7 +100,7 @@ class Graph extends React.Component {
 
             // Append a circle
             nodeEnter.append("svg:circle")
-                .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+                .attr("r", function(d) { return circle_radius(d) })
                 .style("fill", "#eee");
 
             var images = nodeEnter.append("svg:image")
@@ -115,6 +115,8 @@ class Graph extends React.Component {
             var nodeText = nodeEnter.append("text")
                 .attr("x", 30)
                 .attr("fill", palette.tcBlack)
+                .attr("font-size", 18)
+                .attr("font-Family", "Arial, Helvetica, sans-serif")
                 .text(function(d) { return d.name; })
 
             ///////////
@@ -200,6 +202,14 @@ class Graph extends React.Component {
                 }
             }
             root.children.forEach(recurseToDos);
+        }
+        function circle_radius(d) {
+            if(d.children) {
+                return d.children.length > 0 ? 10 : 5;
+            }
+            else if (d._children) {
+                return d._children.length > 0 ? 10 : 5;
+            }
         }
 
         function flatten(root) {
