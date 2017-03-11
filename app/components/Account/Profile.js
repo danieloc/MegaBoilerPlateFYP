@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { updateProfile, changePassword, deleteAccount } from '../../actions/auth';
 import { link, unlink } from '../../actions/oauth';
 import Messages from '../Messages';
+import { CirclePicker } from 'react-color';
 
 class Profile extends React.Component {
   constructor(props) {
@@ -15,16 +16,23 @@ class Profile extends React.Component {
       website: props.user.website,
       gravatar: props.user.gravatar,
       password: '',
-      confirm: ''
+      confirm: '',
+      color: props.user.primaryColor,
     };
   }
 
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }
+  //Not using "handleChange" because that uses value - where the colorPicker uses color
+  changeColor(event) {
+    console.log(event);
+    this.setState({ color: event.hex });
+  }
 
   handleProfileUpdate(event) {
     event.preventDefault();
+    console.log(this.state.color);
     this.props.dispatch(updateProfile(this.state, this.props.token));
   }
 
@@ -103,6 +111,15 @@ class Profile extends React.Component {
                 <label className="col-sm-3">Gravatar</label>
                 <div className="col-sm-4">
                   <img src={this.state.gravatar} width="100" height="100" className="profile"/>
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="col-sm-3">Primary Colour</label>
+                <div className="col-sm-4">
+                  <div className="col-sm-4">
+                    {/*Tomato, Crimson DarkOrchid SlateBlue DarkSlateBlue DodgerBlue DeepSkyBlue DarkTurquise DarkCyan MediumSeaGreen YellowGreen Gold DarkOrange OrangeRed DimGray SlateGray*/}
+                    <CirclePicker name = "color" id="color" color = {this.state.color} onChangeComplete={this.changeColor.bind(this)} width = "252px" colors = { ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#ffc107', '#ff9800','#ff5722', '#795548', '#607d8b'] }/>
+                  </div>
                 </div>
               </div>
               <div className="form-group">

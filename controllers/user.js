@@ -81,7 +81,8 @@ exports.signupPost = function(req, res, next) {
     user = new UserSchema.User({
       name: req.body.name,
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      primaryColor : '#2196f3'
     });
     user.save(function(err) {
       res.send({ token: generateToken(user), user: user });
@@ -119,6 +120,7 @@ exports.accountPut = function(req, res, next) {
       user.gender = req.body.gender;
       user.location = req.body.location;
       user.website = req.body.website;
+      user.primaryColor = req.body.primaryColor;
     }
     user.save(function(err) {
       if ('password' in req.body) {
@@ -126,7 +128,7 @@ exports.accountPut = function(req, res, next) {
       } else if (err && err.code === 11000) {
         res.status(409).send({ msg: 'The email address you have entered is already associated with another account.' });
       } else {
-        res.send({ user: user, msg: 'Your profile information has been updated.' });
+        res.send({ user: user.toJSON(), msg: 'Your profile information has been updated.' });
       }
     });
   });
@@ -336,7 +338,8 @@ exports.authFacebook = function(req, res) {
               gender: profile.gender,
               location: profile.location && profile.location.name,
               picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
-              facebook: profile.id
+              facebook: profile.id,
+              primaryColor : '#2196f3'
             });
             user.save(function(err) {
               return res.send({ token: generateToken(user), user: user });
@@ -405,7 +408,8 @@ exports.authGoogle = function(req, res) {
             gender: profile.gender,
             picture: profile.picture.replace('sz=50', 'sz=200'),
             location: profile.location,
-            google: profile.sub
+            google: profile.sub,
+            primaryColor : '#2196f3'
           });
           user.save(function(err) {
             res.send({ token: generateToken(user), user: user });

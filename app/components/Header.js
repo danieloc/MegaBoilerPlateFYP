@@ -10,7 +10,9 @@ class Header extends React.Component {
   }
 
   render() {
-    const active = { borderBottomColor: '#3f51b5' };
+    var active ={};
+    if(this.props.user)
+      active = { borderBottomColor: this.props.user.primaryColor };
     const leftNavMindMap = this.props.token ? (
         <li><Link to="/mindmap" activeStyle={active}>Mindmap</Link></li>
     ):(<li></li>);

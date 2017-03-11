@@ -45,7 +45,7 @@ class Nodes extends React.Component {
                     lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]], depth)
                 }
             }
-        return <div><NavBar nodes = {nodes} depth = {depth}/> {lowerNavBars} </div>
+        return <div><NavBar nodes = {nodes} depth = {depth} primaryColor = {this.props.user.primaryColor}/> {lowerNavBars} </div>
     }
     render() {
 

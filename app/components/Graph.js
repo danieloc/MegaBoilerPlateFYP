@@ -234,7 +234,7 @@ class Graph extends React.Component {
         const {width, height} = this.props;
         const styles = {
             border : '1px solid #323232',
-            backgroundColor: '#1a1aff',
+            backgroundColor: this.props.user.primaryColor,
             position: 'relative',
             overflow: 'auto',
             height: '100%',

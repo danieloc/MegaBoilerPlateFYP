@@ -26,6 +26,7 @@ var userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true},
   password: String,
+  primaryColor : String,
   nodes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Node'}],
   passwordResetToken: String,
   passwordResetExpires: Date,

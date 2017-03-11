@@ -15,6 +15,9 @@ export default function auth(state = initialState, action) {
         token: action.token,
         user: action.user
       });
+    case 'UPDATE_PROFILE_SUCCESS':
+      return Object.assign({}, state, {
+        user: action.user});
     case 'TODO_FORM_SUCCESS':
       return Object.assign({}, state, {
         user: action.user});
@@ -36,6 +39,7 @@ export default function auth(state = initialState, action) {
       });
     case 'LOGOUT_SUCCESS':
       return initialState;
+
     default:
       return state;
   }

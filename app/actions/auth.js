@@ -153,13 +153,15 @@ export function updateProfile(state, token) {
         name: state.name,
         gender: state.gender,
         location: state.location,
-        website: state.website
+        website: state.website,
+        primaryColor: state.color
       })
     }).then((response) => {
       if (response.ok) {
         return response.json().then((json) => {
           dispatch({
             type: 'UPDATE_PROFILE_SUCCESS',
+            user: json.user,
             messages: [json]
           });
         });

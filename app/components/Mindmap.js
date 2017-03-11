@@ -50,8 +50,7 @@ class Mindmap extends React.Component {
 
     render() {
         return (
-            <div style = {{flex: 1,  position:'relative', height: '100%', margin: 0, display: 'flex', flexDirection: 'column',
-                backgroundColor: '#1a1aff'}}>
+            <div style = {{flex: 1,  position:'relative', height: '100%', margin: 0, display: 'flex', flexDirection: 'column' }}>
                 <Graph width = {this.props.width} height = {this.props.height} flex = {1} data = {this.state.data} style = {{flex:1}}/>
             </div>
         );

@@ -23,17 +23,20 @@ class NavBar extends React.Component {
         if(this.props.nodes && this.props.nodes.length > 0 && this.props.node) {
             return this.props.nodes.map((node, i) => {
                 var className = "inActive";
+                var active = {};
                 if(this.state.depth < this.props.indexList.length) {
                     if(this.props.indexList[this.state.depth -1] === i)
                     {
-                        className = "active"
+                        className = "active";
+                        active = { borderBottomColor: this.props.primaryColor };
                     }
                 }
-                else {
-                    className = this.props.node._id === node._id ? "active" : "inActive";
+                else if(this.props.node._id === node._id){
+                    className = "active";
+                    active = { borderBottomColor: this.props.primaryColor };
                 }
-                return <li className={className} key={i} value={i}
-                           onClick={() => this.changeCurrentNode(i, node)}><Link>{node.name}</Link></li>
+                return <li key={i} value={i}
+                           onClick={() => this.changeCurrentNode(i, node)} ><Link className={className} style={active} >{node.name}</Link></li>
             });
         }
         else {
