@@ -5,8 +5,7 @@
 import React from 'react';
 import ModalWrapper from './ModalWrapper';
 import {hideModal, changeWalkThroughState} from '../../actions/modals';
-import {connect} from 'react-redux';/*
-import mindmapImg from '../../assets/mindmapWalkThrough.png';*/
+import {connect} from 'react-redux';
 
 class WalkThroughModal extends React.Component {
     constructor(props) {
@@ -41,16 +40,16 @@ class WalkThroughModal extends React.Component {
         if(this.props.walkThroughState === 2)
             return <div><legend>Organisation is a powerful tool!</legend>
                 <p>Mind mapping is simple tool and its power stems directly from its simplicity.
-                    People can quickly and easily structure out their ideas in to separate and branching trees.
+                    Using this tool you may quickly and easily structure out their ideas in to separate and branching trees.
                     Mind mapping helps you to plan and to feel like you’ve conceptualise every aspect needed.
                     Because you can visually see it – the order, the hierarchy and the overlap.
                     It’s all there on one page, in this visual network and it’s beautiful. They can clarify just about anything.
                 </p>
             </div>;
-        /*if(this.props.walkThroughState ===3)
+        if(this.props.walkThroughState === 3)
             return <div><legend>Start Creating beautiful Mindmaps now!</legend>
-                        <Image source ={mindmapImg} />
-                </div>;*/
+                <img src='img/showme.PNG'/>
+                </div>;
     }
 
     render() {
