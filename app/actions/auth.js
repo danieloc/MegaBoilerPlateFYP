@@ -486,3 +486,34 @@ export function deleteNodeForm(email, nodeID, indexList, depth, last, token) {
     });
   };
 }
+
+
+export function  walkThroughFinished(email, token) {
+  return (dispatch) => {
+    return fetch('/account/walkthrough', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+      })
+    }).then((response) => {
+      if (response.ok) {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'WALK_THROUGH_FINISHED',
+            user: json.user
+          });
+        });
+      } else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'WALK_THROUGH_FINISH_FAILURE'
+          });
+        });
+      }
+    });
+  };
+}

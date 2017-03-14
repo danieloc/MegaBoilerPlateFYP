@@ -5,6 +5,7 @@
 import React from 'react';
 import ModalWrapper from './ModalWrapper';
 import {hideModal, changeWalkThroughState} from '../../actions/modals';
+import { walkThroughFinished } from '../../actions/auth'
 import {connect} from 'react-redux';
 
 class WalkThroughModal extends React.Component {
@@ -24,7 +25,7 @@ class WalkThroughModal extends React.Component {
             return <button className="btn btn-success"  onClick={() => {this.props.dispatch(changeWalkThroughState(this.props.walkThroughState + 1))}}>Next</button>
         }
         if(this.props.walkThroughState === 3) {
-            return <button className="btn btn-success"  onClick={() => this.props.dispatch(hideModal()) }>Done</button>
+            return <button className="btn btn-success"  onClick={() => {this.props.dispatch(hideModal()); this.props.dispatch(walkThroughFinished(this.props.email, this.props.token))} }>Done</button>
         }
     }
     getWalkThroughPage() {
@@ -48,7 +49,7 @@ class WalkThroughModal extends React.Component {
             </div>;
         if(this.props.walkThroughState === 3)
             return <div><legend>Start Creating beautiful Mindmaps now!</legend>
-                <img src='img/showme.PNG'/>
+                <img src='img/mindmap.PNG' width={300} height = {280}/>
                 </div>;
     }
 
@@ -67,7 +68,9 @@ class WalkThroughModal extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-        walkThroughState : state.modals.walkThroughModalState
+        walkThroughState : state.modals.walkThroughModalState,
+        email : state.auth.user.email,
+        token : state.auth.token
     }
 };
 

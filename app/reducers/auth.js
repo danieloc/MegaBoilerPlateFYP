@@ -39,7 +39,10 @@ export default function auth(state = initialState, action) {
       });
     case 'LOGOUT_SUCCESS':
       return initialState;
-
+    case 'WALK_THROUGH_FINISHED' :
+      return Object.assign({}, state, {
+        user: action.user
+      });
     default:
       return state;
   }

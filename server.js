@@ -111,6 +111,7 @@ app.post('/todos', userController.ensureAuthenticated, userController.addTodos);
 app.delete('/todos', userController.ensureAuthenticated, userController.deleteToDo);
 app.put('/todos', userController.ensureAuthenticated, userController.updateToDos);
 app.put('/account', userController.ensureAuthenticated, userController.accountPut);
+app.put('/account/walkthrough', userController.ensureAuthenticated, userController.accountWalkThroughFinished);
 app.delete('/account', userController.ensureAuthenticated, userController.accountDelete);
 app.post('/signup', userController.signupPost);
 app.post('/login', userController.loginPost);
