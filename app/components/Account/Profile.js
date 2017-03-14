@@ -85,29 +85,6 @@ class Profile extends React.Component {
                 </div>
               </div>
               <div className="form-group">
-                <label className="col-sm-3">Gender</label>
-                <div className="col-sm-4">
-                  <label className="radio-inline radio col-sm-4">
-                    <input type="radio" name="gender" value="male" checked={this.state.gender === 'male'} onChange={this.handleChange.bind(this)}/><span>Male</span>
-                  </label>
-                  <label className="radio-inline col-sm-4">
-                    <input type="radio" name="gender" value="female" checked={this.state.gender === 'female'} onChange={this.handleChange.bind(this)}/><span>Female</span>
-                  </label>
-                </div>
-              </div>
-              <div className="form-group">
-                <label htmlFor="location" className="col-sm-3">Location</label>
-                <div className="col-sm-7">
-                  <input type="text" name="location" id="location" className="form-control" value={this.state.location} onChange={this.handleChange.bind(this)}/>
-                </div>
-              </div>
-              <div className="form-group">
-                <label htmlFor="website" className="col-sm-3">Website</label>
-                <div className="col-sm-7">
-                  <input type="text" name="website" id="website" className="form-control" value={this.state.website} onChange={this.handleChange.bind(this)}/>
-                </div>
-              </div>
-              <div className="form-group">
                 <label className="col-sm-3">Gravatar</label>
                 <div className="col-sm-4">
                   <img src={this.state.gravatar} width="100" height="100" className="profile"/>

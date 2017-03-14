@@ -27,3 +27,14 @@ export function setParent(node, indexList, depth,last) {
         depth: depth
     };
 }
+export function getWalkThrough() {
+    return {
+        type: 'WALK_THROUGH_MODAL',
+    };
+}
+export function changeWalkThroughState(walkThroughState) {
+    return {
+        type: 'WALK_THROUGH_STATE',
+        state: walkThroughState,
+    }
+}

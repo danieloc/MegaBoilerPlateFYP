@@ -2,7 +2,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import AddNodeModal from './AddNodeModal';
-import DeleteNodeModal from './DeleteNodeModal'
+import DeleteNodeModal from './DeleteNodeModal';
+import WalkThroughModal from './WalkThroughModal';
 
 import { MODALS, } from '../../constants.js';
 
@@ -19,6 +20,9 @@ class Modal extends React.Component {
             case MODALS.DELETE_NODE_MODAL :
                 ModalBody = DeleteNodeModal;
                 break;
+            case MODALS.WALK_THROUGH_MODAL :
+                ModalBody = WalkThroughModal;
+                break;
             default :
                 return null;
         }
@@ -32,7 +36,7 @@ class Modal extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        activeModal: state.modals.activeModal
+        activeModal: state.modals.activeModal,
     };
 };
 

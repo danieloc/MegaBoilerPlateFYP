@@ -4,12 +4,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Graph from './Graph';
+import { getWalkThrough } from '../actions/modals';
 import _ from 'lodash';
 
 class Mindmap extends React.Component {
 
     constructor(props) {
         super(props);
+        if(this.props.user.isNewUser) {
+            console.log("logging");
+            this.props.dispatch(getWalkThrough());
+        }
         var data = {
             "name": this.props.user.name,
             "img" : this.props.user.picture || this.props.user.gravatar,
@@ -62,6 +67,7 @@ const mapStateToProps = (state) => {
         user: state.auth.user,
         width: state.viewPort.width,
         height: state.viewPort.height,
+        activeModal: state.modals.activeModal
     }
 };
 

@@ -82,7 +82,8 @@ exports.signupPost = function(req, res, next) {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
-      primaryColor : '#2196f3'
+      primaryColor : '#2196f3',
+      isNewUser: true
     });
     user.save(function(err) {
       res.send({ token: generateToken(user), user: user });
@@ -117,9 +118,6 @@ exports.accountPut = function(req, res, next) {
     } else {
       user.email = req.body.email;
       user.name = req.body.name;
-      user.gender = req.body.gender;
-      user.location = req.body.location;
-      user.website = req.body.website;
       user.primaryColor = req.body.primaryColor;
     }
     user.save(function(err) {
@@ -284,7 +282,7 @@ exports.resetPost = function(req, res, next) {
  * Sign in with Facebook
  */
 exports.authFacebook = function(req, res) {
-  var profileFields = ['id', 'name', 'email', 'gender', 'location'];
+  var profileFields = ['id', 'name', 'email'];
   var accessTokenUrl = 'https://graph.facebook.com/v2.5/oauth/access_token';
   var graphApiUrl = 'https://graph.facebook.com/v2.5/me?fields=' + profileFields.join(',');
 
@@ -315,7 +313,6 @@ exports.authFacebook = function(req, res) {
           }
           user = req.user;
           user.name = user.name || profile.name;
-          user.gender = user.gender || profile.gender;
           user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
           user.facebook = profile.id;
           user.save(function() {
@@ -335,11 +332,10 @@ exports.authFacebook = function(req, res) {
             user = new UserSchema.User({
               name: profile.name,
               email: profile.email,
-              gender: profile.gender,
-              location: profile.location && profile.location.name,
               picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
               facebook: profile.id,
-              primaryColor : '#2196f3'
+              primaryColor : '#2196f3',
+              isNewUser : true
             });
             user.save(function(err) {
               return res.send({ token: generateToken(user), user: user });
@@ -388,9 +384,7 @@ exports.authGoogle = function(req, res) {
           }
           user = req.user;
           user.name = user.name || profile.name;
-          user.gender = profile.gender;
           user.picture = user.picture || profile.picture.replace('sz=50', 'sz=200');
-          user.location = user.location || profile.location;
           user.google = profile.sub;
           user.save(function() {
             res.send({ token: generateToken(user), user: user });
@@ -405,11 +399,10 @@ exports.authGoogle = function(req, res) {
           user = new UserSchema.User({
             name: profile.name,
             email: profile.email,
-            gender: profile.gender,
             picture: profile.picture.replace('sz=50', 'sz=200'),
-            location: profile.location,
             google: profile.sub,
-            primaryColor : '#2196f3'
+            primaryColor : '#2196f3',
+            isNewUser: true
           });
           user.save(function(err) {
             res.send({ token: generateToken(user), user: user });

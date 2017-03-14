@@ -4,6 +4,7 @@
 import {MODALS, } from '../constants';
 const initialState = {
     activeModal: 'NONE',
+    walkThroughModalState: 0,
     node : null,
     indexList : null,
     depth : null,
@@ -45,6 +46,15 @@ export default function modals(state = initialState, action) {
             return Object.assign({}, state, {
                 activeModal: MODALS.NONE,
                 parentName : null
+            });
+        case 'WALK_THROUGH_MODAL' :
+            return Object.assign({}, state, {
+                activeModal: MODALS.WALK_THROUGH_MODAL,
+                walkThroughModalState: 1,
+            });
+        case 'WALK_THROUGH_STATE' :
+            return Object.assign({}, state, {
+                walkThroughModalState: action.state
             });
         default:
             return state;

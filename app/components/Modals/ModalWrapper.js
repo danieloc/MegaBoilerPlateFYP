@@ -62,7 +62,7 @@ class ModalWrapper extends React.Component {
         return (
             <div style={styles.back} onClick={handleBackgroundClick}>
                 <div style={styles.panelAboveSpacer}></div>
-                <Panel {...this.props}>{this.props.children}</Panel>
+                <Panel {...this.props} PrimaryColor = {this.props.user.primaryColor}>{this.props.children}</Panel>
                 <div style={styles.panelBelowSpacer}></div>
             </div>
         );

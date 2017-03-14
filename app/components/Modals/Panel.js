@@ -28,10 +28,11 @@ class Panel extends React.Component {
                 display : 'flex',
                 flexFlow : 'horizontal',
                 justifyContent: 'space-between',
-                backgroundColor: '#2196F3',
+                backgroundColor: this.props.PrimaryColor,
                 color: '#FFFFFF',
                 boxShadow: '0 1px 3px ${rgba(0, 0, 0, 0.382)}',
                 zIndex: 1,
+                textAlign: 'center'
             },
             title : {
                 fontSize : 22,
@@ -40,7 +41,7 @@ class Panel extends React.Component {
                 // overflow: 'Hidden',
             },
             close : {
-                backgroundColor :'#2196F3',
+                backgroundColor :this.props.PrimaryColor,
                 border : 'none',
                 padding: 20,
                 fontSize: 16,
@@ -48,16 +49,16 @@ class Panel extends React.Component {
             body : {
                 flex: '1 1 auto',
                 padding: '24px 24px 0',
-                overflow: 'auto'
+                overflow: 'auto',
+                textAlign: 'center'
             },
             panelBody: {
                 display : 'flex',
                 flexDirection : 'column',
-                padding : 0,
             },
             okButton : {
                 marginLeft: this.props.width - 100 ,
-                backgroundColor : '#2196F3',
+                backgroundColor : this.props.PrimaryColor,
                 color : '#FFFFFF',
                 padding: 12,
                 width: 20,
@@ -73,7 +74,7 @@ class Panel extends React.Component {
                         <h1 style = {styles.title}> {this.props.title}</h1>
                         <button className="btn pull-right" style = {styles.close} onClick = {() => {this.props.dispatch(hideModal())}}>Close</button>
                     </div>
-                    <div style = {styles.panelBody}>
+                    <div style = {styles.body}>
                         {this.props.children}
                     </div>
                 </div>
