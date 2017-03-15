@@ -12,7 +12,6 @@ class Mindmap extends React.Component {
     constructor(props) {
         super(props);
         if(this.props.user.isNewUser) {
-            console.log("logging");
             this.props.dispatch(getWalkThrough());
         }
         var data = {
@@ -55,9 +54,9 @@ class Mindmap extends React.Component {
 
     render() {
         return (
-            <div style = {{flex: 1,  position:'relative', height: '100%', margin: 0, display: 'flex', flexDirection: 'column' }}>
-                <Graph width = {this.props.width} height = {this.props.height} flex = {1} data = {this.state.data} style = {{flex:1}}/>
-            </div>
+                <div style = {{flex: 1,  position:'relative', height: '100%', margin: 0, display: 'flex', flexDirection: 'column' }}>
+                    <Graph width = {this.props.width} height = {this.props.height} flex = {1} data = {this.state.data} style = {{flex:1}}/>
+                </div>
         );
     }
 }

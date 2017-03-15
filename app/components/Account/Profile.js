@@ -11,9 +11,7 @@ class Profile extends React.Component {
     this.state = {
       email: props.user.email,
       name: props.user.name,
-      gender: props.user.gender,
-      location: props.user.location,
-      website: props.user.website,
+      mindmapOption: props.user.mindmapOption,
       gravatar: props.user.gravatar,
       password: '',
       confirm: '',
@@ -88,6 +86,17 @@ class Profile extends React.Component {
                 <label className="col-sm-3">Gravatar</label>
                 <div className="col-sm-4">
                   <img src={this.state.gravatar} width="100" height="100" className="profile"/>
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="col-sm-3">Mindmap</label>
+                <div className="col-sm-4">
+                  <label className="radio-inline radio col-sm-4">
+                    <input type="radio" name="mindmapOption" value={"sprawl"} checked={this.state.mindmapOption === "sprawl"} onChange={this.handleChange.bind(this)}/><span>Sprawl(Default)</span>
+                  </label>
+                  <label className="radio-inline col-sm-4">
+                    <input type="radio" name="mindmapOption" value={"tiered"} checked={this.state.mindmapOption === "tiered"} onChange={this.handleChange.bind(this)}/><span>Tiered</span>
+                  </label>
                 </div>
               </div>
               <div className="form-group">

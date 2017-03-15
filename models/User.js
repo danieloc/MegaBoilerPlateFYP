@@ -28,6 +28,7 @@ var userSchema = new mongoose.Schema({
   password: String,
   primaryColor : String,
   isNewUser: Boolean,
+  mindmapOption: String,
   nodes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Node'}],
   passwordResetToken: String,
   passwordResetExpires: Date,

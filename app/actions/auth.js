@@ -151,7 +151,8 @@ export function updateProfile(state, token) {
       body: JSON.stringify({
         email: state.email,
         name: state.name,
-        primaryColor: state.color
+        primaryColor: state.color,
+        mindmapOption: state.mindmapOption,
       })
     }).then((response) => {
       if (response.ok) {

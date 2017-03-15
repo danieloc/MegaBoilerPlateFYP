@@ -83,6 +83,7 @@ exports.signupPost = function(req, res, next) {
       email: req.body.email,
       password: req.body.password,
       primaryColor : '#2196f3',
+      mindmapOption: "sprawl",
       isNewUser: true
     });
     user.save(function(err) {
@@ -119,6 +120,7 @@ exports.accountPut = function(req, res, next) {
       user.email = req.body.email;
       user.name = req.body.name;
       user.primaryColor = req.body.primaryColor;
+      user.mindmapOption = req.body.mindmapOption;
     }
     user.save(function(err) {
       if ('password' in req.body) {
@@ -344,6 +346,7 @@ exports.authFacebook = function(req, res) {
               picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
               facebook: profile.id,
               primaryColor : '#2196f3',
+              mindmapOption: "sprawl",
               isNewUser : true
             });
             user.save(function(err) {
@@ -411,6 +414,7 @@ exports.authGoogle = function(req, res) {
             picture: profile.picture.replace('sz=50', 'sz=200'),
             google: profile.sub,
             primaryColor : '#2196f3',
+            mindmapOption: "sprawl",
             isNewUser: true
           });
           user.save(function(err) {

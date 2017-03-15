@@ -9,7 +9,18 @@ class Graph extends React.Component {
 
 
     componentDidMount() {
+        this.createMindmap();
+    }
+    createMindmap() {
+        if(this.props.user.mindmapOption === "sprawl") {
+            this.mindmapOptionOne();
+        }
+        if(this.props.user.mindmapOption === "tiered") {
+            this.mindmapOptionTwo();
+        }
+    }
 
+    mindmapOptionOne() {
         var circleWidth = 30;
 
         var palette = {
@@ -36,18 +47,18 @@ class Graph extends React.Component {
         console.log("Displayed Nodes");
         console.log(displayedNodes);
         var root = displayedNodes;
-            root.fixed = true;
-            root.x = width/2;
-            root.y = width/4;
+        root.fixed = true;
+        root.x = width/2;
+        root.y = width/4;
 
         var defs = myChart.insert("svg:defs")
             .data(["end"]);
         defs.enter().append("svg:path")
             .attr("d", "M0,-5L10,0L0,5");
 
-            console.log("Root");
-            console.log(root);
-            update();
+        console.log("Root");
+        console.log(root);
+        update();
 
         hideToDos(root);
 
@@ -229,6 +240,12 @@ class Graph extends React.Component {
             return nodes;
         }
     }
+
+    mindmapOptionTwo() {
+        
+    }
+
+
 
     render() {
         const {width, height} = this.props;
