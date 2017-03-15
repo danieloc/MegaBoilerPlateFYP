@@ -14,21 +14,33 @@ class Mindmap extends React.Component {
         if(this.props.user.isNewUser) {
             this.props.dispatch(getWalkThrough());
         }
-        var data = {
-            "name": this.props.user.name,
-            "img" : this.props.user.picture || this.props.user.gravatar,
-            "children" : []
-        };
-        if(this.props.user.nodes.length > 0) {
-            var nodeData = getData(this.props.user.nodes);
-            console.log(nodeData);
-            data.children = nodeData;
+        var data;
+        if(this.props.user.mindmapOption === 'sprawl') {
+            data = {
+                "name": this.props.user.name,
+                "img": this.props.user.picture || this.props.user.gravatar,
+                "children": []
+            };
+            if (this.props.user.nodes.length > 0) {
+                var nodeData = getOptionOneData(this.props.user.nodes);
+                console.log(nodeData);
+                data.children = nodeData;
+            }
+        }
+        else if(this.props.user.mindmapOption === 'tiered') {
+            data = [{
+                "name": this.props.user.name
+            }];
+            if(this.props.user.nodes.length > 0) {
+                var nodeData = getOptionTwoData(this.props.user.nodes);
+                data = _.concat(data, nodeData);
+            }
         }
         this.state = {
             data : data,
         };
 
-        function getData(nodes) {
+        function getOptionOneData(nodes) {
             var nodeData = null;
             nodes.forEach(function (node) {
                 var singleNodeData = {
@@ -36,11 +48,36 @@ class Mindmap extends React.Component {
                     "children" : []
                 };
                 if (node.nodes && node.nodes.length > 0) {
-                    var subNodes = getData(node.nodes);
+                    var subNodes = getOptionOneData(node.nodes);
                     singleNodeData.children = _.concat(singleNodeData.children, subNodes);
                 }
                 if(nodeData === null) {
                     nodeData = [singleNodeData];
+                }
+                else {
+                    nodeData = _.concat(nodeData, singleNodeData);
+                }
+            });
+            return nodeData;
+        }
+        function getOptionTwoData(nodes) {
+            var nodeData = null;
+            nodes.forEach(function (node) {
+                var singleNodeData = {
+                    'name': node.name,
+                    'target': [0]
+                };
+                if (node.nodes && node.nodes.length > 0) {
+                    singleNodeData = {
+                        'name': node.name,
+                        'target': [0],
+                        'subDocs': [{'name': node.name}]
+                    };
+                    var subNodes = getOptionTwoData(node.nodes);
+                    singleNodeData.subDocs = _.concat(singleNodeData, subNodes);
+                }
+                if(nodeData === null) {
+                    nodeData = singleNodeData;
                 }
                 else {
                     nodeData = _.concat(nodeData, singleNodeData);
