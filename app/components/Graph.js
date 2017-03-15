@@ -278,25 +278,9 @@ class Graph extends React.Component {
 
         var circleWidth = 30;
         var isInner = false;
-
         var palette = {
-            "lightgray": "#819090",
-            "gray": "#708284",
-            "mediumgray": "#536870",
-            "darkgray": "#475B62",
-            "darkblue": "#0A2933",
-            "darkerblue": "#042029",
-            "paleryellow": "#FCF4DC",
-            "paleyellow": "#EAE3CB",
-            "yellow": "#A57706",
-            "orange": "#BD3613",
-            "red": "#D11C24",
-            "pink": "#C61C6F",
-            "purple": "#595AB7",
-            "blue": "#2176C7",
-            "green": "#259286",
+            'black': '#323232',
             "white": "#fefefe",
-            "yellowgreen": "#738A05"
         };
 
         //displayedNodes is used as the data that is being displayed.
@@ -345,11 +329,17 @@ class Graph extends React.Component {
                 .charge(-2000)
                 .size([w, h]);
 
+            var defs = myChart.insert("svg:defs")
+                .data(["end"]);
+            defs.enter().append("svg:path")
+                .attr("d", "M0,-5L10,0L0,5");
+
 
             //Add visable lines to the data links
             var link = myChart.selectAll('line')
                 .data(links).enter().append('line')
                 .attr('stroke', palette.white);
+
 
             var node = myChart.selectAll('circle')
                 .data(displayedNodes).enter()
@@ -409,6 +399,7 @@ class Graph extends React.Component {
 
                     }
                 });
+
             force.linkDistance(w / 2);
 
 
@@ -416,7 +407,7 @@ class Graph extends React.Component {
                 .attr('r', circleWidth)
                 .attr('stroke', function (d, i) {
                     if (i > 0) {
-                        return palette.pink
+                        return palette.black
                     } else {
                         return "transparent"
                     }
@@ -430,9 +421,24 @@ class Graph extends React.Component {
                     }
                 })
 
+            node.append("svg:image")
+                .attr("xlink:href", function (d) {
+                    return d.img;
+                })
+                .attr("x", function (d) {
+                    return -25;
+                })
+                .attr("y", function (d) {
+                    return -25;
+                })
+                .attr("rx", 24)
+                .attr("height", 50)
+                .attr("width", 50)
+
             node.append('text')
                 .text(function (d) {
-                    return d.name
+                    if(!d.img)
+                        return d.name
                 })
                 .attr('font-family', 'Roboto Slab')
                 .attr('fill',palette.white)

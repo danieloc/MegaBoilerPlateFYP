@@ -23,13 +23,13 @@ class Mindmap extends React.Component {
             };
             if (this.props.user.nodes.length > 0) {
                 var nodeData = getOptionOneData(this.props.user.nodes);
-                console.log(nodeData);
                 data.children = nodeData;
             }
         }
         else if(this.props.user.mindmapOption === 'tiered') {
             data = [{
-                "name": this.props.user.name
+                "name": this.props.user.name,
+                "img": this.props.user.picture || this.props.user.gravatar,
             }];
             if(this.props.user.nodes.length > 0) {
                 var nodeData = getOptionTwoData(this.props.user.nodes);
