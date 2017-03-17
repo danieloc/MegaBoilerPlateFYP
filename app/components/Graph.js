@@ -6,12 +6,29 @@ import { connect } from 'react-redux';
 import * as d3 from 'd3';
 
 class Graph extends React.Component {
-
-
-    componentDidMount() {
-        this.createMindmap();
+    constructor(props) {
+        super(props);
+        this.state = {
+            width: 100,
+            height: 100
+        };
+        this.updateDimensions = this.updateDimensions.bind(this);
+        this.mindmapOptionOne = this.mindmapOptionOne.bind(this);
+    }
+    componentWillMount() {
+        this.updateDimensions();
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimensions);
     }
 
+    componentDidMount() {
+        window.addEventListener("resize", this.updateDimensions);
+        this.createMindmap();
+    }
+    updateDimensions() {
+        this.setState({width : this.props.width*0.75, height: this.props.height});
+    }
     createMindmap() {
         if (this.props.user.mindmapOption === "sprawl") {
             this.mindmapOptionOne();
@@ -32,21 +49,26 @@ class Graph extends React.Component {
         //displayedNodes is used as the data that is being displayed.
 
         var displayedNodes = this.props.data;
-        var width = this.props.width;
-        var height = this.props.height;
+        var width = this.state.width;
+        var height = this.state.height;
         var circleWidth = 30;
-        var myChart;
 
         var force = d3.layout.force();
 
-        myChart = d3.select(this.refs.hook)
+        var myChart = d3.select(this.refs.hook)
             .append('svg')
             .attr('width', width)
             .attr('height', height)
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .classed("svg-content", true)
 
-
-        console.log("Displayed Nodes");
-        console.log(displayedNodes);
+        d3.select(window).on("resize", resize);
+        function resize() {
+            console.log("Wubalubadubdub");
+            width = ((this.window.innerWidth - 55) *0.75), height = this.window.innerHeight - 100;
+            myChart.attr("width", width).attr("height", height);
+            force.size([width, height]).resume();
+        }
         var root = displayedNodes;
         root.fixed = true;
         root.x = width / 2;
@@ -57,8 +79,6 @@ class Graph extends React.Component {
         defs.enter().append("svg:path")
             .attr("d", "M0,-5L10,0L0,5");
 
-        console.log("Root");
-        console.log(root);
         update();
 
         hideToDos(root);
@@ -66,11 +86,7 @@ class Graph extends React.Component {
 
         function update() {
             var nodes = flatten(root);
-            console.log("NERDS");
-            console.log(nodes);
             var links = d3.layout.tree().links(nodes);
-            console.log("links");
-            console.log(links);
 
             //Restart the force layout with the updated paths
             force.nodes(nodes)
@@ -125,7 +141,7 @@ class Graph extends React.Component {
                 })
                 .style("fill", "#eee");
 
-            var images = nodeEnter.append("svg:image")
+            nodeEnter.append("svg:image")
                 .attr("xlink:href", function (d) {
                     return d.img;
                 })
@@ -150,36 +166,6 @@ class Graph extends React.Component {
                 })
 
             ///////////
-
-            // make the image grow a little on mouse over and add the text details on click
-            var setEvents = images
-
-                .on('mouseenter', function () {
-                    // select element in current context
-                    d3.select(this)
-                        .transition()
-                        .attr("x", function (d) {
-                            return -60;
-                        })
-                        .attr("y", function (d) {
-                            return -60;
-                        })
-                        .attr("height", 100)
-                        .attr("width", 100);
-                })
-                // set back
-                .on('mouseleave', function () {
-                    d3.select(this)
-                        .transition()
-                        .attr("x", function (d) {
-                            return -25;
-                        })
-                        .attr("y", function (d) {
-                            return -25;
-                        })
-                        .attr("height", 50)
-                        .attr("width", 50);
-                });
 
             // Exit any old nodes.
             node.exit().remove();
@@ -255,7 +241,6 @@ class Graph extends React.Component {
         }
 
         function flatten(root) {
-            console.log(root);
             var nodes = [];
             var i = 0;
 
@@ -286,8 +271,8 @@ class Graph extends React.Component {
         //displayedNodes is used as the data that is being displayed.
 
         var displayedNodes = this.props.data;
-        var width = this.props.width;
-        var height = this.props.height;
+        var width = this.state.width;
+        var height = this.state.height;
         calculateEverything(this, this.props.data, displayedNodes, isInner, palette);
 
         function calculateEverything(Obj, nodes, displayedNodes, isInner, palette) {
@@ -442,6 +427,8 @@ class Graph extends React.Component {
                 })
                 .attr('font-family', 'Roboto Slab')
                 .attr('fill',palette.white)
+                .attr("font-size", 18)
+                .attr("font-Family", "Arial, Helvetica, sans-serif")
                 .attr('x', function (d, i) {
                     if (i > 0) {
                         return circleWidth + 20
@@ -504,7 +491,6 @@ class Graph extends React.Component {
             border: '1px solid #323232',
             backgroundColor: this.props.user.primaryColor,
             position: 'relative',
-            overflow: 'auto',
             height: '100%',
         };
         return (
@@ -519,6 +505,8 @@ class Graph extends React.Component {
 const mapStateToProps = (state) => {
     return {
         user: state.auth.user,
+        width: state.viewPort.width,
+        height: state.viewPort.height,
     }
 };
 

@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import Graph from './Graph';
 import { getWalkThrough } from '../actions/modals';
 import _ from 'lodash';
+import Nodes from './Nodes'
 
 class Mindmap extends React.Component {
 
@@ -87,13 +88,28 @@ class Mindmap extends React.Component {
         }
     }
 
-
-
-    render() {
+    getSideBar() {
+        var sideBarStyle = {
+            width: this.props.width * 0.25,
+            float: 'right',
+            paddingRight: 20,
+        };
         return (
-                <div style = {{flex: 1,  position:'relative', height: '100%', margin: 0, display: 'flex', flexDirection: 'column' }}>
-                    <Graph width = {this.props.width} height = {this.props.height} flex = {1} data = {this.state.data} style = {{flex:1}}/>
+        <div style={sideBarStyle} >
+            <Nodes />
+        </div>);
+    }
+    render() {
+
+        return (
+            <section>
+                <div  style = {{ float: 'left'}}>
+                    <Graph data = {this.state.data} />
                 </div>
+                <span className="glyphicon glyphicon-chevron-right" style={{float: 'right'}}></span>
+                {/*{this.getChevron()}*/}
+                {this.getSideBar()}
+            </section>
         );
     }
 }

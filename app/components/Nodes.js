@@ -61,10 +61,7 @@ class Nodes extends React.Component {
                 {this.getNavBars(this.props.user, 0)}
                 <div className="panel-body">
                     {deleteNodeButton}
-                    {addNodesForm}
-                    {this.displayToDos()}
                 </div>
-                <button onClick={() => {console.log(this.props.user)}}>Check</button>
             </div>
 
         );

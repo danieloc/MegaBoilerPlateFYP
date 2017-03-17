@@ -1,7 +1,6 @@
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 import App from './components/App';
-import AddNodesForm from './components/AddNodesForm';
 import NotFound from './components/NotFound';
 import Login from './components/Account/Login';
 import Signup from './components/Account/Signup';
@@ -30,7 +29,6 @@ export default function getRoutes(store) {
   return (
     <Route path="/" component={App}>
       <IndexRoute component={Mindmap} onLeave={clearMessages} onEnter={ensureAuthenticated}/>
-      <Route path="/goals" component={AddNodesForm} onEnter={ensureAuthenticated} onLeave={clearMessages}/>
       <Route path="/mindmap" component={Mindmap} onEnter={ensureAuthenticated} onLeave={clearMessages} />
       <Route path="/nodes" component={Nodes} onEnter={ensureAuthenticated} onLeave={clearMessages} />
       <Route path="/login" component={Login} onEnter={skipIfAuthenticated} onLeave={clearMessages}/>
