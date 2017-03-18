@@ -13,3 +13,8 @@ export function setHeight(height) {
         height: height
     };
 }
+export function toggleSideBar() {
+    return {
+        type: 'TOGGLE_SIDEBAR'
+    };
+}

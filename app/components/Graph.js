@@ -11,8 +11,7 @@ class Graph extends React.Component {
         super(props);
         var data = this.props.getGraphData();
         this.state = {
-            width: 100,
-            height: 100,
+            sideBar: props.sideBar,
             data: data
         };
         this.updateDimensions = this.updateDimensions.bind(this);
@@ -20,9 +19,6 @@ class Graph extends React.Component {
     }
     componentWillMount() {
         this.updateDimensions();
-    }
-    componentWillUnmount() {
-        window.removeEventListener("resize", this.updateDimensions);
     }
     componentDidUpdate() {
         var tempData = this.props.getGraphData();
@@ -33,6 +29,17 @@ class Graph extends React.Component {
             d3.select('svg').remove();
             this.createMindmap();
         }
+        if(this.props.sideBar !== this.state.sideBar) {
+            var mindmapToSideBarRatio = 1;
+            if(this.props.sideBar) {
+                mindmapToSideBarRatio = 0.75
+            }
+            var width = this.props.width * mindmapToSideBarRatio;
+            var height = this.props.height;
+            d3.select('svg').attr("width", width).attr("height", height);
+            this.setState({sideBar: this.props.sideBar});
+            /*d3.layout.force().size([width, height]).resume();*/
+        }
     }
 
     componentDidMount() {
@@ -40,7 +47,12 @@ class Graph extends React.Component {
         this.createMindmap();
     }
     updateDimensions() {
-        this.setState({width : this.props.width*0.75, height: this.props.height});
+        var mindmapToSideBarRatio = 1;
+        if(this.props.sideBar)
+            mindmapToSideBarRatio = 0.75;
+        var width = this.props.width*mindmapToSideBarRatio;
+        var height = this.props.height;
+        d3.select(this.refs.hook).attr("width", width).attr("height", height)
     }
     createMindmap() {
         if (this.props.user.mindmapOption === "sprawl") {
@@ -60,8 +72,8 @@ class Graph extends React.Component {
         //displayedNodes is used as the data that is being displayed.
 
         var displayedNodes = this.props.data;
-        var width = this.state.width;
-        var height = this.state.height;
+        var width = this.props.width;
+        var height = this.props.height;
         var circleWidth = 30;
 
         var force = d3.layout.force();
@@ -69,13 +81,15 @@ class Graph extends React.Component {
                 .append('svg')
                 .attr('width', width)
                 .attr('height', height)
-                .attr("preserveAspectRatio", "xMinYMin meet")
-                .classed("svg-content", true)
 
-        d3.select(window).on("resize", resize);
+        d3.select(window).on("resize", resize.bind(this));
         function resize() {
             console.log("Wubalubadubdub");
-            width = ((this.window.innerWidth - 55) *0.75), height = this.window.innerHeight - 100;
+            var mindmapToSideBarRatio = 1;
+            if(this.props.sideBar)
+                mindmapToSideBarRatio = 0.75;
+            width = this.props.width*mindmapToSideBarRatio;
+            height = this.props.height;
             myChart.attr("width", width).attr("height", height);
             force.size([width, height]).resume();
         }
@@ -281,8 +295,8 @@ class Graph extends React.Component {
         //displayedNodes is used as the data that is being displayed.
 
         var displayedNodes = this.props.data;
-        var width = this.state.width;
-        var height = this.state.height;
+        var width = this.props.width;
+        var height = this.props.height;
         calculateEverything(this, this.props.data, displayedNodes, isInner, palette);
 
         function calculateEverything(Obj, nodes, displayedNodes, isInner, palette) {
@@ -517,6 +531,7 @@ const mapStateToProps = (state) => {
         user: state.auth.user,
         width: state.viewPort.width,
         height: state.viewPort.height,
+        sideBar: state.viewPort.sideBar
     }
 };
 

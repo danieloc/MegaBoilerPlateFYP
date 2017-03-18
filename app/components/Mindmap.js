@@ -5,8 +5,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Graph from './Graph';
 import { getWalkThrough } from '../actions/modals';
+import { toggleSideBar } from '../actions/viewPortActions';
 import _ from 'lodash';
-import Nodes from './Nodes'
+import Nodes from './Nodes';
 
 class Mindmap extends React.Component {
 
@@ -40,7 +41,7 @@ class Mindmap extends React.Component {
                 data = _.concat(data, nodeData);
             }
         }
-        return data
+        return data;
 
         function getOptionOneData(nodes) {
             var nodeData = null;
@@ -95,11 +96,24 @@ class Mindmap extends React.Component {
             float: 'right',
             paddingRight: 20,
         };
-        return (
-        <div style={sideBarStyle} >
-            <Nodes />
-        </div>);
+        if(this.props.sideBar) {
+            return (
+                <div style={sideBarStyle}>
+                    <Nodes />
+                </div>);
+        }
+        else
+            return null;
     }
+
+    getChevron() {
+        if(this.props.sideBar) {
+            return <span className="glyphicon glyphicon-chevron-right" onClick={() => this.props.dispatch(toggleSideBar())} style={{float: 'right'}}></span>;
+        }
+        else
+            return <span className="glyphicon glyphicon-chevron-left" onClick={() => this.props.dispatch(toggleSideBar())} style={{float: 'right'}}></span>;
+    }
+
     render() {
 
         return (
@@ -107,8 +121,7 @@ class Mindmap extends React.Component {
                 <div  style = {{ float: 'left'}}>
                     <Graph data = {this.getGraphData()} getGraphData = {this.getGraphData}/>
                 </div>
-                <span className="glyphicon glyphicon-chevron-right" style={{float: 'right'}}></span>
-                {/*{this.getChevron()}*/}
+                {this.getChevron()}
                 {this.getSideBar()}
             </section>
         );
@@ -120,7 +133,8 @@ const mapStateToProps = (state) => {
         user: state.auth.user,
         width: state.viewPort.width,
         height: state.viewPort.height,
-        activeModal: state.modals.activeModal
+        activeModal: state.modals.activeModal,
+        sideBar : state.viewPort.sideBar,
     }
 };
 
