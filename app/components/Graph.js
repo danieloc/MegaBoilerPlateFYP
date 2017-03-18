@@ -10,8 +10,6 @@ class Graph extends React.Component {
     constructor(props) {
         super(props);
         var data = this.props.getGraphData();
-        console.log("DATTTTAAAAA")
-        console.log(data);
         this.state = {
             width: 100,
             height: 100,
@@ -28,11 +26,7 @@ class Graph extends React.Component {
     }
     componentDidUpdate() {
         var tempData = this.props.getGraphData();
-        console.log("lucj");
-        console.log(this.state.data);
-        console.log(tempData);
         if(!_.isEqual(this.state.data, tempData)) {
-            console.log("suxxxxxxxedsssss");
             this.setState({
                 data: tempData
             });
@@ -58,8 +52,6 @@ class Graph extends React.Component {
     }
 
     mindmapOptionOne() {
-        var circleWidth = 30;
-
         var palette = {
             "lightgray": '#819090',
             'tcBlack': '#130COE',

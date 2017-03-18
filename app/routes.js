@@ -8,7 +8,7 @@ import Profile from './components/Account/Profile';
 import Forgot from './components/Account/Forgot';
 import Reset from './components/Account/Reset';
 import Mindmap from './components/Mindmap';
-import Nodes from './components/Nodes';
+import GoalPage from './components/GoalPage';
 
 export default function getRoutes(store) {
   const ensureAuthenticated = (nextState, replace) => {
@@ -30,7 +30,7 @@ export default function getRoutes(store) {
     <Route path="/" component={App}>
       <IndexRoute component={Mindmap} onLeave={clearMessages} onEnter={ensureAuthenticated}/>
       <Route path="/mindmap" component={Mindmap} onEnter={ensureAuthenticated} onLeave={clearMessages} />
-      <Route path="/nodes" component={Nodes} onEnter={ensureAuthenticated} onLeave={clearMessages} />
+      <Route path="/nodes" component={GoalPage} onEnter={ensureAuthenticated} onLeave={clearMessages} />
       <Route path="/login" component={Login} onEnter={skipIfAuthenticated} onLeave={clearMessages}/>
       <Route path="/signup" component={Signup} onEnter={skipIfAuthenticated} onLeave={clearMessages}/>
       <Route path="/account" component={Profile} onEnter={ensureAuthenticated} onLeave={clearMessages}/>
