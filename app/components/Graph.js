@@ -11,7 +11,7 @@ class Graph extends React.Component {
         super(props);
         var data = this.props.getGraphData();
         this.state = {
-            sideBar: props.sideBar,
+            sideBar: false,
             data: data
         };
         this.updateDimensions = this.updateDimensions.bind(this);
@@ -38,7 +38,7 @@ class Graph extends React.Component {
             var height = this.props.height;
             d3.select('svg').attr("width", width).attr("height", height);
             this.setState({sideBar: this.props.sideBar});
-            /*d3.layout.force().size([width, height]).resume();*/
+            d3.layout.force().size([width, height]).resume();
         }
     }
 

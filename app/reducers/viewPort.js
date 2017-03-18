@@ -19,7 +19,7 @@ export default function viewPort(state = initialState, action) {
             });
         case 'TOGGLE_SIDEBAR' :
             return Object.assign({}, state, {
-                sideBar : !state.sideBar
+                sideBar : action.toggleState
             });
         default:
             return state;

@@ -18,6 +18,10 @@ class Mindmap extends React.Component {
         }
         this.getGraphData = this.getGraphData.bind(this);
     }
+    componentWillMount() {
+        console.log("Fell in here");
+        this.props.dispatch(toggleSideBar(false));
+    }
     getGraphData() {
         var data;
         if(this.props.user.mindmapOption === 'sprawl') {
@@ -108,10 +112,10 @@ class Mindmap extends React.Component {
 
     getChevron() {
         if(this.props.sideBar) {
-            return <span className="glyphicon glyphicon-chevron-right" onClick={() => this.props.dispatch(toggleSideBar())} style={{float: 'right'}}></span>;
+            return <span className="glyphicon glyphicon-chevron-right" onClick={() => this.props.dispatch(toggleSideBar(false))} style={{float: 'right'}}></span>;
         }
         else
-            return <span className="glyphicon glyphicon-chevron-left" onClick={() => this.props.dispatch(toggleSideBar())} style={{float: 'right'}}></span>;
+            return <span className="glyphicon glyphicon-chevron-left" onClick={() => this.props.dispatch(toggleSideBar(true))} style={{float: 'right'}}></span>;
     }
 
     render() {
