@@ -12,9 +12,12 @@ class Mindmap extends React.Component {
 
     constructor(props) {
         super(props);
-        if(this.props.user.isNewUser) {
+        if (this.props.user.isNewUser) {
             this.props.dispatch(getWalkThrough());
         }
+        this.getGraphData = this.getGraphData.bind(this);
+    }
+    getGraphData() {
         var data;
         if(this.props.user.mindmapOption === 'sprawl') {
             data = {
@@ -37,9 +40,7 @@ class Mindmap extends React.Component {
                 data = _.concat(data, nodeData);
             }
         }
-        this.state = {
-            data : data,
-        };
+        return data
 
         function getOptionOneData(nodes) {
             var nodeData = null;
@@ -104,7 +105,7 @@ class Mindmap extends React.Component {
         return (
             <section>
                 <div  style = {{ float: 'left'}}>
-                    <Graph data = {this.state.data} />
+                    <Graph data = {this.getGraphData()} getGraphData = {this.getGraphData}/>
                 </div>
                 <span className="glyphicon glyphicon-chevron-right" style={{float: 'right'}}></span>
                 {/*{this.getChevron()}*/}

@@ -4,13 +4,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
+import _ from 'lodash';
 
 class Graph extends React.Component {
     constructor(props) {
         super(props);
+        var data = this.props.getGraphData();
+        console.log("DATTTTAAAAA")
+        console.log(data);
         this.state = {
             width: 100,
-            height: 100
+            height: 100,
+            data: data
         };
         this.updateDimensions = this.updateDimensions.bind(this);
         this.mindmapOptionOne = this.mindmapOptionOne.bind(this);
@@ -20,6 +25,20 @@ class Graph extends React.Component {
     }
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateDimensions);
+    }
+    componentDidUpdate() {
+        var tempData = this.props.getGraphData();
+        console.log("lucj");
+        console.log(this.state.data);
+        console.log(tempData);
+        if(!_.isEqual(this.state.data, tempData)) {
+            console.log("suxxxxxxxedsssss");
+            this.setState({
+                data: tempData
+            });
+            d3.select('svg').remove();
+            this.createMindmap();
+        }
     }
 
     componentDidMount() {
@@ -54,13 +73,12 @@ class Graph extends React.Component {
         var circleWidth = 30;
 
         var force = d3.layout.force();
-
-        var myChart = d3.select(this.refs.hook)
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr("preserveAspectRatio", "xMinYMin meet")
-            .classed("svg-content", true)
+            var myChart = d3.select(this.refs.hook)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .classed("svg-content", true)
 
         d3.select(window).on("resize", resize);
         function resize() {
