@@ -14,11 +14,7 @@ class Graph extends React.Component {
             sideBar: false,
             data: data
         };
-        this.updateDimensions = this.updateDimensions.bind(this);
         this.mindmapOptionOne = this.mindmapOptionOne.bind(this);
-    }
-    componentWillMount() {
-        this.updateDimensions();
     }
     componentDidUpdate() {
         var tempData = this.props.getGraphData();
@@ -29,30 +25,10 @@ class Graph extends React.Component {
             d3.select('svg').remove();
             this.createMindmap();
         }
-        if(this.props.sideBar !== this.state.sideBar) {
-            var mindmapToSideBarRatio = 1;
-            if(this.props.sideBar) {
-                mindmapToSideBarRatio = 0.75
-            }
-            var width = this.props.width * mindmapToSideBarRatio;
-            var height = this.props.height;
-            d3.select('svg').attr("width", width).attr("height", height);
-            this.setState({sideBar: this.props.sideBar});
-            d3.layout.force().size([width, height]).resume();
-        }
     }
 
     componentDidMount() {
-        window.addEventListener("resize", this.updateDimensions);
         this.createMindmap();
-    }
-    updateDimensions() {
-        var mindmapToSideBarRatio = 1;
-        if(this.props.sideBar)
-            mindmapToSideBarRatio = 0.75;
-        var width = this.props.width*mindmapToSideBarRatio;
-        var height = this.props.height;
-        d3.select(this.refs.hook).attr("width", width).attr("height", height)
     }
     createMindmap() {
         if (this.props.user.mindmapOption === "sprawl") {
