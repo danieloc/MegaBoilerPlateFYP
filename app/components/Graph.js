@@ -48,7 +48,10 @@ class Graph extends React.Component {
         //displayedNodes is used as the data that is being displayed.
 
         var displayedNodes = this.props.data;
-        var width = this.props.width;
+        var mindmapToSideBarRatio = 1;
+        if(this.props.sideBar)
+            mindmapToSideBarRatio = 0.75;
+        var width = this.props.width*mindmapToSideBarRatio;
         var height = this.props.height;
         var circleWidth = 30;
 
@@ -61,7 +64,7 @@ class Graph extends React.Component {
         d3.select(window).on("resize", resize.bind(this));
         function resize() {
             console.log("Wubalubadubdub");
-            var mindmapToSideBarRatio = 1;
+            mindmapToSideBarRatio = 1;
             if(this.props.sideBar)
                 mindmapToSideBarRatio = 0.75;
             width = this.props.width*mindmapToSideBarRatio;
