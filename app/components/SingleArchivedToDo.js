@@ -14,17 +14,23 @@ class SingleArchivedToDo extends React.Component {
     toggleArchiveToDo() {
         this.props.dispatch(unarchiveToDo(this.props.user.email, this.props.obj._id, this.props.token));
     }
+    getPath() {
+        return this.props.pathArr.map((pathEl) => {
+            return <span>{pathEl} ||</span>
+        })
+    }
 
     render() {
         return (<div className="col-sm-4">
-            <div className="panel">
-                <div className="panel-body">
-                    <h3>{this.props.obj.name}<span className="glyphicon glyphicon-trash pull-right"></span></h3>
-                    <p>{this.props.obj.priority}</p>
-                    <button className="btn-primary" onClick={() =>this.toggleArchiveToDo()}>Unarchive</button>
+                <div className="panel">
+                    <div className="panel-body">
+                        <h3>{this.props.obj.name}<span className="glyphicon glyphicon-trash pull-right"></span></h3>
+                        <p>{this.props.obj.priority}</p>
+                        <p>{this.getPath()}</p>
+                        <button className="btn-primary" onClick={() =>this.toggleArchiveToDo()}>Unarchive</button>
+                    </div>
                 </div>
             </div>
-        </div>
         )
     };
 };

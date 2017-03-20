@@ -11,19 +11,20 @@ class Archived extends React.Component {
         this.displayToDos = this.displayToDos.bind(this);
     }
 
-    displayToDos(node) {
+    displayToDos(node, pathArr) {
         if (node.nodes.length > 0) {
+            var updatedPath = pathArr.concat([node.name]);
             return node.nodes.map((node) => {
                 var subNodeToDos = [];
                 var currentNodeToDos = [];
                 if(node.nodes) {
-                    subNodeToDos = this.displayToDos(node)
+                    subNodeToDos = this.displayToDos(node, updatedPath)
                 }
                 if(node.todos.length > 0) {
                     currentNodeToDos = node.todos.map((todo) => {
                         console.log(todo);
                         if (todo.completed)
-                            return <SingleArchivedToDo key={todo._id} index={todo._id} obj={todo}></SingleArchivedToDo>;
+                            return <SingleArchivedToDo key={todo._id} index={todo._id} obj={todo} pathArr = {updatedPath} ></SingleArchivedToDo>;
                         else return [];
                     });
                 }
@@ -34,7 +35,7 @@ class Archived extends React.Component {
     render() {
         return (
             <div>
-                {this.displayToDos(this.props.user)}
+                {this.displayToDos(this.props.user, [])}
             </div>
         )
     };
