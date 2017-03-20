@@ -20,7 +20,8 @@ class GoalPage extends React.Component {
         if (this.props.node) {
             if (this.props.node.todos.length > 0) {
                 return this.props.node.todos.map((todo, i) => {
-                    return <SingleGoal key={i} index={i} obj={todo} nodeID = {this.props.node._id} handleChange={this.handleChange}> </SingleGoal>;
+                    if(!todo.completed)
+                        return <SingleGoal key={i} index={i} obj={todo} nodeID = {this.props.node._id} handleChange={this.handleChange}> </SingleGoal>;
                 });
             }
         }else {
