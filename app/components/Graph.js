@@ -165,6 +165,7 @@ class Graph extends React.Component {
                 .attr("font-size", 18)
                 .attr("font-Family", "Arial, Helvetica, sans-serif")
                 .text(function (d) {
+                    if(!d.img)
                     return d.name;
                 })
 
