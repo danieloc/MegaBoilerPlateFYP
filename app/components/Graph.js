@@ -56,10 +56,10 @@ class Graph extends React.Component {
         var circleWidth = 30;
 
         var force = d3.layout.force();
-            var myChart = d3.select(this.refs.hook)
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height)
+        var myChart = d3.select(this.refs.hook)
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
 
         d3.select(window).on("resize", resize.bind(this));
         function resize() {
@@ -275,12 +275,12 @@ class Graph extends React.Component {
 
         var displayedNodes = this.props.data;
         var Obj = this;
+        var dataArrayIndex = 0;
+        var dataArray = [displayedNodes];
         calculateEverything();
 
         function calculateEverything() {
             var links = [];
-            console.log('Going to Calculate everything!!');
-            console.log(Obj);
             var mindmapToSideBarRatio = 1;
             if(Obj.props.sideBar)
                 mindmapToSideBarRatio = 0.75;
@@ -291,8 +291,6 @@ class Graph extends React.Component {
             if(displayedNodes.length > 2) {
                 gravity = displayedNodes.length/100;
             }
-
-
             //For every dataset,
             for (var i = 0; i < displayedNodes.length; i++) {
                 //If the datahas a "target" value
@@ -322,7 +320,6 @@ class Graph extends React.Component {
 
             d3.select(window).on("resize", resize.bind(Obj));
             function resize() {
-                console.log("Wubalubadubdub");
                 mindmapToSideBarRatio = 1;
                 if(this.props.sideBar)
                     mindmapToSideBarRatio = 0.75;
@@ -350,32 +347,39 @@ class Graph extends React.Component {
                 .call(force.drag)
                 .on('dblclick', function () {
                     var nodeName = d3.select(this).text();
-                    if ( isInner === false) {
-                        var nodeFound = false;
-                        for (i = 0; i <= displayedNodes.length && nodeFound === false; i++) {
-                            if (displayedNodes[i].name === nodeName) {
-                                nodeFound = true;
-                                console.log(displayedNodes);
-                                displayedNodes = displayedNodes[i].subDocs.valueOf();
+                    var nodeFound = false;
+                    for (i = 0; i <= displayedNodes.length && nodeFound === false; i++) {
+                        if (nodeName === dataArray[dataArrayIndex][0].name) {
+                            nodeFound = true;
+                            console.log("Whoo");
+                            if (dataArray.length > 1) {
+                                console.log("Hoo");
+                                console.log(dataArray);
+                                console.log(dataArrayIndex);
+                                dataArray.splice(dataArrayIndex, dataArrayIndex + 1);
+                                dataArrayIndex--;
+                                console.log(dataArray);
+                                displayedNodes = dataArray[dataArrayIndex];
                                 myChart.remove();
                                 while (links.length > 0) {
                                     links.pop();
                                 }
                                 d3.select('svg').remove();
-                                isInner = true;
+                                isInner = false;
                                 calculateEverything();
                             }
                         }
-                    }
-                    else {
-                        if (nodeName === displayedNodes[0].name) {
-                            displayedNodes = Obj.props.data.valueOf();
+                        else if (dataArray[dataArrayIndex][i] && dataArray[dataArrayIndex][i].name === nodeName && dataArray[dataArrayIndex][i].subDocs) {
+                            nodeFound = true;
+                            displayedNodes = dataArray[dataArrayIndex][i].subDocs.valueOf();
+                            dataArray.push(dataArray[dataArrayIndex][i].subDocs);
+                            dataArrayIndex++;
                             myChart.remove();
                             while (links.length > 0) {
                                 links.pop();
                             }
                             d3.select('svg').remove();
-                            isInner = false;
+                            isInner = true;
                             calculateEverything();
                         }
                     }
@@ -438,42 +442,14 @@ class Graph extends React.Component {
                 .attr("height", 50)
                 .attr("width", 50)
 
-            node.append('text')
-                .text(function (d) {
-                    if(!d.img)
-                        return d.name
-                })
-                .attr('font-family', 'Roboto Slab')
-                .attr('fill',palette.white)
+            var nodeText = node.append("text")
+                .attr("x", 30)
+                .attr("fill", palette.tcBlack)
                 .attr("font-size", 18)
                 .attr("font-Family", "Arial, Helvetica, sans-serif")
-                .attr('x', function (d, i) {
-                    if (i > 0) {
-                        return circleWidth + 20
-                    } else {
-                        return circleWidth - 15
-                    }
-                })
-                .attr('y', function (d, i) {
-                    if (i > 0) {
-                        return circleWidth
-                    } else {
-                        return 8
-                    }
-                })
-                .attr('text-anchor', function (d, i) {
-                    if (i > 0) {
-                        return 'beginning'
-                    } else {
-                        return 'end'
-                    }
-                })
-                .attr('font-size', function (d, i) {
-                    if (i > 0) {
-                        return '2em'
-                    } else {
-                        return '3.4em'
-                    }
+                .text(function (d) {
+                    if(!d.img)
+                    return d.name;
                 })
 
             force.on('tick', function (e) {
