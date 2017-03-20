@@ -274,16 +274,19 @@ class Graph extends React.Component {
         //displayedNodes is used as the data that is being displayed.
 
         var displayedNodes = this.props.data;
-        var width = this.props.width;
-        var height = this.props.height;
-        calculateEverything(this, this.props.data, displayedNodes, isInner, palette);
+        var Obj = this;
+        calculateEverything();
 
-        function calculateEverything(Obj, nodes, displayedNodes, isInner, palette) {
-
+        function calculateEverything() {
             var links = [];
             console.log('Going to Calculate everything!!');
-            var w = Obj.props.width,
-                h = Obj.props.height;
+            console.log(Obj);
+            var mindmapToSideBarRatio = 1;
+            if(Obj.props.sideBar)
+                mindmapToSideBarRatio = 0.75;
+            var w = Obj.props.width*mindmapToSideBarRatio;
+            var h = Obj.props.height;
+
             var gravity = 0.02;
             if(displayedNodes.length > 2) {
                 gravity = displayedNodes.length/100;
@@ -317,6 +320,18 @@ class Graph extends React.Component {
                 .charge(-2000)
                 .size([w, h]);
 
+            d3.select(window).on("resize", resize.bind(Obj));
+            function resize() {
+                console.log("Wubalubadubdub");
+                mindmapToSideBarRatio = 1;
+                if(this.props.sideBar)
+                    mindmapToSideBarRatio = 0.75;
+                w = this.props.width*mindmapToSideBarRatio;
+                h = this.props.height;
+                myChart.attr("width", w).attr("height", h);
+                force.size([w, h]).resume();
+            }
+
             var defs = myChart.insert("svg:defs")
                 .data(["end"]);
             defs.enter().append("svg:path")
@@ -348,20 +363,20 @@ class Graph extends React.Component {
                                 }
                                 d3.select('svg').remove();
                                 isInner = true;
-                                calculateEverything(Obj, nodes, displayedNodes, isInner, palette);
+                                calculateEverything();
                             }
                         }
                     }
                     else {
                         if (nodeName === displayedNodes[0].name) {
-                            displayedNodes = nodes.valueOf();
+                            displayedNodes = Obj.props.data.valueOf();
                             myChart.remove();
                             while (links.length > 0) {
                                 links.pop();
                             }
                             d3.select('svg').remove();
                             isInner = false;
-                            calculateEverything(Obj, nodes, displayedNodes, isInner, palette);
+                            calculateEverything();
                         }
                     }
 
