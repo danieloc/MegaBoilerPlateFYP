@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
-import { removeToDo, updateToDo } from '../actions/auth';
+import { removeToDo, updateToDo} from '../actions/auth';
 
 class SingleGoal extends React.Component {
     constructor(props) {
@@ -29,9 +29,11 @@ class SingleGoal extends React.Component {
         }else if(this.refs.highPriorRef.checked){
             newPriority = "High";
         }
-        console.log(newName);
-        this.props.dispatch(updateToDo(this.props.user.email, this.props.obj._id, newName, newPriority, this.props.nodeID, this.props.indexList, this.props.depth, this.props.token));
+        this.props.dispatch(updateToDo(this.props.user.email, this.props.obj._id, newName, newPriority, false, this.props.nodeID, this.props.indexList, this.props.depth, this.props.token));
         this.setState({editing: false});
+    }
+    archiveToDo() {
+        this.props.dispatch(updateToDo(this.props.user.email, this.props.obj._id, this.props.obj.name, this.props.obj.priority, true, this.props.nodeID, this.props.indexList, this.props.depth, this.props.token))
     }
 
     removeGoal() {
@@ -72,6 +74,7 @@ class SingleGoal extends React.Component {
                                                        className="glyphicon glyphicon-trash pull-right"></span></h3>
                         <p>{this.props.obj.priority}<span className="glyphicon glyphicon-wrench pull-right"
                                                           onClick={() =>this.changeToEdit()}></span></p>
+                        <button className="btn-danger" onClick={() => this.archiveToDo()}>Archive</button>
                     </div>
                 </div>
             </div>
