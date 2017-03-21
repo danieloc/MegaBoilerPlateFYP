@@ -13,3 +13,9 @@ export function setHeight(height) {
         height: height
     };
 }
+export function toggleSideBar(state) {
+    return {
+        type: 'TOGGLE_SIDEBAR',
+        toggleState: state
+    };
+}

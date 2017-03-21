@@ -5,15 +5,24 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Graph from './Graph';
 import { getWalkThrough } from '../actions/modals';
+import { toggleSideBar } from '../actions/viewPortActions';
 import _ from 'lodash';
+import Nodes from './Nodes';
 
 class Mindmap extends React.Component {
 
     constructor(props) {
         super(props);
-        if(this.props.user.isNewUser) {
+        if (this.props.user.isNewUser) {
             this.props.dispatch(getWalkThrough());
         }
+        this.getGraphData = this.getGraphData.bind(this);
+    }
+    componentWillMount() {
+        console.log("Fell in here");
+        this.props.dispatch(toggleSideBar(false));
+    }
+    getGraphData() {
         var data;
         if(this.props.user.mindmapOption === 'sprawl') {
             data = {
@@ -36,9 +45,7 @@ class Mindmap extends React.Component {
                 data = _.concat(data, nodeData);
             }
         }
-        this.state = {
-            data : data,
-        };
+        return data;
 
         function getOptionOneData(nodes) {
             var nodeData = null;
@@ -87,13 +94,46 @@ class Mindmap extends React.Component {
         }
     }
 
+    getSideBar() {
+        var sideBarStyle = {
+            width: this.props.width * 0.25,
+            float: 'right',
+            paddingRight: 20,
+        };
+        if(this.props.sideBar) {
+            return (
+                <div style={sideBarStyle}>
+                    <Nodes />
+                </div>);
+        }
+        else
+            return null;
+    }
 
+    toggleSideBar(onOff) {
+        this.props.dispatch(toggleSideBar(onOff));
+        setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 10);
+
+    }
+
+    getChevron() {
+        if(this.props.sideBar) {
+            return <span className="glyphicon glyphicon-chevron-right" onClick={() => this.toggleSideBar(false)} style={{float: 'right'}}></span>;
+        }
+        else
+            return <span className="glyphicon glyphicon-chevron-left" onClick={() => this.toggleSideBar(true)} style={{float: 'right'}}></span>;
+    }
 
     render() {
+
         return (
-                <div style = {{flex: 1,  position:'relative', height: '100%', margin: 0, display: 'flex', flexDirection: 'column' }}>
-                    <Graph width = {this.props.width} height = {this.props.height} flex = {1} data = {this.state.data} style = {{flex:1}}/>
+            <section>
+                <div  style = {{ float: 'left'}}>
+                    <Graph data = {this.getGraphData()} getGraphData = {this.getGraphData}/>
                 </div>
+                {this.getChevron()}
+                {this.getSideBar()}
+            </section>
         );
     }
 }
@@ -103,7 +143,8 @@ const mapStateToProps = (state) => {
         user: state.auth.user,
         width: state.viewPort.width,
         height: state.viewPort.height,
-        activeModal: state.modals.activeModal
+        activeModal: state.modals.activeModal,
+        sideBar : state.viewPort.sideBar,
     }
 };
 

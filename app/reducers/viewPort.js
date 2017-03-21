@@ -4,6 +4,7 @@
 const initialState = {
     width: 500,
     height : 500,
+    sideBar : false
 };
 
 export default function viewPort(state = initialState, action) {
@@ -15,6 +16,10 @@ export default function viewPort(state = initialState, action) {
         case 'SET_HEIGHT' :
             return Object.assign({}, state, {
                 height : action.height -100
+            });
+        case 'TOGGLE_SIDEBAR' :
+            return Object.assign({}, state, {
+                sideBar : action.toggleState
             });
         default:
             return state;

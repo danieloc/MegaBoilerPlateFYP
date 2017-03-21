@@ -1,7 +1,6 @@
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 import App from './components/App';
-import AddNodesForm from './components/AddNodesForm';
 import NotFound from './components/NotFound';
 import Login from './components/Account/Login';
 import Signup from './components/Account/Signup';
@@ -9,7 +8,8 @@ import Profile from './components/Account/Profile';
 import Forgot from './components/Account/Forgot';
 import Reset from './components/Account/Reset';
 import Mindmap from './components/Mindmap';
-import Nodes from './components/Nodes';
+import GoalPage from './components/GoalPage';
+import Archived from './components/Archived';
 
 export default function getRoutes(store) {
   const ensureAuthenticated = (nextState, replace) => {
@@ -30,9 +30,9 @@ export default function getRoutes(store) {
   return (
     <Route path="/" component={App}>
       <IndexRoute component={Mindmap} onLeave={clearMessages} onEnter={ensureAuthenticated}/>
-      <Route path="/goals" component={AddNodesForm} onEnter={ensureAuthenticated} onLeave={clearMessages}/>
       <Route path="/mindmap" component={Mindmap} onEnter={ensureAuthenticated} onLeave={clearMessages} />
-      <Route path="/nodes" component={Nodes} onEnter={ensureAuthenticated} onLeave={clearMessages} />
+      <Route path="/nodes" component={GoalPage} onEnter={ensureAuthenticated} onLeave={clearMessages} />
+      <Route path="/archived" component={Archived} onEnter={ensureAuthenticated} onLeave={clearMessages} />
       <Route path="/login" component={Login} onEnter={skipIfAuthenticated} onLeave={clearMessages}/>
       <Route path="/signup" component={Signup} onEnter={skipIfAuthenticated} onLeave={clearMessages}/>
       <Route path="/account" component={Profile} onEnter={ensureAuthenticated} onLeave={clearMessages}/>

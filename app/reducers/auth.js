@@ -37,6 +37,10 @@ export default function auth(state = initialState, action) {
       return Object.assign({}, state, {
         user: action.user
       });
+    case 'TODO_UNARCHIVED' :
+      return Object.assign({}, state, {
+        user: action.user
+      });
     case 'LOGOUT_SUCCESS':
       return initialState;
     case 'WALK_THROUGH_FINISHED' :

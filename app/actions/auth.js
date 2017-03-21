@@ -325,7 +325,7 @@ export function removeToDo(email , todoID, nodeID, indexList, depth, token) {
     });
   };
 }
-export function updateToDo(email , todoID, name, priority, nodeID, indexList, depth, token) {
+export function updateToDo(email , todoID, name, priority, archived, nodeID, indexList, depth, token) {
   return (dispatch) => {
     dispatch({
       type: 'CLEAR_MESSAGES'
@@ -341,6 +341,7 @@ export function updateToDo(email , todoID, name, priority, nodeID, indexList, de
         todoID: todoID,
         todoTitle: name,
         todoPriority: priority,
+        archived: archived,
         nodeID: nodeID,
         indexList: indexList,
         depth : depth
@@ -364,6 +365,42 @@ export function updateToDo(email , todoID, name, priority, nodeID, indexList, de
         return response.json().then((json) => {
           dispatch({
             type: 'UPDATE_GOAL_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}
+
+
+export function unarchiveToDo(email , todoID, token) {
+  return (dispatch) => {
+    dispatch({
+      type: 'CLEAR_MESSAGES'
+    });
+    return fetch('/todos/unarchive', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        todoID: todoID,
+      })
+    }).then((response) => {
+      if (response.ok) {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'TODO_UNARCHIVED',
+            user: json.user
+          });
+        });
+      } else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'UPDATE_TODO_FAILURE',
             messages: Array.isArray(json) ? json : [json]
           });
         });

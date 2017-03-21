@@ -627,17 +627,44 @@ function recursiveUpdateToDo(i, node, req) {
           console.log(todo);
           todo.name = req.body.todoTitle;
           todo.priority = req.body.todoPriority;
+          todo.completed = req.body.archived;
           todo.save();
         });
     node.todos.forEach(function(todo){
       if(todo._id.equals(req.body.todoID)) {
         todo.name = req.body.todoTitle;
         todo.priority = req.body.todoPriority;
+        todo.completed = req.body.archived;
       }
     });
     return [node, node];
   }
 }
+
+exports.unarchiveToDo = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      var myTodo;
+      UserSchema.ToDo.findOne({ _id: req.body.todoID})
+          .exec(function (err, todo) {
+            todo.completed = false;
+            myTodo = todo;
+            todo.save(function (err) {
+              done(err, todo);
+            });
+          });
+      UserSchema.User.findOne({  email: req.body.email  })
+          .exec(function(err, user) {
+            res.send({user: user.toJSON(), todo : myTodo});
+          });
+    }]);
+};
 
 exports.addToNode = function(req, res) {
   req.assert('nodeTitle', 'Node title cannot be blank').notEmpty();

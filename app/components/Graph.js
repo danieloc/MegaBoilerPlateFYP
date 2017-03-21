@@ -4,14 +4,32 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
+import _ from 'lodash';
 
 class Graph extends React.Component {
-
+    constructor(props) {
+        super(props);
+        var data = this.props.getGraphData();
+        this.state = {
+            sideBar: false,
+            data: data
+        };
+        this.mindmapOptionOne = this.mindmapOptionOne.bind(this);
+    }
+    componentDidUpdate() {
+        var tempData = this.props.getGraphData();
+        if(!_.isEqual(this.state.data, tempData)) {
+            this.setState({
+                data: tempData
+            });
+            d3.select('svg').remove();
+            this.createMindmap();
+        }
+    }
 
     componentDidMount() {
         this.createMindmap();
     }
-
     createMindmap() {
         if (this.props.user.mindmapOption === "sprawl") {
             this.mindmapOptionOne();
@@ -22,8 +40,6 @@ class Graph extends React.Component {
     }
 
     mindmapOptionOne() {
-        var circleWidth = 30;
-
         var palette = {
             "lightgray": '#819090',
             'tcBlack': '#130COE',
@@ -32,21 +48,30 @@ class Graph extends React.Component {
         //displayedNodes is used as the data that is being displayed.
 
         var displayedNodes = this.props.data;
-        var width = this.props.width;
+        var mindmapToSideBarRatio = 1;
+        if(this.props.sideBar)
+            mindmapToSideBarRatio = 0.75;
+        var width = this.props.width*mindmapToSideBarRatio;
         var height = this.props.height;
         var circleWidth = 30;
-        var myChart;
 
         var force = d3.layout.force();
-
-        myChart = d3.select(this.refs.hook)
+        var myChart = d3.select(this.refs.hook)
             .append('svg')
             .attr('width', width)
             .attr('height', height)
 
-
-        console.log("Displayed Nodes");
-        console.log(displayedNodes);
+        d3.select(window).on("resize", resize.bind(this));
+        function resize() {
+            console.log("Wubalubadubdub");
+            mindmapToSideBarRatio = 1;
+            if(this.props.sideBar)
+                mindmapToSideBarRatio = 0.75;
+            width = this.props.width*mindmapToSideBarRatio;
+            height = this.props.height;
+            myChart.attr("width", width).attr("height", height);
+            force.size([width, height]).resume();
+        }
         var root = displayedNodes;
         root.fixed = true;
         root.x = width / 2;
@@ -57,8 +82,6 @@ class Graph extends React.Component {
         defs.enter().append("svg:path")
             .attr("d", "M0,-5L10,0L0,5");
 
-        console.log("Root");
-        console.log(root);
         update();
 
         hideToDos(root);
@@ -66,11 +89,7 @@ class Graph extends React.Component {
 
         function update() {
             var nodes = flatten(root);
-            console.log("NERDS");
-            console.log(nodes);
             var links = d3.layout.tree().links(nodes);
-            console.log("links");
-            console.log(links);
 
             //Restart the force layout with the updated paths
             force.nodes(nodes)
@@ -125,7 +144,7 @@ class Graph extends React.Component {
                 })
                 .style("fill", "#eee");
 
-            var images = nodeEnter.append("svg:image")
+            nodeEnter.append("svg:image")
                 .attr("xlink:href", function (d) {
                     return d.img;
                 })
@@ -146,40 +165,11 @@ class Graph extends React.Component {
                 .attr("font-size", 18)
                 .attr("font-Family", "Arial, Helvetica, sans-serif")
                 .text(function (d) {
+                    if(!d.img)
                     return d.name;
                 })
 
             ///////////
-
-            // make the image grow a little on mouse over and add the text details on click
-            var setEvents = images
-
-                .on('mouseenter', function () {
-                    // select element in current context
-                    d3.select(this)
-                        .transition()
-                        .attr("x", function (d) {
-                            return -60;
-                        })
-                        .attr("y", function (d) {
-                            return -60;
-                        })
-                        .attr("height", 100)
-                        .attr("width", 100);
-                })
-                // set back
-                .on('mouseleave', function () {
-                    d3.select(this)
-                        .transition()
-                        .attr("x", function (d) {
-                            return -25;
-                        })
-                        .attr("y", function (d) {
-                            return -25;
-                        })
-                        .attr("height", 50)
-                        .attr("width", 50);
-                });
 
             // Exit any old nodes.
             node.exit().remove();
@@ -255,7 +245,6 @@ class Graph extends React.Component {
         }
 
         function flatten(root) {
-            console.log(root);
             var nodes = [];
             var i = 0;
 
@@ -286,22 +275,23 @@ class Graph extends React.Component {
         //displayedNodes is used as the data that is being displayed.
 
         var displayedNodes = this.props.data;
-        var width = this.props.width;
-        var height = this.props.height;
-        calculateEverything(this, this.props.data, displayedNodes, isInner, palette);
+        var Obj = this;
+        var dataArrayIndex = 0;
+        var dataArray = [displayedNodes];
+        calculateEverything();
 
-        function calculateEverything(Obj, nodes, displayedNodes, isInner, palette) {
-
+        function calculateEverything() {
             var links = [];
-            console.log('Going to Calculate everything!!');
-            var w = Obj.props.width,
-                h = Obj.props.height;
+            var mindmapToSideBarRatio = 1;
+            if(Obj.props.sideBar)
+                mindmapToSideBarRatio = 0.75;
+            var w = Obj.props.width*mindmapToSideBarRatio;
+            var h = Obj.props.height;
+
             var gravity = 0.02;
             if(displayedNodes.length > 2) {
                 gravity = displayedNodes.length/100;
             }
-
-
             //For every dataset,
             for (var i = 0; i < displayedNodes.length; i++) {
                 //If the datahas a "target" value
@@ -329,6 +319,17 @@ class Graph extends React.Component {
                 .charge(-2000)
                 .size([w, h]);
 
+            d3.select(window).on("resize", resize.bind(Obj));
+            function resize() {
+                mindmapToSideBarRatio = 1;
+                if(this.props.sideBar)
+                    mindmapToSideBarRatio = 0.75;
+                w = this.props.width*mindmapToSideBarRatio;
+                h = this.props.height;
+                myChart.attr("width", w).attr("height", h);
+                force.size([w, h]).resume();
+            }
+
             var defs = myChart.insert("svg:defs")
                 .data(["end"]);
             defs.enter().append("svg:path")
@@ -347,33 +348,40 @@ class Graph extends React.Component {
                 .call(force.drag)
                 .on('dblclick', function () {
                     var nodeName = d3.select(this).text();
-                    if ( isInner === false) {
-                        var nodeFound = false;
-                        for (i = 0; i <= displayedNodes.length && nodeFound === false; i++) {
-                            if (displayedNodes[i].name === nodeName) {
-                                nodeFound = true;
-                                console.log(displayedNodes);
-                                displayedNodes = displayedNodes[i].subDocs.valueOf();
+                    var nodeFound = false;
+                    for (i = 0; i <= displayedNodes.length && nodeFound === false; i++) {
+                        if (nodeName === dataArray[dataArrayIndex][0].name) {
+                            nodeFound = true;
+                            console.log("Whoo");
+                            if (dataArray.length > 1) {
+                                console.log("Hoo");
+                                console.log(dataArray);
+                                console.log(dataArrayIndex);
+                                dataArray.splice(dataArrayIndex, dataArrayIndex + 1);
+                                dataArrayIndex--;
+                                console.log(dataArray);
+                                displayedNodes = dataArray[dataArrayIndex];
                                 myChart.remove();
                                 while (links.length > 0) {
                                     links.pop();
                                 }
                                 d3.select('svg').remove();
-                                isInner = true;
-                                calculateEverything(Obj, nodes, displayedNodes, isInner, palette);
+                                isInner = false;
+                                calculateEverything();
                             }
                         }
-                    }
-                    else {
-                        if (nodeName === displayedNodes[0].name) {
-                            displayedNodes = nodes.valueOf();
+                        else if (dataArray[dataArrayIndex][i] && dataArray[dataArrayIndex][i].name === nodeName && dataArray[dataArrayIndex][i].subDocs) {
+                            nodeFound = true;
+                            displayedNodes = dataArray[dataArrayIndex][i].subDocs.valueOf();
+                            dataArray.push(dataArray[dataArrayIndex][i].subDocs);
+                            dataArrayIndex++;
                             myChart.remove();
                             while (links.length > 0) {
                                 links.pop();
                             }
                             d3.select('svg').remove();
-                            isInner = false;
-                            calculateEverything(Obj, nodes, displayedNodes, isInner, palette);
+                            isInner = true;
+                            calculateEverything();
                         }
                     }
 
@@ -435,40 +443,14 @@ class Graph extends React.Component {
                 .attr("height", 50)
                 .attr("width", 50)
 
-            node.append('text')
+            var nodeText = node.append("text")
+                .attr("x", 30)
+                .attr("fill", palette.tcBlack)
+                .attr("font-size", 18)
+                .attr("font-Family", "Arial, Helvetica, sans-serif")
                 .text(function (d) {
                     if(!d.img)
-                        return d.name
-                })
-                .attr('font-family', 'Roboto Slab')
-                .attr('fill',palette.white)
-                .attr('x', function (d, i) {
-                    if (i > 0) {
-                        return circleWidth + 20
-                    } else {
-                        return circleWidth - 15
-                    }
-                })
-                .attr('y', function (d, i) {
-                    if (i > 0) {
-                        return circleWidth
-                    } else {
-                        return 8
-                    }
-                })
-                .attr('text-anchor', function (d, i) {
-                    if (i > 0) {
-                        return 'beginning'
-                    } else {
-                        return 'end'
-                    }
-                })
-                .attr('font-size', function (d, i) {
-                    if (i > 0) {
-                        return '2em'
-                    } else {
-                        return '3.4em'
-                    }
+                    return d.name;
                 })
 
             force.on('tick', function (e) {
@@ -504,7 +486,6 @@ class Graph extends React.Component {
             border: '1px solid #323232',
             backgroundColor: this.props.user.primaryColor,
             position: 'relative',
-            overflow: 'auto',
             height: '100%',
         };
         return (
@@ -519,6 +500,9 @@ class Graph extends React.Component {
 const mapStateToProps = (state) => {
     return {
         user: state.auth.user,
+        width: state.viewPort.width,
+        height: state.viewPort.height,
+        sideBar: state.viewPort.sideBar
     }
 };
 

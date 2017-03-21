@@ -110,6 +110,7 @@ app.delete('/nodes', userController.ensureAuthenticated, userController.deleteNo
 app.post('/todos', userController.ensureAuthenticated, userController.addTodos);
 app.delete('/todos', userController.ensureAuthenticated, userController.deleteToDo);
 app.put('/todos', userController.ensureAuthenticated, userController.updateToDos);
+app.put('/todos/unarchive', userController.ensureAuthenticated, userController.unarchiveToDo);
 app.put('/account', userController.ensureAuthenticated, userController.accountPut);
 app.put('/account/walkthrough', userController.ensureAuthenticated, userController.accountWalkThroughFinished);
 app.delete('/account', userController.ensureAuthenticated, userController.accountDelete);
