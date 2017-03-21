@@ -12,8 +12,12 @@ class Archived extends React.Component {
     }
 
     displayToDos(node, pathArr) {
+        var updatedPath;
         if (node.nodes.length > 0) {
-            var updatedPath = pathArr.concat([node.name]);
+            if(pathArr === [])
+                updatedPath = [node.name];
+            else
+                updatedPath = pathArr.concat(node.name);
             return node.nodes.map((node) => {
                 var subNodeToDos = [];
                 var currentNodeToDos = [];
@@ -21,6 +25,7 @@ class Archived extends React.Component {
                     subNodeToDos = this.displayToDos(node, updatedPath)
                 }
                 if(node.todos.length > 0) {
+                    updatedPath = updatedPath.concat(node.name);
                     currentNodeToDos = node.todos.map((todo) => {
                         console.log(todo);
                         if (todo.completed)
