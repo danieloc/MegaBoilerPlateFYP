@@ -411,7 +411,7 @@ export function unarchiveToDo(email , todoID, token) {
 
 
 
-export function addNodeForm(email, userName, nodeTitle, indexList, depth, token) {
+export function addNodeForm(email, userName, userImage, nodeTitle, indexList, depth, token) {
   return (dispatch) => {
     return fetch('/nodes', {
       method: 'post',
@@ -422,6 +422,7 @@ export function addNodeForm(email, userName, nodeTitle, indexList, depth, token)
       body: JSON.stringify({
         email: email,
         userName: userName,
+        userImage: userImage,
         nodeTitle: nodeTitle,
         indexList : indexList,
         depth : depth

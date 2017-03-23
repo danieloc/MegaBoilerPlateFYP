@@ -18,8 +18,11 @@ var todoSchema = new mongoose.Schema({
 
 var nodeSchema = new mongoose.Schema({
   name: String,
-  owner: String,
-  ownerName: String,
+  owner: {
+    email: String,
+    name: String,
+    image: String,
+  },
   collaborators: [{
     name: String,
     email: String,

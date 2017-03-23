@@ -727,8 +727,11 @@ function addNode(i, nodes, req, parentID) {
   }
   else if (i === req.body.depth) {
     var singleNode = new UserSchema.Node({
-      owner: req.body.email,
-      ownerName: req.body.userName,
+      owner: {
+          email : req.body.email,
+          name: req.body.userName,
+          image: req.body.userImage,
+      },
       collaborators: [],
       name: req.body.nodeTitle,
       todos: [],
@@ -930,7 +933,7 @@ exports.shareNode = function(req, res) {
               var collab = {
                 name: user.name,
                 email: req.body.emailToShare,
-                picture: user.picture,
+                picture: user.picture || user.gravatar,
                 accepted: false,
               };
               if(node.collaborators.length === 0) {

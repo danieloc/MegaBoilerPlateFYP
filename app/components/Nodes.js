@@ -33,10 +33,19 @@ class Nodes extends React.Component {
             }
         return <div><NavBar nodes = {nodes} depth = {depth} primaryColor = {this.props.user.primaryColor}/> {lowerNavBars} </div>
     }
+
+    getNodeCollaborators() {
+        return this.props.node.collaborators.map((collaborator, i) => {
+
+            return <img key={i} src={collaborator.picture || collaborator.gravatar} className="collaboratorImage" />
+        })
+    }
     render() {
         const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal())}}>Delete Node</button> :
             null;
         const shareNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-primary" onClick={() => {this.props.dispatch(getShareNodeModal())}}>Share Node</button> :
+            null;
+        const collaboratorDiv = this.props.node && this.props.node.collaborators.length > 0 ? <div><h3>Collaborators</h3><div className="panel"><div className="panel-body">{this.getNodeCollaborators()}</div></div></div>:
             null;
 
         return (
@@ -46,6 +55,7 @@ class Nodes extends React.Component {
                     {shareNodeButton}
                     {deleteNodeButton}
                 </div>
+                {collaboratorDiv}
             </div>
 
         );
