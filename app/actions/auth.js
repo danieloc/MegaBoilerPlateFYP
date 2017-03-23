@@ -542,22 +542,16 @@ export function shareNodeForm(email, emailToShare, nodeID, token) {
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
-          console.log("----------------SHARE-RESPONSE-----------------------------------");
-          console.log("User");
-          console.log(json.user);
-          console.log("NodeInformaiton");
-          console.log(json.nodeInformation);
           dispatch({
             type: 'SHARE_NODE_SUCCESS',
             messages: 'The node was deleted successfully',
-            user: json.user,
           });
         });
       }
       else {
         return response.json().then((json) => {
           dispatch({
-            type: 'DELETE_NODE_FAILURE',
+            type: 'SHARE_NODE_FAILURE',
             messages: Array.isArray(json) ? json : [json]
           });
         });
@@ -578,18 +572,13 @@ export function acceptInvitation(email, nodeID ,accept, token) {
       body: JSON.stringify({
         email: email,
         nodeID : nodeID,
-        accept: accept,
+        accepted: accept,
       })
     }).then((response) => {
       if(response.ok) {
         return response.json().then((json) => {
-          console.log("----------------SHARE-RESPONSE-----------------------------------");
-          console.log("User");
-          console.log(json.user);
-          console.log("NodeInformaiton");
-          console.log(json.nodeInformation);
           dispatch({
-            type: 'SHARE_NODE_SUCCESS',
+            type: 'ACCEPT_NODE_SUCCESS',
             messages: 'The node was deleted successfully',
             user: json.user,
           });
@@ -598,7 +587,7 @@ export function acceptInvitation(email, nodeID ,accept, token) {
       else {
         return response.json().then((json) => {
           dispatch({
-            type: 'DELETE_NODE_FAILURE',
+            type: 'ACCEPT_NODE_FAILURE',
             messages: Array.isArray(json) ? json : [json]
           });
         });

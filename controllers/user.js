@@ -897,26 +897,32 @@ exports.shareNode = function(req, res) {
       });
     },
     function(token, done) {
-      console.log(req.body.email);
-      console.log(req.body.emailToShare);
       if(req.body.email === req.body.emailToShare) {
         return res.status(404).send({ msg: "That's your own email address you dumb bitch"})
       }
-      UserSchema.User.findOne({ email: req.body.emailToShare }, function(err, user) {
+      UserSchema.User.findOne({ email: req.body.emailToShare })
+          .then(function (user){
         if (!user) {
-          return res.status(401).send({
+          return res.status(400).send({
             msg: 'The email address ' + req.body.emailToShare + ' is not associated with any account. ' +
             'Double-check the email address and try again.'
           });
         }
-        return user
-      }).then(function (user){
         UserSchema.Node.findOne({ _id : req.body.nodeID})
             .exec(function(err, node) {
+              for(var i =0; i < node.collaborators.length; i++) {
+                if(node.collaborators[i].email === req.body.emailToShare) {
+                  return res.status(400).send({
+                    msg: 'The email address ' + req.body.emailToShare + ' has already been invited. Double-check the email address and try again.'
+                  });
+                }
+              }
               console.log(user);
               if(user.invitations.length === 0)
                 user.invitations = [node];
-              else user.invitations.push(node);
+              else {
+                user.invitations.push(node);
+              }
               ////////////////////////////////
               console.log(user);
               console.log(user.picture);
@@ -953,23 +959,43 @@ exports.acceptNode = function(req, res) {
       });
     },
     function(token, done) {
-      UserSchema.User.findOne({ email: req.body.email }, function(err, user) {
-        console.log(user);
-        var found = false;
-        var i = 0;
-        var newInvitations = user.invitations;
-        while(i < user.invitations.length && !found) {
-          console.log("Birch");
-          if(user.invitations[i]._id === req.body.nodeID) {
-            newInvitations.splice(i, 1);
-            found = true;
-          }
-          i++;
-        }
-        console.log("acc");
-        user.invitations = newInvitations;
-        return user;
-      }).then(function (user){
+      UserSchema.User.findOne({ email: req.body.email })
+          .then(function (user) {
+            console.log(user);
+            var found = false;
+            var newNode;
+            var i = 0;
+            var newInvitations = user.invitations;
+            while(i < user.invitations.length && !found) {
+              if(user.invitations[i]._id.equals(req.body.nodeID)) {
+                var newNode = user.invitations[i];
+                newInvitations.splice(i, 1);
+                if(req.body.accepted) {
+                  if (user.nodes.length === 0) {
+                    user.nodes = [newNode];
+                  }
+                  else {
+                    user.nodes.push(newNode);
+                  }
+                }
+                found = true;
+              }
+              i++;
+            }
+            console.log("acc");
+            user.invitations = newInvitations;
+            console.log(user);
+            console.log("____________________");
+            console.log(user.invitations);
+            user.save(function(err) {
+              if (err) {
+                done(err, user);
+              }
+            });
+            console.log("USSSSERRRRRRR");
+            console.log(user);
+            return user;
+          }).then(function (user){
         UserSchema.Node.findOne({ _id : req.body.nodeID})
             .exec(function(err, node) {
               console.log("About to start node");
@@ -978,9 +1004,12 @@ exports.acceptNode = function(req, res) {
               var i = 0;
               var newCollaborators = node.collaborators;
               while(i < node.collaborators.length && found === false) {
-                if(node.collaborators[i].email === req.body.email) {
+                var collabName = node.collaborators[i].email;
+                console.log(req.body.email);
+                if(collabName === req.body.email) {
+                  console.log("IT WORKED ANYWAY");
                   if(!req.body.accepted)
-                    newCollaborators.splice(i, i+1);
+                    newCollaborators.splice(i, 1);
                   else if(req.body.accepted){
                     newCollaborators[i].accepted = true;
                   }
@@ -999,9 +1028,10 @@ exports.acceptNode = function(req, res) {
                   done(err, user);
                 }
               });
-              console.log(user);
-              user.save();
-              return res.send({msg : "YODEL"});
+              if(req.body.accepted)
+                return res.send({user: user.toJSON(), msg : "You have accepted the node"});
+              else
+                return res.send({ user: user.toJSON(), msg : "You have rejected the node"});
             })
       });
     }]);

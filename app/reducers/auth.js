@@ -47,6 +47,10 @@ export default function auth(state = initialState, action) {
       return Object.assign({}, state, {
         user: action.user
       });
+    case 'ACCEPT_NODE_SUCCESS' :
+      return Object.assign({}, state, {
+        user: action.user
+      });
     default:
       return state;
   }
