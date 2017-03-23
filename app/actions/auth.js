@@ -411,7 +411,7 @@ export function unarchiveToDo(email , todoID, token) {
 
 
 
-export function addNodeForm(email, name, indexList, depth, token) {
+export function addNodeForm(email, userName, nodeTitle, indexList, depth, token) {
   return (dispatch) => {
     return fetch('/nodes', {
       method: 'post',
@@ -421,7 +421,8 @@ export function addNodeForm(email, name, indexList, depth, token) {
       },
       body: JSON.stringify({
         email: email,
-        nodeTitle: name,
+        userName: userName,
+        nodeTitle: nodeTitle,
         indexList : indexList,
         depth : depth
       })
@@ -525,6 +526,86 @@ export function deleteNodeForm(email, nodeID, indexList, depth, last, token) {
   };
 }
 
+export function shareNodeForm(email, emailToShare, nodeID, token) {
+  return (dispatch) => {
+    return fetch('/nodes/share', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        emailToShare: emailToShare,
+        nodeID : nodeID
+      })
+    }).then((response) => {
+      if(response.ok) {
+        return response.json().then((json) => {
+          console.log("----------------SHARE-RESPONSE-----------------------------------");
+          console.log("User");
+          console.log(json.user);
+          console.log("NodeInformaiton");
+          console.log(json.nodeInformation);
+          dispatch({
+            type: 'SHARE_NODE_SUCCESS',
+            messages: 'The node was deleted successfully',
+            user: json.user,
+          });
+        });
+      }
+      else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'DELETE_NODE_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}
+
+export function acceptInvitation(email, nodeID ,accept, token) {
+  return (dispatch) => {
+    console.log("Bitch Please");
+    return fetch('/nodes/share/accept', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        nodeID : nodeID,
+        accept: accept,
+      })
+    }).then((response) => {
+      if(response.ok) {
+        return response.json().then((json) => {
+          console.log("----------------SHARE-RESPONSE-----------------------------------");
+          console.log("User");
+          console.log(json.user);
+          console.log("NodeInformaiton");
+          console.log(json.nodeInformation);
+          dispatch({
+            type: 'SHARE_NODE_SUCCESS',
+            messages: 'The node was deleted successfully',
+            user: json.user,
+          });
+        });
+      }
+      else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'DELETE_NODE_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}
 
 export function  walkThroughFinished(email, token) {
   return (dispatch) => {

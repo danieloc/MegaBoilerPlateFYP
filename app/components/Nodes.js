@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import NavBar from './NavBar';
-import { getDeleteNodeModal, setParent} from '../actions/modals';
+import { getDeleteNodeModal, setParent, getShareNodeModal} from '../actions/modals';
 
 class Nodes extends React.Component {
 
@@ -34,13 +34,16 @@ class Nodes extends React.Component {
         return <div><NavBar nodes = {nodes} depth = {depth} primaryColor = {this.props.user.primaryColor}/> {lowerNavBars} </div>
     }
     render() {
-        const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal())}}> Delete Node</button> :
+        const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal())}}>Delete Node</button> :
+            null;
+        const shareNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-primary" onClick={() => {this.props.dispatch(getShareNodeModal())}}>Share Node</button> :
             null;
 
         return (
             <div>
                 {this.getNavBars(this.props.user, 0)}
                 <div>
+                    {shareNodeButton}
                     {deleteNodeButton}
                 </div>
             </div>
