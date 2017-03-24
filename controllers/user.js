@@ -730,7 +730,7 @@ function addNode(i, nodes, req, parentID) {
       owner: {
           email : req.body.email,
           name: req.body.userName,
-          image: req.body.userImage,
+          picture: req.body.userImage,
       },
       collaborators: [],
       name: req.body.nodeTitle,

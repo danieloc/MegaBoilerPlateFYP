@@ -35,8 +35,7 @@ class NavBar extends React.Component {
                     className = "active";
                     active = { borderBottomColor: this.props.primaryColor };
                 }
-                return <li key={i} value={i}
-                           onClick={() => this.changeCurrentNode(i, node)} ><Link className={className} style={active} >{node.name}</Link></li>
+                return <li key={i} value={i} onClick={() => this.changeCurrentNode(i, node)} ><Link className={className} style={active} >{node.name}</Link></li>
             });
         }
         else {
@@ -69,6 +68,10 @@ class NavBar extends React.Component {
             console.log(this.props.indexList);
         }
     }
+    getPlusIcon() {
+        if((this.props.node && this.props.userEmail === this.props.node.owner.email) || this.props.depth === 1)
+            return (<li><Link onClick={() => this.addNodeModal(this.state.depth)}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>);
+    }
 
     render() {
         return (
@@ -77,7 +80,7 @@ class NavBar extends React.Component {
                     <div id="navbar" className="navbar-collapse collapse">
                         <ul className="nav navbar-nav">
                             {this.getNodes()}
-                            <li><Link onClick={() => this.addNodeModal(this.state.depth)}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>
+                            {this.getPlusIcon()}
                         </ul>
                     </div>
                 </nav>
@@ -87,10 +90,11 @@ class NavBar extends React.Component {
 }
 const mapStateToProps =(state) => {
     return {
+        userEmail: state.auth.user.email,
         node : state.modals.node,
         indexList : state.modals.indexList
     }
-}
+};
 
 export default connect(mapStateToProps)(NavBar)
 

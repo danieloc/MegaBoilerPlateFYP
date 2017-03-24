@@ -21,7 +21,7 @@ var nodeSchema = new mongoose.Schema({
   owner: {
     email: String,
     name: String,
-    image: String,
+    picture: String,
   },
   collaborators: [{
     name: String,
