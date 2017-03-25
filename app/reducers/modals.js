@@ -26,6 +26,10 @@ export default function modals(state = initialState, action) {
             return Object.assign({}, state, {
                 activeModal: MODALS.SHARE_NODE_MODAL,
             });
+        case 'LEAVE_NODE_MODAL' :
+            return Object.assign({}, state, {
+                activeModal: MODALS.LEAVE_NODE_MODAL,
+            });
         case 'INVITATION_MODAL' :
             return Object.assign({}, state, {
                 activeModal: MODALS.INVITATION_MODAL,

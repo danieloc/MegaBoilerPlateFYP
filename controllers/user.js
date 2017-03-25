@@ -728,9 +728,9 @@ function addNode(i, nodes, req, parentID) {
   else if (i === req.body.depth) {
     var singleNode = new UserSchema.Node({
       owner: {
-          email : req.body.email,
-          name: req.body.userName,
-          picture: req.body.userImage,
+        email : req.body.email,
+        name: req.body.userName,
+        picture: req.body.userImage,
       },
       collaborators: [],
       name: req.body.nodeTitle,
@@ -887,6 +887,78 @@ exports.deleteNode = function(req, res) {
 };
 
 
+
+
+/**
+ * PUT /nodes/leave
+ */
+
+exports.leaveNode = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+
+      UserSchema.User.findOne({  email: req.body.email  })
+          .exec(function(err, user) {
+            var nodeInformation = null;
+            var index = null;
+            var last = false;
+            var nodes = user.nodes;
+            UserSchema.Node.findOne({_id: req.body._id})
+                .exec(function (err, node) {
+                  var newCollabs = [];
+                  for(var n = 0; n < node.collaborators.length; n++) {
+                    if(node.collaborators[n].email !== req.body.email) {
+                      newCollabs.push(node.collaborators[n]);
+                    }
+                  }
+                  node.collaborators = newCollabs;
+                  node.save(function (err) {
+                    if(err) {
+                      done(err, node)
+                    }
+                  });
+                });
+            console.log(req.body.index);
+            nodes.splice(req.body.index, 1);
+            if(nodes.length === 0) {
+              console.log("Took the correct path");
+              return res.send({user: user.toJSON(), nodeInformation: null, indexList : [index], last: last});
+            }
+            if(req.body.last && nodes.length > 0) {
+              console.log("If it's the last Node in the list and there is more than one in the list");
+              nodeInformation = nodes[nodes.length - 1];
+              index = req.body.index;
+              if(index === nodes.length - 1) {
+                last = true
+              }
+            }
+            if(!req.body.last && nodes.length > 0) {
+              nodeInformation = nodes[req.body.index];
+              index = req.body.index;
+              if(index === nodes.length - 1) {
+                last = true
+              }
+            }
+            user.save(function (err) {
+              if(err) {
+                done(err, user)
+              }
+              return res.send({user: user.toJSON(), nodeInformation: nodeInformation, indexList : [index], last: last});
+            });
+
+            });
+
+
+    }]);
+};
+
+
 /**
  * PUT /nodes/share
  */
@@ -905,51 +977,51 @@ exports.shareNode = function(req, res) {
       }
       UserSchema.User.findOne({ email: req.body.emailToShare })
           .then(function (user){
-        if (!user) {
-          return res.status(400).send({
-            msg: 'The email address ' + req.body.emailToShare + ' is not associated with any account. ' +
-            'Double-check the email address and try again.'
-          });
-        }
-        UserSchema.Node.findOne({ _id : req.body.nodeID})
-            .exec(function(err, node) {
-              for(var i =0; i < node.collaborators.length; i++) {
-                if(node.collaborators[i].email === req.body.emailToShare) {
-                  return res.status(400).send({
-                    msg: 'The email address ' + req.body.emailToShare + ' has already been invited. Double-check the email address and try again.'
-                  });
-                }
-              }
-              console.log(user);
-              if(user.invitations.length === 0)
-                user.invitations = [node];
-              else {
-                user.invitations.push(node);
-              }
-              ////////////////////////////////
-              console.log(user);
-              console.log(user.picture);
-              console.log(req.body.emailToShare);
-              var collab = {
-                name: user.name,
-                email: req.body.emailToShare,
-                picture: user.picture || user.gravatar,
-                accepted: false,
-              };
-              if(node.collaborators.length === 0) {
-                node.collaborators = [collab];
-              }
-              else
-                node.collaborators.push(collab);
-              node.save();
-              user.save(function(err) {
-                if (err) {
-                  done(err, user);
-                }
+            if (!user) {
+              return res.status(400).send({
+                msg: 'The email address ' + req.body.emailToShare + ' is not associated with any account. ' +
+                'Double-check the email address and try again.'
               });
-              return res.send({msg : "A Request has been made for the email address " + req.body.emailToShare + " to join the node"});
-            })
-      });
+            }
+            UserSchema.Node.findOne({ _id : req.body.nodeID})
+                .exec(function(err, node) {
+                  for(var i =0; i < node.collaborators.length; i++) {
+                    if(node.collaborators[i].email === req.body.emailToShare) {
+                      return res.status(400).send({
+                        msg: 'The email address ' + req.body.emailToShare + ' has already been invited. Double-check the email address and try again.'
+                      });
+                    }
+                  }
+                  console.log(user);
+                  if(user.invitations.length === 0)
+                    user.invitations = [node];
+                  else {
+                    user.invitations.push(node);
+                  }
+                  ////////////////////////////////
+                  console.log(user);
+                  console.log(user.picture);
+                  console.log(req.body.emailToShare);
+                  var collab = {
+                    name: user.name,
+                    email: req.body.emailToShare,
+                    picture: user.picture || user.gravatar,
+                    accepted: false,
+                  };
+                  if(node.collaborators.length === 0) {
+                    node.collaborators = [collab];
+                  }
+                  else
+                    node.collaborators.push(collab);
+                  node.save();
+                  user.save(function(err) {
+                    if (err) {
+                      done(err, user);
+                    }
+                  });
+                  return res.send({msg : "A Request has been made for the email address " + req.body.emailToShare + " to join the node"});
+                })
+          });
     }]);
 };
 

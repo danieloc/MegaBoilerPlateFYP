@@ -23,6 +23,11 @@ export function getShareNodeModal() {
         type: 'SHARE_NODE_MODAL',
     };
 }
+export function getLeaveNodeModal() {
+    return {
+        type: 'LEAVE_NODE_MODAL',
+    };
+}
 export function setParent(node, indexList, depth,last) {
     return {
         type: 'SET_NODE',

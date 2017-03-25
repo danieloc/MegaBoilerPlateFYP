@@ -527,6 +527,63 @@ export function deleteNodeForm(email, nodeID, indexList, depth, last, token) {
   };
 }
 
+export function leaveNodeForm(email, nodeID, index, last, token) {
+  return (dispatch) => {
+    return fetch('/nodes/leave', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        _id : nodeID,
+        index : index,
+        last : last
+      })
+    }).then((response) => {
+      if(response.ok) {
+        return response.json().then((json) => {
+          console.log("----------------DELETE-RESPONSE-----------------------------------");
+          console.log("User");
+          console.log(json.user);
+          console.log("NodeInformaiton");
+          console.log(json.nodeInformation);
+          console.log("IndexList");
+          console.log(json.indexList);
+          console.log("Last");
+          console.log(json.last);
+          var length = null;
+          console.log(json.user);
+          if(json.nodeInformation) {
+            length = json.indexList.length;
+          }
+          dispatch({
+            type: 'SET_NODE',
+            node: json.nodeInformation,
+            indexList: json.indexList,
+            last: json.last,
+            depth: length
+          });
+          dispatch({
+            type: 'DELETE_NODE_SUCCESS',
+            messages: 'The node was deleted successfully',
+            user: json.user,
+          });
+        });
+      }
+      else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'DELETE_NODE_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}
+
 export function shareNodeForm(email, emailToShare, nodeID, token) {
   return (dispatch) => {
     return fetch('/nodes/share', {
