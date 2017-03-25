@@ -4,14 +4,14 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
-import { getAddNodeModal, setParent} from '../actions/modals';
+import { getAddNodeModal, setParent, setCollaborators} from '../actions/modals';
 
 class NavBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             depth : props.depth
-        }
+        };
     }
 
     addNodeModal() {
@@ -63,11 +63,14 @@ class NavBar extends React.Component {
                 newIndexList.pop();
             }
             newIndexList[this.state.depth - 1] = i;
-            console.log(newIndexList);
             this.props.dispatch(setParent(node, newIndexList, this.state.depth, last));
-            console.log(this.props.indexList);
         }
+        var newCollaborators = this.props.getNodeCollaborators(this.props.user.nodes, newIndexList, 0, false, [],0);
+        console.log(newCollaborators);
+        this.props.dispatch(setCollaborators(newCollaborators));
     }
+
+
     getPlusIcon() {
         if((this.props.node && this.props.userEmail === this.props.node.owner.email) || this.props.depth === 1)
             return (<li><Link onClick={() => this.addNodeModal(this.state.depth)}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>);
@@ -90,6 +93,7 @@ class NavBar extends React.Component {
 }
 const mapStateToProps =(state) => {
     return {
+        user: state.auth.user,
         userEmail: state.auth.user.email,
         node : state.modals.node,
         indexList : state.modals.indexList

@@ -8,7 +8,8 @@ const initialState = {
     node : null,
     indexList : null,
     depth : null,
-    last : false
+    last : false,
+    collaboratorList : [],
 };
 
 export default function modals(state = initialState, action) {
@@ -63,6 +64,10 @@ export default function modals(state = initialState, action) {
             return Object.assign({}, state, {
                 activeModal: MODALS.WALK_THROUGH_MODAL,
                 walkThroughModalState: 1,
+            });
+        case 'SET_COLLABORATORS' :
+            return Object.assign({}, state, {
+                collaboratorList: action.collaboratorList
             });
         case 'WALK_THROUGH_STATE' :
             return Object.assign({}, state, {

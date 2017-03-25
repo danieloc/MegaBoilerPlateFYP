@@ -28,6 +28,14 @@ export function getLeaveNodeModal() {
         type: 'LEAVE_NODE_MODAL',
     };
 }
+
+export function setCollaborators(collaboratorList) {
+    return {
+        type: 'SET_COLLABORATORS',
+        collaboratorList: collaboratorList,
+    };
+}
+
 export function setParent(node, indexList, depth,last) {
     return {
         type: 'SET_NODE',

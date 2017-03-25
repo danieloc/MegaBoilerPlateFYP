@@ -4,22 +4,53 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import NavBar from './NavBar';
-import { getDeleteNodeModal, setParent, getShareNodeModal, getLeaveNodeModal} from '../actions/modals';
+import Collaborators from './Collaborators';
+import { getDeleteNodeModal, setParent, getShareNodeModal, getLeaveNodeModal, setCollaborators} from '../actions/modals';
 
 class Nodes extends React.Component {
 
     constructor(props) {
         super(props);
-        this.getNodePath = this.getNodePath.bind(this);
+        this.getNodeCollaborators = this.getNodeCollaborators.bind(this);
     }
 
     componentDidMount() {
         if(this.props.user.nodes.length > 0) {
             this.props.dispatch(setParent(this.props.user.nodes[0], [0], 1, false, 1));
+            var newCollaborators = this.getNodeCollaborators(this.props.user.nodes, [0], 0, false, [],0);
+            console.log(newCollaborators);
+            this.props.dispatch(setCollaborators(newCollaborators));
         }
     }
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
+    }
+
+    getNodeCollaborators(nodes, indexList, n, ownerFound) {
+        var nodeCollabs =[];
+        if(this.props.user.email !== nodes[indexList[n]].owner.email && ownerFound === false) {
+            console.log(1);
+            nodeCollabs.push(nodes[indexList[n]].owner);
+            ownerFound = true;
+        }
+        nodes[indexList[n]].collaborators.map((collaborator, i) => {
+            if(collaborator.email !== this.props.user.email) {
+                console.log(2);
+                nodeCollabs.push(collaborator);
+            }
+        });
+        if(indexList.length > n+1) {
+            console.log(3);
+            var lowerNodeCollabs = this.getNodeCollaborators(nodes[indexList[n]].nodes, indexList, n+1, ownerFound);
+            if(lowerNodeCollabs !== null) {
+                console.log("LOWER NODES");
+                var allTags = [];
+                allTags.push.apply(allTags, nodeCollabs);
+                allTags.push.apply(allTags, lowerNodeCollabs);
+                nodeCollabs = allTags;
+            }
+        }
+        return nodeCollabs;
     }
 
     getNavBars(node, depth, i) {
@@ -35,71 +66,7 @@ class Nodes extends React.Component {
                 lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
             }
         }
-        return <div key={i}><NavBar nodes = {nodes} depth = {depth} primaryColor = {this.props.user.primaryColor}/> {lowerNavBars} </div>
-    }
-
-    getNodePathCollaborators() {
-        if(this.props.node && this.props.node.collaborators.length > 0) {
-            var collaborators = this.getNodePath(this.props.user.nodes, this.props.indexList, 0, false);
-            if (collaborators !== null)
-                return (<div><h3>Collaborators</h3>
-                    <div className="panel">
-                        <div className="panel-body">{collaborators}</div>
-                    </div>
-                </div>);
-            else return null;
-        }
-        else return null;
-    }
-
-    getNodePath(nodes, indexList, n, ownerFound, key) {
-        console.log(this.props.user);
-        var ownerCollaborator = null;
-        var collaborators;
-        var nodeCollabs =[];
-        if(this.props.user.email !== nodes[indexList[n]].owner.email && ownerFound === false) {
-            key += 1;
-            ownerFound = true;
-            ownerCollaborator = [(
-                <div key={key} className="col-sm-1">
-                    <img src={nodes[indexList[n]].owner.picture} className="collaboratorImage"/>
-                    <p style={{float: 'center'}}>{nodes[indexList[n]].owner.name}</p>
-                </div>
-            )]
-        }
-        collaborators = nodes[indexList[n]].collaborators.map((collaborator, i) => {
-            console.log(collaborator.email);
-            if(collaborator.email !== this.props.user.email) {
-                return [(
-                    <div key={key + i}>
-                        <div className="col-sm-1">
-                            <img src={collaborator.picture} className="collaboratorImage"/>
-                            <p style={{float: 'center'}}>{collaborator.name}</p>
-                        </div>
-                    </div>
-                )];
-            }
-            else return null;
-        });
-        if(ownerCollaborator !== null) {
-            nodeCollabs = ownerCollaborator.concat(collaborators);
-        }
-        else if(collaborators !== null){
-            nodeCollabs = nodeCollabs.concat(collaborators);
-        }
-        else {
-            nodeCollabs = null;
-        }
-        if(this.props.indexList.length > n+1) {
-            console.log(nodes[indexList[n]].nodes);
-            key = key +  collaborators.length;
-            var lowerNodeColabs = this.getNodePath(nodes[indexList[n]].nodes, indexList, n+1, ownerFound, key);
-            if(lowerNodeColabs !== null) {
-                nodeCollabs.push(lowerNodeColabs);
-            }
-        }
-        return nodeCollabs;
-
+        return <div key={i}><NavBar getNodeCollaborators = {this.getNodeCollaborators} nodes = {nodes} depth = {depth} primaryColor = {this.props.user.primaryColor}/> {lowerNavBars} </div>
     }
 
     render() {
@@ -109,6 +76,7 @@ class Nodes extends React.Component {
             null;
         const leaveNodeButton = this.props.node  && this.props.user.email !== this.props.node.owner.email ? <button className="btn-danger" onClick={() => {this.props.dispatch(getLeaveNodeModal())}}>Leave Node</button> :
             null;
+        const collaborators = this.props.node ? <Collaborators /> : null;
 
         return (
             <div>
@@ -118,7 +86,7 @@ class Nodes extends React.Component {
                     {deleteNodeButton}
                     {leaveNodeButton}
                 </div>
-                {this.getNodePathCollaborators()}
+                {collaborators}
             </div>
 
         );

@@ -21,8 +21,19 @@ class ShareNodeModal extends React.Component {
 
     handleReset(event) {
         event.preventDefault();
-        this.props.dispatch(shareNodeForm(this.props.user.email, this.state.email, this.props.node._id,this.props.token));
-        this.props.dispatch(hideModal());
+        var isAlreadyCollab = false;
+        console.log(this.props.collaboratorList);
+        for(var i = 0; i < this.props.collaboratorList.length; i++) {
+            if(this.state.email === this.props.collaboratorList[i]) {
+                console.log("Star");
+                //The email address is already a collaborator
+                isAlreadyCollab = true;
+            }
+        }
+        if(!isAlreadyCollab) {
+            this.props.dispatch(shareNodeForm(this.props.user.email, this.state.email, this.props.node._id, this.props.token));
+            this.props.dispatch(hideModal());
+        }
     }
     render() {
         return (
@@ -33,7 +44,7 @@ class ShareNodeModal extends React.Component {
             >
                 <form onSubmit={this.handleReset.bind(this)}>
                     <div className="form-group">
-                        <label htmlFor="node">Whe would you like to share this node with?</label>
+                        <label htmlFor="node">Who would you like to share this node with?</label>
                         <h3>Node Name: {this.props.node.name}</h3>
                         <input name = "email" id="email" placeholder="myFriendsEmailAddress@TheirEmail.com" className="form-control" autoFocus value={this.state.email} onChange={this.handleChange.bind(this)}/>
                     </div>
@@ -57,7 +68,8 @@ const mapStateToProps = (state) => {
         node: state.modals.node,
         indexList : state.modals.indexList,
         depth : state.modals.depth,
-        last : state.modals.last
+        last : state.modals.last,
+        collaboratorList: state.modals.collaboratorList,
     };
 };
 
