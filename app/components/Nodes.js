@@ -76,7 +76,7 @@ class Nodes extends React.Component {
             null;
         const leaveNodeButton = this.props.node  && this.props.user.email !== this.props.node.owner.email ? <button className="btn-danger" onClick={() => {this.props.dispatch(getLeaveNodeModal())}}>Leave Node</button> :
             null;
-        const collaborators = this.props.node ? <Collaborators /> : null;
+        const collaborators = this.props.node && this.props.node.collaborators.length >0? <Collaborators /> : null;
 
         return (
             <div>
