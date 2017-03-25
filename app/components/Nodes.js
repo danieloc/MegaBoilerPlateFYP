@@ -31,7 +31,7 @@ class Nodes extends React.Component {
             if (nodes.length > 0 && this.props.indexList && this.props.indexList.length > depth) {
                 lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
             }
-            if (nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth && this.props.node && this.props.user.email === this.props.node.owner.email) {
+            else if (nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth && this.props.node && (this.props.user.email === this.props.node.owner.email||nodes[this.props.indexList[depth - 1]].nodes.length > 0)) {
                 lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
             }
         }
