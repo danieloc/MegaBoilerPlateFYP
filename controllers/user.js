@@ -548,12 +548,11 @@ function recursiveDeleteToDo(i, node, req) {
     i++;
     console.log(node);
     console.log(req.body.indexList);
-    var responseArray = recursiveUpdateToDo(i, node.nodes[req.body.indexList[i - 1]], req);
+    var responseArray = recursiveDeleteToDo(i, node.nodes[req.body.indexList[i - 1]], req);
     node.nodes[req.body.indexList[i - 1]] = responseArray[0];
     return [node, responseArray[1]];
   }
   else if(i === req.body.depth) {
-    console.log(node);
     UserSchema.ToDo.findOne({ "_id" : req.body.todoID})
         .remove()
         .exec(function (err, node) {
