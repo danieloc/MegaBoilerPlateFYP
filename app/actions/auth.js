@@ -23,7 +23,7 @@ export function login(email, password) {
             user: json.user
           });
           cookie.save('token', json.token, { expires: moment().add(1, 'hour').toDate() });
-          browserHistory.push('/account');
+          browserHistory.push('/mindmap');
         });
       } else {
         return response.json().then((json) => {
@@ -69,7 +69,6 @@ export function signup(name, email, password) {
 
 export function logout() {
   cookie.remove('token');
-  browserHistory.push('/login');
   return {
     type: 'LOGOUT_SUCCESS'
   };
