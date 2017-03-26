@@ -583,7 +583,7 @@ export function leaveNodeForm(email, nodeID, index, last, token) {
   };
 }
 
-export function shareNodeForm(email, emailToShare, nodeID, token) {
+export function shareNodeForm(email, emailToShare, nodeID, isAlreadyCollab, token) {
   return (dispatch) => {
     return fetch('/nodes/share', {
       method: 'put',
@@ -594,6 +594,7 @@ export function shareNodeForm(email, emailToShare, nodeID, token) {
       body: JSON.stringify({
         email: email,
         emailToShare: emailToShare,
+        isAlreadyCollab : isAlreadyCollab,
         nodeID : nodeID
       })
     }).then((response) => {
@@ -601,7 +602,7 @@ export function shareNodeForm(email, emailToShare, nodeID, token) {
         return response.json().then((json) => {
           dispatch({
             type: 'SHARE_NODE_SUCCESS',
-            messages: 'The node was deleted successfully',
+            messages: [{msg : "The node was shared successfully"}],
           });
         });
       }

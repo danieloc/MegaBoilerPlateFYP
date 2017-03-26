@@ -972,8 +972,11 @@ exports.shareNode = function(req, res) {
       });
     },
     function(token, done) {
-      if(req.body.email === req.body.emailToShare) {
-        return res.status(404).send({ msg: "That's your own email address you dumb bitch"})
+      if(req.body.email === req.body.emailToShare.toLowerCase()) {
+        return res.status(404).send({ msg: "That's your own email address."})
+      }
+      if(req.body.isAlreadyCollab) {
+        return res.status(404).send({ msg: "This email address has already been invited to the node or one of its parent nodes."})
       }
       UserSchema.User.findOne({ email: req.body.emailToShare })
           .then(function (user){

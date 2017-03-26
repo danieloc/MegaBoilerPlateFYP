@@ -4,6 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
+import Messages from '../Messages';
 import { shareNodeForm } from '../../actions/auth';
 import { hideModal} from '../../actions/modals';
 
@@ -24,16 +25,11 @@ class ShareNodeModal extends React.Component {
         var isAlreadyCollab = false;
         console.log(this.props.collaboratorList);
         for(var i = 0; i < this.props.collaboratorList.length; i++) {
-            if(this.state.email === this.props.collaboratorList[i]) {
-                console.log("Star");
-                //The email address is already a collaborator
+            if(this.state.email.toLowerCase() === this.props.collaboratorList[i]) {
                 isAlreadyCollab = true;
             }
         }
-        if(!isAlreadyCollab) {
-            this.props.dispatch(shareNodeForm(this.props.user.email, this.state.email, this.props.node._id, this.props.token));
-            this.props.dispatch(hideModal());
-        }
+        this.props.dispatch(shareNodeForm(this.props.user.email, this.state.email, this.props.node._id, isAlreadyCollab, this.props.token));
     }
     render() {
         return (
@@ -42,6 +38,7 @@ class ShareNodeModal extends React.Component {
                           width={400}
                           showOk={false}
             >
+                <Messages messages={this.props.messages}/>
                 <form onSubmit={this.handleReset.bind(this)}>
                     <div className="form-group">
                         <label htmlFor="node">Who would you like to share this node with?</label>
@@ -50,7 +47,6 @@ class ShareNodeModal extends React.Component {
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-success">Share</button>
-                        <button className="btn btn-danger" onClick={() => this.props.dispatch(hideModal())}>Cancel</button>
 
                     </div>
                 </form>
@@ -70,6 +66,7 @@ const mapStateToProps = (state) => {
         depth : state.modals.depth,
         last : state.modals.last,
         collaboratorList: state.modals.collaboratorList,
+        messages: state.messages,
     };
 };
 

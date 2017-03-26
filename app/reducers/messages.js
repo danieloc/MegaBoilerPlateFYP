@@ -13,6 +13,7 @@ export default function messages(state = {}, action) {
     case 'OAUTH_FAILURE':
     case 'UNLINK_FAILURE':
     case 'LINK_FAILURE':
+    case 'SHARE_NODE_FAILURE' :
       return {
         error: action.messages
       };
@@ -21,6 +22,7 @@ export default function messages(state = {}, action) {
     case 'RESET_PASSWORD_SUCCESS':
     case 'CONTACT_FORM_SUCCESS':
     case 'TODO_FORM_SUCCESS':
+    case 'SHARE_NODE_SUCCESS' :
       return {
         success: action.messages
       };
@@ -39,6 +41,7 @@ export default function messages(state = {}, action) {
         info: action.messages
       };
     case 'CLEAR_MESSAGES':
+    case 'SET_NODE' :
       return {};
     default:
       return state;
