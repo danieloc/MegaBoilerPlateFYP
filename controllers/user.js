@@ -458,7 +458,7 @@ exports.addTodos = function(req, res) {
         return res.status(400).send({ msg: 'You have not given your goal a title!' });
       }
       console.log("Entering User");
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  _id: req.user.id })
           .exec(function(err, user) {
             var i = 1;
             console.log("Entering Recursion");
@@ -526,7 +526,7 @@ exports.deleteToDo = function(req, res) {
       });
     },
     function (token, done) {
-      UserSchema.User.findOne({email: req.body.email})
+      UserSchema.User.findOne({ _id: req.user.id})
           .exec(function (err, user) {
             var i = 1;
             console.log("Entering Recursion");
@@ -593,7 +593,7 @@ exports.updateToDos = function(req, res) {
       if (req.body.todoTitle.length < 1) {
         return res.status(400).send({msg: 'You have not given your goal a title!'});
       }
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({   _id: req.user.id  })
           .exec(function(err, user) {
             var i = 1;
             console.log("Entering Recursion");
@@ -658,7 +658,7 @@ exports.unarchiveToDo = function(req, res) {
               done(err, todo);
             });
           });
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({   _id: req.user.id  })
           .exec(function(err, user) {
             res.send({user: user.toJSON(), todo : myTodo});
           });
@@ -687,7 +687,7 @@ exports.addToNode = function(req, res) {
       });
     },
     function(token, done) {
-      UserSchema.User.findOne({ email: req.body.email})
+      UserSchema.User.findOne({  _id: req.user.id})
           .exec(function (err, user) {
             var i = 1;
             var responseArray = addNode(i, user.nodes, req, null);
@@ -806,7 +806,7 @@ exports.deleteNode = function(req, res) {
     },
     function(token, done) {
 
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({   _id: req.user.id  })
           .exec(function(err, user) {
             ////////////////////////////////
             var i = 1;
@@ -902,7 +902,7 @@ exports.leaveNode = function(req, res) {
     },
     function(token, done) {
 
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({   _id: req.user.id })
           .exec(function(err, user) {
             var nodeInformation = null;
             var index = null;
@@ -977,7 +977,7 @@ exports.shareNode = function(req, res) {
       if(req.body.isAlreadyCollab) {
         return res.status(404).send({ msg: "This email address has already been invited to the node or one of its parent nodes."})
       }
-      UserSchema.User.findOne({ email: req.body.emailToShare })
+      UserSchema.User.findOne({  _id: req.user.id })
           .then(function (user){
             if (!user) {
               return res.status(400).send({
@@ -1036,7 +1036,7 @@ exports.acceptNode = function(req, res) {
       });
     },
     function(token, done) {
-      UserSchema.User.findOne({ email: req.body.email })
+      UserSchema.User.findOne({  _id: req.user.id })
           .then(function (user) {
             console.log(user);
             var found = false;
