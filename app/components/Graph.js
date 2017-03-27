@@ -85,8 +85,6 @@ class Graph extends React.Component {
 
         update();
 
-        hideToDos(root);
-
 
         function update() {
             var nodes = flatten(root);
@@ -225,23 +223,6 @@ class Graph extends React.Component {
             update();
         }
 
-        function hideToDos(root) {
-            console.log("Helxxxxxlo");
-            var i = 0;
-
-            function recurseToDos(node) {
-                click(node);
-                if (node.children) {
-                    console.log("Hello");
-                    node.children.forEach(click)
-                }
-                else {
-                    i++;
-                }
-            }
-
-            root.children.forEach(recurseToDos);
-        }
 
         function circle_radius(d) {
             if (d.children) {
