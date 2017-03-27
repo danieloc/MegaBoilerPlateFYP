@@ -4,45 +4,89 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import NavBar from './NavBar';
-import { getDeleteNodeModal, setParent} from '../actions/modals';
+import Collaborators from './Collaborators';
+import { getDeleteNodeModal, setParent, getShareNodeModal, getLeaveNodeModal, setCollaborators} from '../actions/modals';
 
 class Nodes extends React.Component {
 
     constructor(props) {
         super(props);
+        this.getNodeCollaborators = this.getNodeCollaborators.bind(this);
     }
 
     componentDidMount() {
         if(this.props.user.nodes.length > 0) {
-            this.props.dispatch(setParent(this.props.user.nodes[0], [0], 1, false));
+            this.props.dispatch(setParent(this.props.user.nodes[0], [0], 1, false, 1));
+            var newCollaborators = this.getNodeCollaborators(this.props.user.nodes, [0], 0, false, [],0);
+            console.log(newCollaborators);
+            this.props.dispatch(setCollaborators(newCollaborators));
         }
     }
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    getNavBars(node, depth) {
+    getNodeCollaborators(nodes, indexList, n, ownerFound) {
+        var nodeCollabs =[];
+        if(this.props.user.email !== nodes[indexList[n]].owner.email && ownerFound === false) {
+            console.log(1);
+            nodeCollabs.push(nodes[indexList[n]].owner);
+            ownerFound = true;
+        }
+        nodes[indexList[n]].collaborators.map((collaborator, i) => {
+            if(collaborator.email !== this.props.user.email) {
+                console.log(2);
+                nodeCollabs.push(collaborator);
+            }
+        });
+        if(indexList.length > n+1) {
+            console.log(3);
+            var lowerNodeCollabs = this.getNodeCollaborators(nodes[indexList[n]].nodes, indexList, n+1, ownerFound);
+            if(lowerNodeCollabs !== null) {
+                console.log("LOWER NODES");
+                var allTags = [];
+                allTags.push.apply(allTags, nodeCollabs);
+                allTags.push.apply(allTags, lowerNodeCollabs);
+                nodeCollabs = allTags;
+            }
+        }
+        return nodeCollabs;
+    }
+
+    getNavBars(node, depth, i) {
         var lowerNavBars = <div></div>;
         var nodes = null;
-            if(node) {
-                depth++;
-                nodes = node.nodes;
-                if (nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth) {
-                    lowerNavBars = this.getNavBars(nodes[this.props.indexList[depth - 1]], depth)
-                }
+        if(node) {
+            depth++;
+            nodes = node.nodes;
+            if (nodes.length > 0 && this.props.indexList && this.props.indexList.length > depth) {
+                lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
             }
-        return <div><NavBar nodes = {nodes} depth = {depth} primaryColor = {this.props.user.primaryColor}/> {lowerNavBars} </div>
+            else if (nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth && this.props.node && (this.props.user.email === this.props.node.owner.email||nodes[this.props.indexList[depth - 1]].nodes.length > 0)) {
+                lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
+            }
+        }
+        return <div key={i}><NavBar getNodeCollaborators = {this.getNodeCollaborators} nodes = {nodes} depth = {depth} primaryColor = {this.props.user.primaryColor}/> {lowerNavBars} </div>
     }
+
     render() {
-        const deleteNodeButton = this.props.user.nodes.length > 0 ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal())}}> Delete Node</button> :
+        const deleteNodeButton = this.props.node && this.props.user.email === this.props.node.owner.email ? <button className="btn-danger" onClick={() => {this.props.dispatch(getDeleteNodeModal())}}>Delete Node</button> :
             null;
+        const shareNodeButton = this.props.node  && this.props.user.email === this.props.node.owner.email ? <button className="btn-primary" onClick={() => {this.props.dispatch(getShareNodeModal())}}>Share Node</button> :
+            null;
+        const leaveNodeButton = this.props.node  && this.props.user.email !== this.props.node.owner.email ? <button className="btn-danger" onClick={() => {this.props.dispatch(getLeaveNodeModal())}}>Leave Node</button> :
+            null;
+        const collaborators = this.props.node && this.props.node.collaborators.length >0? <Collaborators /> : null;
 
         return (
             <div>
-                {this.getNavBars(this.props.user, 0)}
+                {this.getNavBars(this.props.user, 0, 0)}
                 <div>
+                    {shareNodeButton}
                     {deleteNodeButton}
+                    {leaveNodeButton}
                 </div>
+                {collaborators}
             </div>
 
         );

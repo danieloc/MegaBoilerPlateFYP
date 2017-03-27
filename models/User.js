@@ -18,6 +18,17 @@ var todoSchema = new mongoose.Schema({
 
 var nodeSchema = new mongoose.Schema({
   name: String,
+  owner: {
+    email: String,
+    name: String,
+    picture: String,
+  },
+  collaborators: [{
+    name: String,
+    email: String,
+    picture: String,
+    accepted: Boolean,
+  }],
   todos: [{type: mongoose.Schema.Types.ObjectId, ref: 'ToDo'}],
   nodes:[{type: mongoose.Schema.Types.ObjectId, ref: 'Node'}],
 });
@@ -29,6 +40,7 @@ var userSchema = new mongoose.Schema({
   primaryColor : String,
   isNewUser: Boolean,
   mindmapOption: String,
+  invitations: [{type: mongoose.Schema.Types.ObjectId, ref: 'Node'}],
   nodes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Node'}],
   passwordResetToken: String,
   passwordResetExpires: Date,
@@ -48,6 +60,7 @@ var autoPopulateNodeSchema = function(next) {
 
 var autoPopulateUserSchema = function(next) {
   this.populate('nodes');
+  this.populate('invitations');
   next();
 };
 

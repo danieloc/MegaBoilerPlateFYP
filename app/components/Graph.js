@@ -4,6 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
+import {event as currentEvent} from 'd3';
 import _ from 'lodash';
 
 class Graph extends React.Component {
@@ -134,8 +135,14 @@ class Graph extends React.Component {
                 .attr("transform", function (d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 })
-                .on("click", click)
+                .on("click", function (d) {
+                    if (currentEvent.defaultPrevented) {
+                        return; // click suppressed
+                    }
+                    else click(d);
+                })
                 .call(force.drag);
+
 
             // Append a circle
             nodeEnter.append("svg:circle")
@@ -166,7 +173,7 @@ class Graph extends React.Component {
                 .attr("font-Family", "Arial, Helvetica, sans-serif")
                 .text(function (d) {
                     if(!d.img)
-                    return d.name;
+                        return d.name;
                 })
 
             ///////////
@@ -178,6 +185,7 @@ class Graph extends React.Component {
             // Re-select for update.
             path = myChart.selectAll("path.link");
             node = myChart.selectAll("g.node");
+
 
             function tick() {
 
@@ -450,7 +458,7 @@ class Graph extends React.Component {
                 .attr("font-Family", "Arial, Helvetica, sans-serif")
                 .text(function (d) {
                     if(!d.img)
-                    return d.name;
+                        return d.name;
                 })
 
             force.on('tick', function (e) {

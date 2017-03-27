@@ -458,7 +458,7 @@ exports.addTodos = function(req, res) {
         return res.status(400).send({ msg: 'You have not given your goal a title!' });
       }
       console.log("Entering User");
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({  _id: req.user.id })
           .exec(function(err, user) {
             var i = 1;
             console.log("Entering Recursion");
@@ -526,7 +526,7 @@ exports.deleteToDo = function(req, res) {
       });
     },
     function (token, done) {
-      UserSchema.User.findOne({email: req.body.email})
+      UserSchema.User.findOne({ _id: req.user.id})
           .exec(function (err, user) {
             var i = 1;
             console.log("Entering Recursion");
@@ -548,12 +548,11 @@ function recursiveDeleteToDo(i, node, req) {
     i++;
     console.log(node);
     console.log(req.body.indexList);
-    var responseArray = recursiveUpdateToDo(i, node.nodes[req.body.indexList[i - 1]], req);
+    var responseArray = recursiveDeleteToDo(i, node.nodes[req.body.indexList[i - 1]], req);
     node.nodes[req.body.indexList[i - 1]] = responseArray[0];
     return [node, responseArray[1]];
   }
   else if(i === req.body.depth) {
-    console.log(node);
     UserSchema.ToDo.findOne({ "_id" : req.body.todoID})
         .remove()
         .exec(function (err, node) {
@@ -594,7 +593,7 @@ exports.updateToDos = function(req, res) {
       if (req.body.todoTitle.length < 1) {
         return res.status(400).send({msg: 'You have not given your goal a title!'});
       }
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({   _id: req.user.id  })
           .exec(function(err, user) {
             var i = 1;
             console.log("Entering Recursion");
@@ -659,7 +658,7 @@ exports.unarchiveToDo = function(req, res) {
               done(err, todo);
             });
           });
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({   _id: req.user.id  })
           .exec(function(err, user) {
             res.send({user: user.toJSON(), todo : myTodo});
           });
@@ -688,7 +687,7 @@ exports.addToNode = function(req, res) {
       });
     },
     function(token, done) {
-      UserSchema.User.findOne({ email: req.body.email})
+      UserSchema.User.findOne({  _id: req.user.id})
           .exec(function (err, user) {
             var i = 1;
             var responseArray = addNode(i, user.nodes, req, null);
@@ -727,6 +726,12 @@ function addNode(i, nodes, req, parentID) {
   }
   else if (i === req.body.depth) {
     var singleNode = new UserSchema.Node({
+      owner: {
+        email : req.body.email,
+        name: req.body.userName,
+        picture: req.body.userImage,
+      },
+      collaborators: [],
       name: req.body.nodeTitle,
       todos: [],
       nodes: [],
@@ -801,7 +806,7 @@ exports.deleteNode = function(req, res) {
     },
     function(token, done) {
 
-      UserSchema.User.findOne({  email: req.body.email  })
+      UserSchema.User.findOne({   _id: req.user.id  })
           .exec(function(err, user) {
             ////////////////////////////////
             var i = 1;
@@ -877,5 +882,234 @@ exports.deleteNode = function(req, res) {
           });
 
 
+    }]);
+};
+
+
+
+
+/**
+ * PUT /nodes/leave
+ */
+
+exports.leaveNode = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+
+      UserSchema.User.findOne({   _id: req.user.id })
+          .exec(function(err, user) {
+            var nodeInformation = null;
+            var index = null;
+            var last = false;
+            var nodes = user.nodes;
+            UserSchema.Node.findOne({_id: req.body._id})
+                .exec(function (err, node) {
+                  var newCollabs = [];
+                  for(var n = 0; n < node.collaborators.length; n++) {
+                    if(node.collaborators[n].email !== req.body.email) {
+                      newCollabs.push(node.collaborators[n]);
+                    }
+                  }
+                  node.collaborators = newCollabs;
+                  node.save(function (err) {
+                    if(err) {
+                      done(err, node)
+                    }
+                  });
+                });
+            console.log(req.body.index);
+            nodes.splice(req.body.index, 1);
+            if(nodes.length === 0) {
+              console.log("Took the correct path");
+              return res.send({user: user.toJSON(), nodeInformation: null, indexList : [index], last: last});
+            }
+            if(req.body.last && nodes.length > 0) {
+              console.log("If it's the last Node in the list and there is more than one in the list");
+              nodeInformation = nodes[nodes.length - 1];
+              index = req.body.index;
+              if(index === nodes.length - 1) {
+                last = true
+              }
+            }
+            if(!req.body.last && nodes.length > 0) {
+              nodeInformation = nodes[req.body.index];
+              index = req.body.index;
+              if(index === nodes.length - 1) {
+                last = true
+              }
+            }
+            user.save(function (err) {
+              if(err) {
+                done(err, user)
+              }
+              return res.send({user: user.toJSON(), nodeInformation: nodeInformation, indexList : [index], last: last});
+            });
+
+            });
+
+
+    }]);
+};
+
+
+/**
+ * PUT /nodes/share
+ */
+
+exports.shareNode = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      if(req.body.email === req.body.emailToShare.toLowerCase()) {
+        return res.status(404).send({ msg: "That's your own email address."})
+      }
+      if(req.body.isAlreadyCollab) {
+        return res.status(404).send({ msg: "This email address has already been invited to the node or one of its parent nodes."})
+      }
+      UserSchema.User.findOne({  _id: req.user.id })
+          .then(function (user){
+            if (!user) {
+              return res.status(400).send({
+                msg: 'The email address ' + req.body.emailToShare + ' is not associated with any account. ' +
+                'Double-check the email address and try again.'
+              });
+            }
+            UserSchema.Node.findOne({ _id : req.body.nodeID})
+                .exec(function(err, node) {
+                  for(var i =0; i < node.collaborators.length; i++) {
+                    if(node.collaborators[i].email === req.body.emailToShare) {
+                      return res.status(400).send({
+                        msg: 'The email address ' + req.body.emailToShare + ' has already been invited. Double-check the email address and try again.'
+                      });
+                    }
+                  }
+                  console.log(user);
+                  if(user.invitations.length === 0)
+                    user.invitations = [node];
+                  else {
+                    user.invitations.push(node);
+                  }
+                  ////////////////////////////////
+                  console.log(user);
+                  console.log(user.picture);
+                  console.log(req.body.emailToShare);
+                  var collab = {
+                    name: user.name,
+                    email: req.body.emailToShare,
+                    picture: user.picture || user.gravatar,
+                    accepted: false,
+                  };
+                  if(node.collaborators.length === 0) {
+                    node.collaborators = [collab];
+                  }
+                  else
+                    node.collaborators.push(collab);
+                  node.save();
+                  user.save(function(err) {
+                    if (err) {
+                      done(err, user);
+                    }
+                  });
+                  return res.send({msg : "A Request has been made for the email address " + req.body.emailToShare + " to join the node"});
+                })
+          });
+    }]);
+};
+
+exports.acceptNode = function(req, res) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(16, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      UserSchema.User.findOne({  _id: req.user.id })
+          .then(function (user) {
+            console.log(user);
+            var found = false;
+            var newNode;
+            var i = 0;
+            var newInvitations = user.invitations;
+            while(i < user.invitations.length && !found) {
+              if(user.invitations[i]._id.equals(req.body.nodeID)) {
+                var newNode = user.invitations[i];
+                newInvitations.splice(i, 1);
+                if(req.body.accepted) {
+                  if (user.nodes.length === 0) {
+                    user.nodes = [newNode];
+                  }
+                  else {
+                    user.nodes.push(newNode);
+                  }
+                }
+                found = true;
+              }
+              i++;
+            }
+            console.log("acc");
+            user.invitations = newInvitations;
+            console.log(user);
+            console.log("____________________");
+            console.log(user.invitations);
+            user.save(function(err) {
+              if (err) {
+                done(err, user);
+              }
+            });
+            console.log("USSSSERRRRRRR");
+            console.log(user);
+            return user;
+          }).then(function (user){
+        UserSchema.Node.findOne({ _id : req.body.nodeID})
+            .exec(function(err, node) {
+              console.log("About to start node");
+              ////////////////////////////////
+              var found = false;
+              var i = 0;
+              var newCollaborators = node.collaborators;
+              while(i < node.collaborators.length && found === false) {
+                var collabName = node.collaborators[i].email;
+                console.log(req.body.email);
+                if(collabName === req.body.email) {
+                  console.log("IT WORKED ANYWAY");
+                  if(!req.body.accepted)
+                    newCollaborators.splice(i, 1);
+                  else if(req.body.accepted){
+                    newCollaborators[i].accepted = true;
+                  }
+                  found = true;
+                }
+                i++;
+              }
+              if(!found) {
+                return res.status(401).send({
+                  msg: 'You were not invited to this specific node.'
+                });
+              }
+              node.collaborators = newCollaborators;
+              node.save(function(err) {
+                if (err) {
+                  done(err, user);
+                }
+              });
+              if(req.body.accepted)
+                return res.send({user: user.toJSON(), msg : "You have accepted the node"});
+              else
+                return res.send({ user: user.toJSON(), msg : "You have rejected the node"});
+            })
+      });
     }]);
 };

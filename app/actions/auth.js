@@ -23,7 +23,7 @@ export function login(email, password) {
             user: json.user
           });
           cookie.save('token', json.token, { expires: moment().add(1, 'hour').toDate() });
-          browserHistory.push('/account');
+          browserHistory.push('/mindmap');
         });
       } else {
         return response.json().then((json) => {
@@ -69,7 +69,6 @@ export function signup(name, email, password) {
 
 export function logout() {
   cookie.remove('token');
-  browserHistory.push('/login');
   return {
     type: 'LOGOUT_SUCCESS'
   };
@@ -411,7 +410,7 @@ export function unarchiveToDo(email , todoID, token) {
 
 
 
-export function addNodeForm(email, name, indexList, depth, token) {
+export function addNodeForm(email, userName, userImage, nodeTitle, indexList, depth, token) {
   return (dispatch) => {
     return fetch('/nodes', {
       method: 'post',
@@ -421,7 +420,9 @@ export function addNodeForm(email, name, indexList, depth, token) {
       },
       body: JSON.stringify({
         email: email,
-        nodeTitle: name,
+        userName: userName,
+        userImage: userImage,
+        nodeTitle: nodeTitle,
         indexList : indexList,
         depth : depth
       })
@@ -525,6 +526,133 @@ export function deleteNodeForm(email, nodeID, indexList, depth, last, token) {
   };
 }
 
+export function leaveNodeForm(email, nodeID, index, last, token) {
+  return (dispatch) => {
+    return fetch('/nodes/leave', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        _id : nodeID,
+        index : index,
+        last : last
+      })
+    }).then((response) => {
+      if(response.ok) {
+        return response.json().then((json) => {
+          console.log("----------------DELETE-RESPONSE-----------------------------------");
+          console.log("User");
+          console.log(json.user);
+          console.log("NodeInformaiton");
+          console.log(json.nodeInformation);
+          console.log("IndexList");
+          console.log(json.indexList);
+          console.log("Last");
+          console.log(json.last);
+          var length = null;
+          console.log(json.user);
+          if(json.nodeInformation) {
+            length = json.indexList.length;
+          }
+          dispatch({
+            type: 'SET_NODE',
+            node: json.nodeInformation,
+            indexList: json.indexList,
+            last: json.last,
+            depth: length
+          });
+          dispatch({
+            type: 'DELETE_NODE_SUCCESS',
+            messages: 'The node was deleted successfully',
+            user: json.user,
+          });
+        });
+      }
+      else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'DELETE_NODE_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}
+
+export function shareNodeForm(email, emailToShare, nodeID, isAlreadyCollab, token) {
+  return (dispatch) => {
+    return fetch('/nodes/share', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        emailToShare: emailToShare,
+        isAlreadyCollab : isAlreadyCollab,
+        nodeID : nodeID
+      })
+    }).then((response) => {
+      if(response.ok) {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'SHARE_NODE_SUCCESS',
+            messages: [{msg : "The node was shared successfully"}],
+          });
+        });
+      }
+      else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'SHARE_NODE_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}
+
+export function acceptInvitation(email, nodeID ,accept, token) {
+  return (dispatch) => {
+    console.log("Bitch Please");
+    return fetch('/nodes/share/accept', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: email,
+        nodeID : nodeID,
+        accepted: accept,
+      })
+    }).then((response) => {
+      if(response.ok) {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'ACCEPT_NODE_SUCCESS',
+            messages: 'The node was deleted successfully',
+            user: json.user,
+          });
+        });
+      }
+      else {
+        return response.json().then((json) => {
+          dispatch({
+            type: 'ACCEPT_NODE_FAILURE',
+            messages: Array.isArray(json) ? json : [json]
+          });
+        });
+      }
+    });
+  };
+}
 
 export function  walkThroughFinished(email, token) {
   return (dispatch) => {

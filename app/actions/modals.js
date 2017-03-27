@@ -18,6 +18,24 @@ export function getDeleteNodeModal() {
         type: 'DELETE_NODE_MODAL',
     };
 }
+export function getShareNodeModal() {
+    return {
+        type: 'SHARE_NODE_MODAL',
+    };
+}
+export function getLeaveNodeModal() {
+    return {
+        type: 'LEAVE_NODE_MODAL',
+    };
+}
+
+export function setCollaborators(collaboratorList) {
+    return {
+        type: 'SET_COLLABORATORS',
+        collaboratorList: collaboratorList,
+    };
+}
+
 export function setParent(node, indexList, depth,last) {
     return {
         type: 'SET_NODE',
@@ -30,6 +48,11 @@ export function setParent(node, indexList, depth,last) {
 export function getWalkThrough() {
     return {
         type: 'WALK_THROUGH_MODAL',
+    };
+}
+export function getInvitationModal() {
+    return {
+        type: 'INVITATION_MODAL',
     };
 }
 export function changeWalkThroughState(walkThroughState) {

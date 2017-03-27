@@ -5,6 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Graph from './Graph';
 import { getWalkThrough } from '../actions/modals';
+import { getInvitationModal } from '../actions/modals'
 import { toggleSideBar } from '../actions/viewPortActions';
 import _ from 'lodash';
 import Nodes from './Nodes';
@@ -15,6 +16,9 @@ class Mindmap extends React.Component {
         super(props);
         if (this.props.user.isNewUser) {
             this.props.dispatch(getWalkThrough());
+        }
+        if (this.props.user.invitations.length > 0) {
+            this.props.dispatch(getInvitationModal());
         }
         this.getGraphData = this.getGraphData.bind(this);
     }
