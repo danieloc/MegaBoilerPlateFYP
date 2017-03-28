@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Messages from './Messages';
-import { submitNodeToDoForm } from '../actions/auth';
+import { submitNodeToDoForm } from '../actions/todos';
 
 class AddNodesForm extends React.Component {
     constructor(props) {

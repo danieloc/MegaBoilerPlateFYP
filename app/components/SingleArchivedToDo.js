@@ -4,7 +4,7 @@
 
 import React from 'react';
 import {connect } from 'react-redux'
-import { unarchiveToDo } from '../actions/auth'
+import { unarchiveToDo } from '../actions/todos'
 
 class SingleArchivedToDo extends React.Component {
     constructor(props) {

@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
-import { acceptInvitation } from '../../actions/auth';
+import { acceptInvitation } from '../../actions/nodes';
 
 class InvitationModal extends React.Component {
 

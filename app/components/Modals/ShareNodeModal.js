@@ -5,8 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
 import Messages from '../Messages';
-import { shareNodeForm } from '../../actions/auth';
-import { hideModal} from '../../actions/modals';
+import { shareNodeForm } from '../../actions/nodes';
 
 class ShareNodeModal extends React.Component {
 

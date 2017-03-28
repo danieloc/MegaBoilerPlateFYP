@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
-import { leaveNodeForm} from '../../actions/auth';
+import { leaveNodeForm} from '../../actions/nodes';
 import { hideModal} from '../../actions/modals'
 
 class AddNodeModal extends React.Component {

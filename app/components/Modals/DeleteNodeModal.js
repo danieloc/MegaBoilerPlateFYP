@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
-import { deleteNodeForm } from '../../actions/auth';
+import { deleteNodeForm } from '../../actions/nodes';
 import { hideModal} from '../../actions/modals'
 
 
