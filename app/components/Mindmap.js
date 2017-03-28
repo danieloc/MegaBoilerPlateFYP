@@ -10,7 +10,7 @@ import { toggleSideBar } from '../actions/viewPortActions';
 import _ from 'lodash';
 import Nodes from './Nodes';
 
-class Mindmap extends React.Component {
+export class Mindmap extends React.Component {
 
     constructor(props) {
         super(props);
@@ -29,6 +29,7 @@ class Mindmap extends React.Component {
     getGraphData() {
         var data;
         if(this.props.user.mindmapOption === 'sprawl') {
+            console.log(JSON.stringify(this.props.user));
             data = {
                 "name": this.props.user.name,
                 "img": this.props.user.picture || this.props.user.gravatar,

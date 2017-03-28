@@ -322,7 +322,7 @@ exports.shareNode = function(req, res) {
             if(req.body.isAlreadyCollab) {
                 return res.status(404).send({ msg: "This email address has already been invited to the node or one of its parent nodes."})
             }
-            UserSchema.User.findOne({  _id: req.user.id })
+            UserSchema.User.findOne({  email: req.body.emailToShare })
                 .then(function (user){
                     if (!user) {
                         return res.status(400).send({
