@@ -8,39 +8,67 @@ import SingleArchivedToDo from './SingleArchivedToDo';
 class Archived extends React.Component {
     constructor(props) {
         super(props);
-        this.displayToDos = this.displayToDos.bind(this);
+        this.displayArchiveToDos = this.displayArchiveToDos.bind(this);
     }
 
-    displayToDos(node, pathArr) {
+
+    displayArchiveToDosOrNothing() {
+        var achivedToDos = this.displayArchiveToDos(this.props.user, null);
+        console.log(achivedToDos);
+        if(achivedToDos.length > 0) {
+            return achivedToDos.map((todo, i) => {
+                return <SingleArchivedToDo key={i} index={i} obj={todo.obj} pathArr = {todo.pathArr} ></SingleArchivedToDo>;
+            })
+        }
+        else {
+            var userColor = this.props.user.primaryColor;
+            const styles = {
+                backgroundColor: userColor,
+            };
+            return <div className="archivedBack" style={styles}><h1 className="noArchived">You do not have any archived ToDos</h1></div>
+        }
+    }
+
+    displayArchiveToDos(node, pathArr) {
         var updatedPath;
+        var everyToDoInLevel = [];
         if (node.nodes.length > 0) {
-            if(pathArr === [])
+            if(pathArr === null)
                 updatedPath = [node.name];
             else
-                updatedPath = pathArr.concat(node.name);
-            return node.nodes.map((node) => {
+                updatedPath = pathArr.concat([node.name]);
+            node.nodes.forEach((node) => {
                 var subNodeToDos = [];
                 var currentNodeToDos = [];
                 if(node.nodes) {
-                    subNodeToDos = this.displayToDos(node, updatedPath)
+                    subNodeToDos = this.displayArchiveToDos(node, updatedPath)
                 }
                 if(node.todos.length > 0) {
-                    updatedPath = updatedPath.concat(node.name);
-                    currentNodeToDos = node.todos.map((todo) => {
-                        console.log(todo);
-                        if (todo.completed)
-                            return <SingleArchivedToDo key={todo._id} index={todo._id} obj={todo} pathArr = {updatedPath} ></SingleArchivedToDo>;
-                        else return [];
+                    updatedPath.concat([node.name]);
+                    node.todos.forEach((todo) => {
+                        if(todo.completed) {
+                            currentNodeToDos.push({
+                                pathArr : updatedPath,
+                                obj : todo
+                            });
+                            console.log(currentNodeToDos);
+                        }
                     });
                 }
-                return currentNodeToDos.concat(subNodeToDos);
+                for(var i =0; i < subNodeToDos.length; i++) {
+                    currentNodeToDos.push(subNodeToDos[i])
+                }
+                for(var i =0; i < currentNodeToDos.length; i++) {
+                    everyToDoInLevel.push(currentNodeToDos[i]);
+                }
             });
         }
+        return everyToDoInLevel;
     }
     render() {
         return (
             <div>
-                {this.displayToDos(this.props.user, [])}
+                {this.displayArchiveToDosOrNothing()}
             </div>
         )
     };
