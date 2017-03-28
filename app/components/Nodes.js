@@ -7,7 +7,7 @@ import NavBar from './NavBar';
 import Collaborators from './Collaborators';
 import { getDeleteNodeModal, setParent, getShareNodeModal, getLeaveNodeModal, setCollaborators} from '../actions/modals';
 
-class Nodes extends React.Component {
+export class Nodes extends React.Component {
 
     constructor(props) {
         super(props);

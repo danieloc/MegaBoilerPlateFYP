@@ -7,7 +7,7 @@ import * as d3 from 'd3';
 import {event as currentEvent} from 'd3';
 import _ from 'lodash';
 
-class Graph extends React.Component {
+export class Graph extends React.Component {
     constructor(props) {
         super(props);
         var data = this.props.getGraphData();

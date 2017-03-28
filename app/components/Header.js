@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { logout } from '../actions/auth';
 import { browserHistory } from 'react-router';
 
-class Header extends React.Component {
+export class Header extends React.Component {
   handleLogout(event) {
     event.preventDefault();
     this.props.dispatch(logout());

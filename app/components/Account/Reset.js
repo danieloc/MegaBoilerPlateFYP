@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { resetPassword } from '../../actions/auth';
 import Messages from '../Messages';
 
-class Reset extends React.Component {
+export class Reset extends React.Component {
   constructor(props) {
     super(props);
     this.state = { password: '', confirm: '' };

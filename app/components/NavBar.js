@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 import { Link } from 'react-router';
 import { getAddNodeModal, setParent, setCollaborators} from '../actions/modals';
 
-class NavBar extends React.Component {
+export class NavBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

@@ -5,7 +5,7 @@ import { signup } from '../../actions/auth';
 import { facebookLogin, googleLogin } from '../../actions/oauth';
 import Messages from '../Messages';
 
-class Signup extends React.Component {
+export class Signup extends React.Component {
   constructor(props) {
     super(props);
     this.state = { name: '', email: '', password: '' };
@@ -24,16 +24,8 @@ class Signup extends React.Component {
     this.props.dispatch(facebookLogin())
   }
 
-  handleTwitter() {
-    this.props.dispatch(twitterLogin())
-  }
-
   handleGoogle() {
     this.props.dispatch(googleLogin())
-  }
-
-  handleVk() {
-    this.props.dispatch(vkLogin())
   }
 
   render() {

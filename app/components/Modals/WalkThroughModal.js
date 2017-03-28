@@ -8,7 +8,7 @@ import {hideModal, changeWalkThroughState} from '../../actions/modals';
 import { walkThroughFinished } from '../../actions/modals';
 import {connect} from 'react-redux';
 
-class WalkThroughModal extends React.Component {
+export class WalkThroughModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

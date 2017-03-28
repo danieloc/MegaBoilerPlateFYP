@@ -5,7 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import SingleArchivedToDo from './SingleArchivedToDo';
 
-class Archived extends React.Component {
+export class Archived extends React.Component {
     constructor(props) {
         super(props);
         this.displayArchiveToDos = this.displayArchiveToDos.bind(this);

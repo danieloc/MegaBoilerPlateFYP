@@ -10,7 +10,7 @@ import InvitationModal from './InvitationModal';
 
 import { MODALS, } from '../../constants.js';
 
-class Modal extends React.Component {
+export class Modal extends React.Component {
     constructor(props) {
         super(props);
     };

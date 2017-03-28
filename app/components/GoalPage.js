@@ -7,7 +7,7 @@ import Nodes from './Nodes';
 import AddNodesForm from './AddNodesForm';
 import SingleGoal from './SingleGoal';
 
-class GoalPage extends React.Component {
+export class GoalPage extends React.Component {
 
     constructor(props) {
         super(props);
