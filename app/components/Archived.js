@@ -11,6 +11,7 @@ class Archived extends React.Component {
         this.displayArchiveToDos = this.displayArchiveToDos.bind(this);
     }
 
+
     displayArchiveToDosOrNothing() {
         var achivedToDos = this.displayArchiveToDos(this.props.user, null);
         console.log(achivedToDos);
@@ -19,7 +20,13 @@ class Archived extends React.Component {
                 return <SingleArchivedToDo key={i} index={i} obj={todo.obj} pathArr = {todo.pathArr} ></SingleArchivedToDo>;
             })
         }
-        else return <h1 key>Feck Off</h1>
+        else {
+            var userColor = this.props.user.primaryColor;
+            const styles = {
+                backgroundColor: userColor,
+            };
+            return <div className="archivedBack" style={styles}><h1 className="noArchived">You do not have any archived ToDos</h1></div>
+        }
     }
 
     displayArchiveToDos(node, pathArr) {
