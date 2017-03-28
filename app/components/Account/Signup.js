@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux'
 import { signup } from '../../actions/auth';
-import { facebookLogin, twitterLogin, googleLogin, vkLogin } from '../../actions/oauth';
+import { facebookLogin, googleLogin } from '../../actions/oauth';
 import Messages from '../Messages';
 
 class Signup extends React.Component {

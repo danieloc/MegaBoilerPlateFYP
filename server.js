@@ -31,6 +31,9 @@ var UserSchema = require('./models/User');
 
 // Controllers
 var userController = require('./controllers/user');
+var nodeController = require('./controllers/nodes');
+var todoController = require('./controllers/todos');
+var modalController = require('./controllers/modals');
 var contactController = require('./controllers/contact');
 
 // React and Server-Side Rendering
@@ -105,17 +108,17 @@ if (app.get('env') === 'development') {
 }
 
 app.post('/contact', contactController.contactPost);
-app.post('/nodes', userController.ensureAuthenticated, userController.addToNode);
-app.put('/nodes/share', userController.ensureAuthenticated, userController.shareNode);
-app.put('/nodes/leave', userController.ensureAuthenticated, userController.leaveNode);
-app.put('/nodes/share/accept', userController.ensureAuthenticated, userController.acceptNode);
-app.delete('/nodes', userController.ensureAuthenticated, userController.deleteNode);
-app.post('/todos', userController.ensureAuthenticated, userController.addTodos);
-app.delete('/todos', userController.ensureAuthenticated, userController.deleteToDo);
-app.put('/todos', userController.ensureAuthenticated, userController.updateToDos);
-app.put('/todos/unarchive', userController.ensureAuthenticated, userController.unarchiveToDo);
+app.post('/nodes', userController.ensureAuthenticated, nodeController.addToNode);
+app.put('/nodes/share', userController.ensureAuthenticated, nodeController.shareNode);
+app.put('/nodes/leave', userController.ensureAuthenticated, nodeController.leaveNode);
+app.put('/nodes/share/accept', userController.ensureAuthenticated, nodeController.acceptNode);
+app.delete('/nodes', userController.ensureAuthenticated, nodeController.deleteNode);
+app.post('/todos', userController.ensureAuthenticated, todoController.addTodos);
+app.delete('/todos', userController.ensureAuthenticated, todoController.deleteToDo);
+app.put('/todos', userController.ensureAuthenticated, todoController.updateToDos);
+app.put('/todos/unarchive', userController.ensureAuthenticated, todoController.unarchiveToDo);
 app.put('/account', userController.ensureAuthenticated, userController.accountPut);
-app.put('/account/walkthrough', userController.ensureAuthenticated, userController.accountWalkThroughFinished);
+app.put('/account/walkthrough', userController.ensureAuthenticated, modalController.accountWalkThroughFinished);
 app.delete('/account', userController.ensureAuthenticated, userController.accountDelete);
 app.post('/signup', userController.signupPost);
 app.post('/login', userController.loginPost);

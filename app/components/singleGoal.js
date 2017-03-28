@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
-import { removeToDo, updateToDo} from '../actions/auth';
+import { removeToDo, updateToDo} from '../actions/todos';
 
 class SingleGoal extends React.Component {
     constructor(props) {

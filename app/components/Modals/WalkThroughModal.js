@@ -5,7 +5,7 @@
 import React from 'react';
 import ModalWrapper from './ModalWrapper';
 import {hideModal, changeWalkThroughState} from '../../actions/modals';
-import { walkThroughFinished } from '../../actions/auth'
+import { walkThroughFinished } from '../../actions/modals';
 import {connect} from 'react-redux';
 
 class WalkThroughModal extends React.Component {
