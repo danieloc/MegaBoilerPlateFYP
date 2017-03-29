@@ -35,5 +35,20 @@ describe('auth actions', () => {
     return store.dispatch(login()).then(() => {
       expect(store.getActions()).to.deep.equal(expectedActions);
     });
-  });
+  });/*
+
+  it('creates LOGIN_SUCCESS action when login form is submitted', () => {
+    fetchMock.mock('/nodes', 'POST', { token, user });
+
+    const expectedActions = [
+      { type: 'SET_NODE' },
+      { type: 'LOGIN_SUCCESS', token: token, user: user }];
+
+    const store = mockStore({});
+
+    return store.dispatch(login()).then(() => {
+      expect(store.getActions()).to.deep.equal(expectedActions);
+    });
+  });*/
+
 });

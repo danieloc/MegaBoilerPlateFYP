@@ -4,7 +4,7 @@ var server = require('../../server');
 describe('GET /', function() {
   it('should render ok', function(done) {
     request(server)
-      .get('/')
+      .get('/login')
       .expect(200, done);
   });
 });
