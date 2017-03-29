@@ -16,7 +16,7 @@ const styles = {
     },
 };
 
-class AddNodeModal extends React.Component {
+export class AddNodeModal extends React.Component {
 
     constructor(props) {
         super(props);

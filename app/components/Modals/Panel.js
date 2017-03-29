@@ -4,7 +4,7 @@
 import React from 'react';
 import {hideModal} from '../../actions/modals'
 
-class Panel extends React.Component {
+export class Panel extends React.Component {
 
     render() {
         const styles = {

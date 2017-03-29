@@ -5,7 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { removeToDo, updateToDo} from '../actions/todos';
 
-class SingleGoal extends React.Component {
+export class SingleGoal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

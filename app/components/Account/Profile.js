@@ -5,7 +5,7 @@ import { link, unlink } from '../../actions/oauth';
 import Messages from '../Messages';
 import { CirclePicker } from 'react-color';
 
-class Profile extends React.Component {
+export class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

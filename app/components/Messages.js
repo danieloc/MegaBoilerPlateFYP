@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Messages extends React.Component {
+export class Messages extends React.Component {
   render() {
     return this.props.messages.success ? (
       <div role="alert" className="alert alert-success">

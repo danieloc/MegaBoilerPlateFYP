@@ -29,7 +29,7 @@ const styles = {
     },
 };
 
-class ModalWrapper extends React.Component {
+export class ModalWrapper extends React.Component {
     constructor(props) {
         super(props);
 

@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-class Collaborators extends React.Component {
+export class Collaborators extends React.Component {
 
     constructor(props) {
         super(props);

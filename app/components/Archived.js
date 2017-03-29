@@ -5,7 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import SingleArchivedToDo from './SingleArchivedToDo';
 
-class Archived extends React.Component {
+export class Archived extends React.Component {
     constructor(props) {
         super(props);
         this.displayArchiveToDos = this.displayArchiveToDos.bind(this);
@@ -14,7 +14,6 @@ class Archived extends React.Component {
 
     displayArchiveToDosOrNothing() {
         var achivedToDos = this.displayArchiveToDos(this.props.user, null);
-        console.log(achivedToDos);
         if(achivedToDos.length > 0) {
             return achivedToDos.map((todo, i) => {
                 return <SingleArchivedToDo key={i} index={i} obj={todo.obj} pathArr = {todo.pathArr} ></SingleArchivedToDo>;
@@ -51,7 +50,6 @@ class Archived extends React.Component {
                                 pathArr : updatedPath,
                                 obj : todo
                             });
-                            console.log(currentNodeToDos);
                         }
                     });
                 }

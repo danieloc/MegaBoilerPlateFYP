@@ -106,12 +106,10 @@ if (app.get('env') === 'development') {
   }));
   app.use(require('webpack-hot-middleware')(compiler));
 }
-
-app.post('/contact', contactController.contactPost);
 app.post('/nodes', userController.ensureAuthenticated, nodeController.addToNode);
 app.put('/nodes/share', userController.ensureAuthenticated, nodeController.shareNode);
 app.put('/nodes/leave', userController.ensureAuthenticated, nodeController.leaveNode);
-app.put('/nodes/share/accept', userController.ensureAuthenticated, nodeController.acceptNode);
+app.put('/nodes/accept', userController.ensureAuthenticated, nodeController.acceptNode);
 app.delete('/nodes', userController.ensureAuthenticated, nodeController.deleteNode);
 app.post('/todos', userController.ensureAuthenticated, todoController.addTodos);
 app.delete('/todos', userController.ensureAuthenticated, todoController.deleteToDo);

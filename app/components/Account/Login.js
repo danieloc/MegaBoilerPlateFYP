@@ -5,7 +5,7 @@ import { login } from '../../actions/auth';
 import { facebookLogin, googleLogin } from '../../actions/oauth';
 import Messages from '../Messages';
 
-class Login extends React.Component {
+export class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = { email: '', password: '' };

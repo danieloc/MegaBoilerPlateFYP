@@ -6,7 +6,7 @@ import React from 'react';
 import {connect } from 'react-redux'
 import { unarchiveToDo } from '../actions/todos'
 
-class SingleArchivedToDo extends React.Component {
+export class SingleArchivedToDo extends React.Component {
     constructor(props) {
         super(props);
     }

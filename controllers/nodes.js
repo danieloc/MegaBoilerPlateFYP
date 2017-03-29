@@ -271,18 +271,19 @@ exports.leaveNode = function(req, res) {
                     console.log(req.body.index);
                     nodes.splice(req.body.index, 1);
                     if(nodes.length === 0) {
-                        console.log("Took the correct path");
-                        return res.send({user: user.toJSON(), nodeInformation: null, indexList : [index], last: last});
+                        nodeInformation = null;
                     }
-                    if(req.body.last && nodes.length > 0) {
+                    else if(req.body.last && nodes.length > 0) {
                         console.log("If it's the last Node in the list and there is more than one in the list");
-                        nodeInformation = nodes[nodes.length - 1];
-                        index = req.body.index;
+                        console.log(nodes[req.body.index - 1]);
+                        nodeInformation = nodes[req.body.index - 1];
+                        index = req.body.index - 2 ;
                         if(index === nodes.length - 1) {
                             last = true
                         }
                     }
-                    if(!req.body.last && nodes.length > 0) {
+                    else if(!req.body.last && nodes.length > 0) {
+                        console.log("Not last and node length greater than one....");
                         nodeInformation = nodes[req.body.index];
                         index = req.body.index;
                         if(index === nodes.length - 1) {
@@ -322,7 +323,7 @@ exports.shareNode = function(req, res) {
             if(req.body.isAlreadyCollab) {
                 return res.status(404).send({ msg: "This email address has already been invited to the node or one of its parent nodes."})
             }
-            UserSchema.User.findOne({  _id: req.user.id })
+            UserSchema.User.findOne({  email: req.body.emailToShare })
                 .then(function (user){
                     if (!user) {
                         return res.status(400).send({

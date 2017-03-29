@@ -135,7 +135,7 @@ export function leaveNodeForm(email, nodeID, index, last, token) {
         }).then((response) => {
             if(response.ok) {
                 return response.json().then((json) => {
-                    console.log("----------------DELETE-RESPONSE-----------------------------------");
+                    console.log("----------------LEAVE-RESPONSE-----------------------------------");
                     console.log("User");
                     console.log(json.user);
                     console.log("NodeInformaiton");
@@ -157,8 +157,8 @@ export function leaveNodeForm(email, nodeID, index, last, token) {
                         depth: length
                     });
                     dispatch({
-                        type: 'DELETE_NODE_SUCCESS',
-                        messages: 'The node was deleted successfully',
+                        type: 'LEAVE_NODE_SUCCESS',
+                        messages: 'The node was left successfully',
                         user: json.user,
                     });
                 });
@@ -212,8 +212,7 @@ export function shareNodeForm(email, emailToShare, nodeID, isAlreadyCollab, toke
 
 export function acceptInvitation(email, nodeID ,accept, token) {
     return (dispatch) => {
-        console.log("Bitch Please");
-        return fetch('/nodes/share/accept', {
+        return fetch('/nodes/accept', {
             method: 'put',
             headers: {
                 'Content-Type': 'application/json',

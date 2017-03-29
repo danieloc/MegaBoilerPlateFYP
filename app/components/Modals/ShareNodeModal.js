@@ -7,7 +7,7 @@ import ModalWrapper from './ModalWrapper';
 import Messages from '../Messages';
 import { shareNodeForm } from '../../actions/nodes';
 
-class ShareNodeModal extends React.Component {
+export class ShareNodeModal extends React.Component {
 
     constructor(props) {
         super(props);

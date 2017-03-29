@@ -7,7 +7,7 @@ import ModalWrapper from './ModalWrapper';
 import { leaveNodeForm} from '../../actions/nodes';
 import { hideModal} from '../../actions/modals'
 
-class AddNodeModal extends React.Component {
+export class AddNodeModal extends React.Component {
 
     constructor(props) {
         super(props);

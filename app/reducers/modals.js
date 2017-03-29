@@ -14,6 +14,10 @@ const initialState = {
 
 export default function modals(state = initialState, action) {
     switch (action.type) {
+        case 'LOGOUT_SUCCESS':
+            return Object.assign({}, state, {
+                node: null,
+            });
         case 'NODE_MODAL' :
             return Object.assign({}, state, {
                 activeModal: MODALS.NODE_MODAL,

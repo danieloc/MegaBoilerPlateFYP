@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import ModalWrapper from './ModalWrapper';
 import { acceptInvitation } from '../../actions/nodes';
 
-class InvitationModal extends React.Component {
+export class InvitationModal extends React.Component {
 
     constructor(props) {
         super(props);
