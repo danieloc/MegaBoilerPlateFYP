@@ -72,7 +72,7 @@ export class NavBar extends React.Component {
 
 
     getPlusIcon() {
-        if((this.props.node && this.props.userEmail === this.props.node.owner.email) || this.props.depth === 1)
+        if((this.props.node && this.props.user.email === this.props.node.owner.email) || this.props.depth === 1)
             return (<li><Link onClick={() => this.addNodeModal(this.state.depth)}><span className = "glyphicon glyphicon-plus-sign"></span></Link></li>);
     }
 
@@ -94,7 +94,6 @@ export class NavBar extends React.Component {
 const mapStateToProps =(state) => {
     return {
         user: state.auth.user,
-        userEmail: state.auth.user.email,
         node : state.modals.node,
         indexList : state.modals.indexList
     }

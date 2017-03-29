@@ -14,7 +14,6 @@ describe('auth actions', () => {
     id: '01234567890',
     name: 'John Doe',
     email: 'john@gmail.com',
-    location: 'San Francisco'
   };
 
   afterEach(() => {

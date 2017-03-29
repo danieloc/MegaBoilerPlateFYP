@@ -16,13 +16,13 @@ export class Header extends React.Component {
     if(this.props.user)
       active = { borderBottomColor: this.props.user.primaryColor };
     const leftNavMindMap = this.props.token ? (
-        <li><Link to="/mindmap" activeStyle={active}>Mindmap</Link></li>
+        <li className="mindmap"><Link to="/mindmap" activeStyle={active}>Mindmap</Link></li>
     ):(<li></li>);
     const leftNavNodes = this.props.token ? (
-        <li><Link to="/nodes" activeStyle={active}>Nodes</Link></li>
+        <li className="nodes"><Link to="/nodes" activeStyle={active}>Nodes</Link></li>
     ):(<li></li>);
     const leftNavArchived = this.props.token ? (
-        <li><Link to="/archived" activeStyle={active}>Archived</Link></li>
+        <li className="archived"><Link to="/archived" activeStyle={active}>Archived</Link></li>
     ):(<li></li>);
     const rightNav = this.props.token ? (
       <ul className="nav navbar-nav navbar-right">
