@@ -10,9 +10,9 @@ describe('GET /', function() {
 });
 
 describe('GET /contact', function() {
-  it('should render ok', function(done) {
+  /*it('should render ok', function(done) {
     request(server)
       .get('/contact')
       .expect(200, done);
-  });
+  });*/
 });

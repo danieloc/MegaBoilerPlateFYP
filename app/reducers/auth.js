@@ -21,11 +21,11 @@ export default function auth(state = initialState, action) {
     case 'TODO_FORM_SUCCESS':
       return Object.assign({}, state, {
         user: action.user});
-    case 'DELETE_GOAL_SUCCESS':
+    case 'DELETE_TODO_SUCCESS':
       return Object.assign({}, state, {
         user: action.user
       });
-    case 'UPDATE_GOAL_SUCCESS':
+    case 'UPDATE_TODO_SUCCESS':
       return Object.assign({}, state, {
         user: action.user
       });
@@ -34,6 +34,10 @@ export default function auth(state = initialState, action) {
         user: action.user
       });
     case 'DELETE_NODE_SUCCESS':
+      return Object.assign({}, state, {
+        user: action.user
+      });
+    case 'LEAVE_NODE_SUCCESS':
       return Object.assign({}, state, {
         user: action.user
       });

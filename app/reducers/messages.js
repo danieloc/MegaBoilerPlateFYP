@@ -8,8 +8,8 @@ export default function messages(state = {}, action) {
     case 'RESET_PASSWORD_FAILURE':
     case 'CONTACT_FORM_FAILURE':
     case 'TODO_FORM_FAILURE':
-    case 'DELETE_GOAL_FAILURE':
-    case 'UPDATE_GOAL_FAILURE' :
+    case 'DELETE_TODO_FAILURE':
+    case 'UPDATE_TODO_FAILURE' :
     case 'OAUTH_FAILURE':
     case 'UNLINK_FAILURE':
     case 'LINK_FAILURE':
@@ -26,11 +26,11 @@ export default function messages(state = {}, action) {
       return {
         success: action.messages
       };
-    case 'DELETE_GOAL_SUCCESS':
+    case 'DELETE_TODO_SUCCESS':
       return {
         success: action.messages
       };
-    case 'UPDATE_GOAL_SUCCESS':
+    case 'UPDATE_TODO_SUCCESS':
       return {
         success: action.messages
       };

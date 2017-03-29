@@ -33,7 +33,7 @@ export function submitNodeToDoForm(state, nodeID,indexList, depth, token) {
                     });
                     dispatch({
                         type: 'TODO_FORM_SUCCESS',
-                        messages: [{msg : "Goal Submitted"}],
+                        messages: [{msg : "ToDo Submitted"}],
                         user: json.user
                     });
                 });
@@ -77,15 +77,15 @@ export function removeToDo(email , todoID, nodeID, indexList, depth, token) {
                         depth: depth
                     });
                     dispatch({
-                        type: 'DELETE_GOAL_SUCCESS',
-                        messages: [{msg : "Goal Deleted"}],
+                        type: 'DELETE_TODO_SUCCESS',
+                        messages: [{msg : "ToDo Deleted"}],
                         user: json.user
                     });
                 });
             } else {
                 return response.json().then((json) => {
                     dispatch({
-                        type: 'DELETE_GOAL_FAILURE',
+                        type: 'DELETE_TODO_FAILURE',
                         messages: Array.isArray(json) ? json : [json]
                     });
                 });
@@ -124,15 +124,15 @@ export function updateToDo(email , todoID, name, priority, archived, nodeID, ind
                         depth: depth
                     });
                     dispatch({
-                        type: 'UPDATE_GOAL_SUCCESS',
-                        messages: [{msg : "Goal updated"}],
+                        type: 'UPDATE_TODO_SUCCESS',
+                        messages: [{msg : "ToDo updated"}],
                         user: json.user
                     });
                 });
             } else {
                 return response.json().then((json) => {
                     dispatch({
-                        type: 'UPDATE_GOAL_FAILURE',
+                        type: 'UPDATE_TODO_FAILURE',
                         messages: Array.isArray(json) ? json : [json]
                     });
                 });
