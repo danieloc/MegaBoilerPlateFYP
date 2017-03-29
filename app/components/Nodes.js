@@ -54,19 +54,22 @@ export class Nodes extends React.Component {
     }
 
     getNavBars(node, depth, i) {
-        var lowerNavBars = <div></div>;
-        var nodes = null;
-        if(node) {
-            depth++;
-            nodes = node.nodes;
-            if (nodes.length > 0 && this.props.indexList && this.props.indexList.length > depth) {
-                lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
+        if(this.props.user.nodes) {
+            var lowerNavBars = <div></div>;
+            var nodes = null;
+            if (node) {
+                depth++;
+                nodes = node.nodes;
+                if (nodes.length > 0 && this.props.indexList && this.props.indexList.length > depth) {
+                    lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
+                }
+                else if (nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth && this.props.node && (this.props.user.email === this.props.node.owner.email || nodes[this.props.indexList[depth - 1]].nodes.length > 0)) {
+                    lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
+                }
             }
-            else if (nodes.length > 0 && this.props.indexList && this.props.indexList.length >= depth && this.props.node && (this.props.user.email === this.props.node.owner.email||nodes[this.props.indexList[depth - 1]].nodes.length > 0)) {
-                lowerNavBars = [this.getNavBars(nodes[this.props.indexList[depth - 1]], depth, i++)];
-            }
+            return <div key={i}><NavBar getNodeCollaborators={this.getNodeCollaborators} nodes={nodes} depth={depth}
+                                        primaryColor={this.props.user.primaryColor}/> {lowerNavBars} </div>
         }
-        return <div key={i}><NavBar getNodeCollaborators = {this.getNodeCollaborators} nodes = {nodes} depth = {depth} primaryColor = {this.props.user.primaryColor}/> {lowerNavBars} </div>
     }
 
     render() {

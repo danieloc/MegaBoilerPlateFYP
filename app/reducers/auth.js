@@ -46,7 +46,10 @@ export default function auth(state = initialState, action) {
         user: action.user
       });
     case 'LOGOUT_SUCCESS':
-      return initialState;
+      return Object.assign({}, state, {
+        user: {},
+        token: null
+      });
     case 'WALK_THROUGH_FINISHED' :
       return Object.assign({}, state, {
         user: action.user
