@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import Messages from './Messages';
 import { submitNodeToDoForm } from '../actions/todos';
 
-export class AddNodesForm extends React.Component {
+export class AddToDosForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -34,7 +34,7 @@ export class AddNodesForm extends React.Component {
                     <div className="panel-body">
                         <Messages messages={this.props.messages}/>
                         <form onSubmit={this.handleReset.bind(this)}>
-                            <legend>{this.props.name}</legend>
+                            <legend>{this.props.nodeName}</legend>
                             <div className="form-group">
                                 <label htmlFor="goal">New To-Do</label>
                                 <input name = "goal" id="goal" placeholder="New To-Do" className="form-control" autoFocus value={this.state.goal} onChange={this.handleChange.bind(this)}/>
@@ -70,4 +70,4 @@ const mapStateToProps = (state) => {
         depth : state.modals.depth
     };
 };
-export default connect(mapStateToProps)(AddNodesForm);
+export default connect(mapStateToProps)(AddToDosForm);

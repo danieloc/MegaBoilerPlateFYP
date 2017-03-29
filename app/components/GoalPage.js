@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import Nodes from './Nodes';
-import AddNodesForm from './AddNodesForm';
+import AddNodesForm from './AddToDosForm';
 import SingleGoal from './SingleGoal';
 
 export class GoalPage extends React.Component {
@@ -30,9 +30,7 @@ export class GoalPage extends React.Component {
     }
     render() {
 
-        const message = this.props.childID ? "SUB LEVEL NODE: " : "TOP LEVEL NODE: ";
-
-        const addNodesForm = this.props.node ? <AddNodesForm nodeID = {this.props.node._id} name = {message + this.props.node.name}/> :
+        const addNodesForm = this.props.node ? <AddNodesForm nodeID = {this.props.node._id} nodeName = {this.props.node.name}/> :
             null;
 
         return (
