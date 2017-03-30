@@ -43,7 +43,7 @@ export class Archived extends React.Component {
                     subNodeToDos = this.displayArchiveToDos(node, updatedPath)
                 }
                 if(node.todos.length > 0) {
-                    updatedPath.concat([node.name]);
+                    updatedPath = updatedPath.concat([node.name]);
                     node.todos.forEach((todo) => {
                         if(todo.completed) {
                             currentNodeToDos.push({
