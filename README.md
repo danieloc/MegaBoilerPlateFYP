@@ -48,6 +48,7 @@ Mike Bostock is one of creators of d3.js, and is one of the reasons why d3.js is
 
 This application was build off a really nice boilerplate called "MegaBoilerPlate" made by Sahat Yalkabov. MegaBoilerplate creates starter projects, optimized for simplicity and ease of use in a variety of options regarding the platform (Nodejs, Static Sites, JS Libraries or Electron), framework(Express, Meteor etc), CSS Framework(Bootstrap, Foundation etc), CSS Preprocessor etc..... MegaBoilerPlates code is subject to an MIT License.
 
+________________________________________________________
 The MIT License (MIT)
 
 Copyright (c) 2016 Sahat Yalkabov
@@ -69,5 +70,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+________________________________________________________
 
 The above license applies to the code used in the initial commit of this repository(MEGABOILERPLATE) and does not apply to the rest of this repository. 
