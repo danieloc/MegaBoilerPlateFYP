@@ -45,3 +45,29 @@ But what happens when you do not have a pencil? When you do not have paper? Befo
 There seems to be a learning curve to using these applications. They seem boring and a lot of times they keep your mind map public unless you pay a subscription fee. Which would make a lot of people uneasy about using them. The majority of people I asked would say that they’ve tried using some of these applications online, but disliked the complexity of the available applications. What they wanted was something easy to use. Something clean and uncluttered, and no matter how much I looked for a quick and easy Mind Map I could not find one I liked. This was the main reasoning for me deciding on this FYP, I actually wanted to make something I would use and would help me in my day to day life. And hopefully others as well.
 Another motivating factor for this project was that I had wanted to build a website with this specific language stack – The most important language that I wanted to learn was React.js. I first heard about it in 2015 and wanted to use it in a project for a while now. I am interested in pursuing a career with web-app development in the future, and the two hottest topics at the moment are Angular 2.x and React. Having already worked with Angular1.x before I decided to try my hand at React instead for a change of pace.
 Mike Bostock is one of creators of d3.js, and is one of the reasons why d3.js is as popular as it is today. I follow him on twitter, and read the New York Times articles that he does visualisations for, they are always very illustrative, and make you understand something that you would not have been able to conceptualise verbally. It is amazing what he can do with a json file and 50 lines of d3.js.
+
+This application was build off a really nice boilerplate called "MegaBoilerPlate" made by Sahat Yalkabov. MegaBoilerplate creates starter projects, optimized for simplicity and ease of use in a variety of options regarding the platform (Nodejs, Static Sites, JS Libraries or Electron), framework(Express, Meteor etc), CSS Framework(Bootstrap, Foundation etc), CSS Preprocessor etc..... MegaBoilerPlates code is subject to an MIT License.
+
+The MIT License (MIT)
+
+Copyright (c) 2016 Sahat Yalkabov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+The above license applies to the code used in the initial commit of this repository(MEGABOILERPLATE) and does not apply to the rest of this repository. 
